@@ -22,7 +22,8 @@
         private int treeTrunkSize;
         private int imageHeight;
         private int imageWidth;
-        private WriteableBitmap image;
+        private WriteableBitmap imageSkeletton;
+        private WriteableBitmap imageTree;
 
         private int rotationAngle;
         private float rotationAngleStart;
@@ -58,10 +59,16 @@
             set { this.Set(ref this.imageWidth, value); }
         }
 
-        public WriteableBitmap Image
+        public WriteableBitmap ImageSkeletton
         {
-            get { return this.image; }
-            set { this.Set(ref this.image, value); }
+            get { return this.imageSkeletton; }
+            set { this.Set(ref this.imageSkeletton, value); }
+        }
+
+        public WriteableBitmap ImageTree
+        {
+            get { return this.imageTree; }
+            set { this.Set(ref this.imageTree, value); }
         }
 
         public int RotationAngle

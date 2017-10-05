@@ -20,6 +20,8 @@ namespace TreeGenerator
         Matrix leftSkewMatrix = Matrix.Identity;
         Matrix rightSkewMatrix = Matrix.Identity;
 
+        private TreeModel tree;
+
 
         public MainWindow()
         {
@@ -28,8 +30,25 @@ namespace TreeGenerator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                this.tree = new TreeModel();
+                this.GenerateTree();
+                this.DrawTree(this.tree);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+        }
+
+        private void GenerateTree()
+        {
             var bitmap = BitmapFactory.New(mainViewModel.ImageWidth, mainViewModel.ImageHeight);
-            mainViewModel.Image = bitmap;
+            mainViewModel.ImageSkeletton = bitmap;
+
+            var bitmap2 = BitmapFactory.New(mainViewModel.ImageWidth, mainViewModel.ImageHeight);
+            mainViewModel.ImageTree = bitmap2;
 
             using (bitmap.GetBitmapContext())
             {
@@ -45,13 +64,13 @@ namespace TreeGenerator
 
                 Vector currentPoint = new Vector(mainViewModel.ImageWidth / 2, (mainViewModel.ImageHeight - 1));
                 bitmap.SetPixel((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
+                this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection));
 
                 int treeCrownSize = mainViewModel.TreeTrunkSize - mainViewModel.BranchStart;
-                int halfBranchDistance = mainViewModel.BranchDistance / 2;
 
                 HashSet<int> leftBranches;
                 HashSet<int> rightBranches;
-                this.GenerateBranchPositions(this.mainViewModel.BranchStart, treeCrownSize, halfBranchDistance, out leftBranches, out rightBranches);
+                this.GenerateBranchPositions(this.mainViewModel.BranchStart, treeCrownSize, mainViewModel.BranchDistance, out leftBranches, out rightBranches);
 
                 for (int y = 0; y < mainViewModel.TreeTrunkSize - 1; y++)
                 {
@@ -65,9 +84,12 @@ namespace TreeGenerator
                         growDirection = rotationMatrix.Transform(growDirection);
                     }
 
+                    // Generate trunk.
                     currentPoint -= growDirection;
-                    bitmap.SetPixel((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
+                    bitmap.SetPixelSafe((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
+                    this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection));
 
+                    // Generate branches.
                     if (y > mainViewModel.BranchStart)
                     {
                         if (leftBranches.Contains(y))
@@ -84,7 +106,7 @@ namespace TreeGenerator
             }
         }
 
-        private void GenerateBranchPositions(int branchStart, int treeCrownSize, int halfBranchDistance, out HashSet<int> leftBranches, out HashSet<int> rightBranches)
+        private void GenerateBranchPositions(int branchStart, int treeCrownSize, int branchDistance, out HashSet<int> leftBranches, out HashSet<int> rightBranches)
         {
             HashSet<int> leftCrown = new HashSet<int>(Enumerable.Range(branchStart, treeCrownSize));
             HashSet<int> rightCrown = new HashSet<int>(Enumerable.Range(branchStart, treeCrownSize));
@@ -110,7 +132,7 @@ namespace TreeGenerator
                 if (selectedCrown.Contains(newBranch))
                 {
                     selectedBranches.Add(newBranch);
-                    for (int j = newBranch - halfBranchDistance; j < newBranch + halfBranchDistance; j++)
+                    for (int j = newBranch - branchDistance; j < newBranch + branchDistance; j++)
                     {
                         selectedCrown.Remove(j);
                     }
@@ -152,11 +174,11 @@ namespace TreeGenerator
             Matrix rotationMatrix = Matrix.Identity;
             rotationMatrix.Rotate(rotationStep);
 
-            List<int> subBranchPositions = new List<int>();
             HashSet<int> leftBranches;
             HashSet<int> rightBranches;
             this.GenerateBranchPositions(this.mainViewModel.BranchStart, branchLength, this.mainViewModel.BranchDistance / 2, out leftBranches, out rightBranches);
 
+            var branch = new Branch();
             for (int y = 0; y < branchLength; y++)
             {
                 if (y == 0)
@@ -170,7 +192,8 @@ namespace TreeGenerator
                 }
 
                 currentPoint -= growDirection;
-                bitmap.SetPixel((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
+                bitmap.SetPixelSafe((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
+                branch.BranchPoints.Add(new TreePoint(currentPoint, growDirection));
 
                 if (y > mainViewModel.BranchStart)
                 {
@@ -186,6 +209,103 @@ namespace TreeGenerator
                 }
             }
 
+            this.tree.Branches.Add(branch);
+        }
+
+        private void DrawTree(TreeModel tree)
+        {
+            var treeImage = this.mainViewModel.ImageTree;
+            Matrix rotation90RightMatrix = Matrix.Identity;
+            rotation90RightMatrix.Rotate(90);
+
+            // Draw trunk.
+            List<int> trunkPoints = new List<int>();// { 10, 10, 30, 30, 30, 80, 10, 10 };
+            var trunkWidth = 5;
+            foreach (var trunkElement in tree.Trunk)
+            {
+                var trunkElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
+                var resizePoint = -trunkWidth * trunkElementRightDirection + trunkElement.Position;
+                trunkPoints.Add((int)resizePoint.X);
+                trunkPoints.Add((int)resizePoint.Y);
+            }
+
+            foreach (var trunkElement in tree.Trunk.ToArray().Reverse())
+            {
+                var trunkElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
+                var resizePoint = trunkWidth * trunkElementRightDirection + trunkElement.Position;
+                trunkPoints.Add((int)resizePoint.X);
+                trunkPoints.Add((int)resizePoint.Y);
+            }
+
+            trunkPoints.Add(trunkPoints[0]);
+            trunkPoints.Add(trunkPoints[1]);
+            treeImage.FillPolygon(trunkPoints.ToArray(), Colors.SaddleBrown);
+
+            // Draw branches.
+            var branchWidth = 2;
+            foreach (var branch in tree.Branches)
+            {
+                List<int> branchPoints = new List<int>();// { 10, 10, 30, 30, 30, 80, 10, 10 };
+
+                foreach (var trunkElement in branch.BranchPoints)
+                {
+                    var branchElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
+                    var resizePoint = -branchWidth * branchElementRightDirection + trunkElement.Position;
+                    branchPoints.Add((int)resizePoint.X);
+                    branchPoints.Add((int)resizePoint.Y);
+                }
+
+                foreach (var trunkElement in branch.BranchPoints.ToArray().Reverse())
+                {
+                    var branchElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
+                    var resizePoint = branchWidth * branchElementRightDirection + trunkElement.Position;
+                    branchPoints.Add((int)resizePoint.X);
+                    branchPoints.Add((int)resizePoint.Y);
+                }
+
+                branchPoints.Add(branchPoints[0]);
+                branchPoints.Add(branchPoints[1]);
+                treeImage.FillPolygon(branchPoints.ToArray(), Colors.SaddleBrown);
+
+                //treeImage.SetPixelSafe((int)branchElement.Position.X, (int)branchElement.Position.Y, Colors.Black);
+
+            }
+        }
+    }
+
+    class TreeModel
+    {
+        public List<TreePoint> Trunk { get; } = new List<TreePoint>();
+
+        public List<Branch> Branches { get; } = new List<Branch>();
+    }
+
+    class Branch
+    {
+        public List<TreePoint> BranchPoints { get; set; } = new List<TreePoint>();
+    }
+
+    public class TreePoint
+    {
+        public TreePoint(Vector position, Vector growDirection)
+        {
+            this.Position = position;
+            this.GrowDirection = growDirection;
+        }
+
+        public Vector Position { get; set; }
+
+        public Vector GrowDirection { get; set; }
+    }
+
+    public static class BitmapExtensions
+    {
+        public static void SetPixelSafe(this WriteableBitmap bitmap, int x, int y, Color color)
+        {
+            if (x < bitmap.Width && x > 0 && y < bitmap.Height && y > 0)
+            {
+                bitmap.SetPixel(x, y, color);
+            }
         }
     }
 }
