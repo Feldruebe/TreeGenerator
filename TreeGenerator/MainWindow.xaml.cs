@@ -12,7 +12,7 @@ namespace TreeGenerator
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         MainViewModel mainViewModel = new ViewModelLocator().Main;
         Random rand = new Random();
@@ -30,16 +30,16 @@ namespace TreeGenerator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                this.tree = new TreeModel();
-                this.GenerateTree();
-                this.DrawTree(this.tree);
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.Message);
-            }
+            //try
+            //{
+            this.tree = new TreeModel();
+            this.GenerateTree();
+            this.DrawTree(this.tree);
+            //}
+            //catch (Exception exception)
+            //{
+            //    MessageBox.Show(exception.Message);
+            //}
         }
 
         private void GenerateTree()
@@ -62,9 +62,12 @@ namespace TreeGenerator
                 Matrix rotationMatrix = Matrix.Identity;
                 rotationMatrix.Rotate(rotationStep);
 
+                var trunkStartWidth = 5;
+                var trunkEndWidth = 2;
+
                 Vector currentPoint = new Vector(mainViewModel.ImageWidth / 2, (mainViewModel.ImageHeight - 1));
                 bitmap.SetPixel((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
-                this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection));
+                this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth});
 
                 int treeCrownSize = mainViewModel.TreeTrunkSize - mainViewModel.BranchStart;
 
@@ -85,21 +88,22 @@ namespace TreeGenerator
                     }
 
                     // Generate trunk.
+                    var currentWidth = trunkEndWidth + (trunkStartWidth - trunkEndWidth) * ((mainViewModel.TreeTrunkSize - y) / (double)mainViewModel.TreeTrunkSize);
                     currentPoint -= growDirection;
                     bitmap.SetPixelSafe((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
-                    this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection));
+                    this.tree.Trunk.Add(new TreePoint(currentPoint, growDirection) { Width = (int)currentWidth });
 
                     // Generate branches.
                     if (y > mainViewModel.BranchStart)
                     {
                         if (leftBranches.Contains(y))
                         {
-                            this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Left);
+                            this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Left, currentWidth);
                         }
 
                         if (rightBranches.Contains(y))
                         {
-                            this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Right);
+                            this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Right, currentWidth);
                         }
                     }
                 }
@@ -140,7 +144,7 @@ namespace TreeGenerator
             }
         }
 
-        private void GenerateBranch(WriteableBitmap bitmap, Vector growDirection, Vector currentPoint, BranchType branchType, int level = 1)
+        private void GenerateBranch(WriteableBitmap bitmap, Vector growDirection, Vector currentPoint, BranchType branchType, double width, int level = 1)
         {
             int angle = this.mainViewModel.BranchSkew + rand.Next(-this.mainViewModel.BranchSkewDeviation, this.mainViewModel.BranchSkewDeviation);
             this.leftSkewMatrix = Matrix.Identity;
@@ -150,16 +154,16 @@ namespace TreeGenerator
 
             if (branchType == BranchType.Left)
             {
-                this.GrowBranch(bitmap, growDirection, currentPoint, leftSkewMatrix, BranchType.Left, level);
+                this.GrowBranch(bitmap, growDirection, currentPoint, leftSkewMatrix, BranchType.Left, width, level);
             }
 
             if (branchType == BranchType.Right)
             {
-                this.GrowBranch(bitmap, growDirection, currentPoint, rightSkewMatrix, BranchType.Right, level);
+                this.GrowBranch(bitmap, growDirection, currentPoint, rightSkewMatrix, BranchType.Right, width, level);
             }
         }
 
-        private void GrowBranch(WriteableBitmap bitmap, Vector growDirection, Vector currentPoint, Matrix skewMatrix, BranchType branchType, int level)
+        private void GrowBranch(WriteableBitmap bitmap, Vector growDirection, Vector currentPoint, Matrix skewMatrix, BranchType branchType, double width, int level)
         {
             if (level == 4)
             {
@@ -179,6 +183,8 @@ namespace TreeGenerator
             this.GenerateBranchPositions(this.mainViewModel.BranchStart, branchLength, this.mainViewModel.BranchDistance / 2, out leftBranches, out rightBranches);
 
             var branch = new Branch();
+            var branchStartWidth = width;
+            var branchEndWidth = 1;
             for (int y = 0; y < branchLength; y++)
             {
                 if (y == 0)
@@ -192,19 +198,20 @@ namespace TreeGenerator
                 }
 
                 currentPoint -= growDirection;
+                var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
                 bitmap.SetPixelSafe((int)currentPoint.X, (int)currentPoint.Y, Colors.Black);
-                branch.BranchPoints.Add(new TreePoint(currentPoint, growDirection));
+                branch.BranchPoints.Add(new TreePoint(currentPoint, growDirection) {Width = (int)currentWidth});
 
                 if (y > mainViewModel.BranchStart)
                 {
                     if (leftBranches.Contains(y))
                     {
-                        this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Left, level + 1);
+                        this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Left, currentWidth, level + 1);
                     }
 
                     if (rightBranches.Contains(y))
                     {
-                        this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Right, level + 1);
+                        this.GenerateBranch(bitmap, growDirection, currentPoint, BranchType.Right, currentWidth, level + 1);
                     }
                 }
             }
@@ -219,53 +226,53 @@ namespace TreeGenerator
             rotation90RightMatrix.Rotate(90);
 
             // Draw trunk.
-            List<int> trunkPoints = new List<int>();// { 10, 10, 30, 30, 30, 80, 10, 10 };
-            var trunkWidth = 5;
-            foreach (var trunkElement in tree.Trunk)
+            int trunkArrayLength = (tree.Trunk.Count) * 4 + 2;
+            var trunkArray = new int[trunkArrayLength];
+            for (int i = 0; i < tree.Trunk.Count; i++)
             {
+                var trunkElement = tree.Trunk[i];
                 var trunkElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
-                var resizePoint = -trunkWidth * trunkElementRightDirection + trunkElement.Position;
-                trunkPoints.Add((int)resizePoint.X);
-                trunkPoints.Add((int)resizePoint.Y);
+                var resizePointLeft = -trunkElement.Width * trunkElementRightDirection + trunkElement.Position;
+                var resizePointRight = trunkElement.Width * trunkElementRightDirection + trunkElement.Position;
+
+                trunkArray[i * 2] = (int)resizePointLeft.X;
+                trunkArray[i * 2 + 1] = (int)resizePointLeft.Y;
+
+                int reverseIndex = (tree.Trunk.Count) * 4 - 2 - i * 2;
+                trunkArray[reverseIndex] = (int)resizePointRight.X;
+                trunkArray[reverseIndex + 1] = (int)resizePointRight.Y;
             }
 
-            foreach (var trunkElement in tree.Trunk.ToArray().Reverse())
-            {
-                var trunkElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
-                var resizePoint = trunkWidth * trunkElementRightDirection + trunkElement.Position;
-                trunkPoints.Add((int)resizePoint.X);
-                trunkPoints.Add((int)resizePoint.Y);
-            }
-
-            trunkPoints.Add(trunkPoints[0]);
-            trunkPoints.Add(trunkPoints[1]);
-            treeImage.FillPolygon(trunkPoints.ToArray(), Colors.SaddleBrown);
+            trunkArray[trunkArrayLength - 2] = trunkArray[0];
+            trunkArray[trunkArrayLength - 1] = trunkArray[1];
+            treeImage.FillPolygon(trunkArray, Colors.SaddleBrown);
+            treeImage.DrawPolyline(trunkArray.Take(trunkArray.Length - 2).ToArray(), Colors.Black);
 
             // Draw branches.
-            var branchWidth = 2;
             foreach (var branch in tree.Branches)
             {
-                List<int> branchPoints = new List<int>();// { 10, 10, 30, 30, 30, 80, 10, 10 };
+                int branchArrayLength = (branch.BranchPoints.Count) * 4 + 2;
+                var branchArray = new int[branchArrayLength];
 
-                foreach (var trunkElement in branch.BranchPoints)
+                for (int i = 0; i < branch.BranchPoints.Count; i++)
                 {
-                    var branchElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
-                    var resizePoint = -branchWidth * branchElementRightDirection + trunkElement.Position;
-                    branchPoints.Add((int)resizePoint.X);
-                    branchPoints.Add((int)resizePoint.Y);
+                    var branchElement = branch.BranchPoints[i];
+                    var branchElementRightDirection = rotation90RightMatrix.Transform(branchElement.GrowDirection);
+                    var resizePointLeft = -branchElement.Width * branchElementRightDirection + branchElement.Position;
+                    var resizePointRight = branchElement.Width * branchElementRightDirection + branchElement.Position;
+
+                    branchArray[i * 2] = (int)resizePointLeft.X;
+                    branchArray[i * 2 + 1] = (int)resizePointLeft.Y;
+
+                    int reverseIndex = (branch.BranchPoints.Count) * 4 - 2 - i * 2;
+                    branchArray[reverseIndex] = (int)resizePointRight.X;
+                    branchArray[reverseIndex + 1] = (int)resizePointRight.Y;
                 }
 
-                foreach (var trunkElement in branch.BranchPoints.ToArray().Reverse())
-                {
-                    var branchElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
-                    var resizePoint = branchWidth * branchElementRightDirection + trunkElement.Position;
-                    branchPoints.Add((int)resizePoint.X);
-                    branchPoints.Add((int)resizePoint.Y);
-                }
-
-                branchPoints.Add(branchPoints[0]);
-                branchPoints.Add(branchPoints[1]);
-                treeImage.FillPolygon(branchPoints.ToArray(), Colors.SaddleBrown);
+                branchArray[branchArrayLength - 2] = branchArray[0];
+                branchArray[branchArrayLength - 1] = branchArray[1];
+                treeImage.FillPolygon(branchArray, Colors.SaddleBrown);
+                treeImage.DrawPolyline(branchArray.Take(branchArray.Length - 2).ToArray(), Colors.Black);
 
                 //treeImage.SetPixelSafe((int)branchElement.Position.X, (int)branchElement.Position.Y, Colors.Black);
 
@@ -296,6 +303,8 @@ namespace TreeGenerator
         public Vector Position { get; set; }
 
         public Vector GrowDirection { get; set; }
+
+        public int Width { get; set; }
     }
 
     public static class BitmapExtensions
