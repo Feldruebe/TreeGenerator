@@ -7,8 +7,8 @@
         xmlns:viewmodel="clr-namespace:TreeGenerator.ViewModels"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
-        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"  >
+        Title="MainWindow" Height="500" Width="525"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>

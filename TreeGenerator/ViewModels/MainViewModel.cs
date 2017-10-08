@@ -39,6 +39,8 @@
         private int branchSkewDeviation;
         private int branchRotationAngleStart;
         private float branchRotationAngle;
+        private int trunkWidthStart;
+        private int trunkWidthEnd;
 
         public int TreeTrunkSize
         {
@@ -151,6 +153,18 @@
             set { this.Set(ref branchRotationAngle, value); }
         }
 
+        public int TrunkWidthStart
+        {
+            get { return trunkWidthStart; }
+            set { this.Set(ref trunkWidthStart, value); }
+        }
+
+        public int TrunkWidthEnd
+        {
+            get { return trunkWidthEnd; }
+            set { this.Set(ref trunkWidthEnd, value); }
+        }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -181,6 +195,8 @@
             this.BranchSkewDeviation = 10;
             this.BranchRotationAngleStart = 0;
             this.BranchRotationAngle = 30;
+            this.trunkWidthStart = 8;
+            this.trunkWidthEnd = 2;
 
         }
     }
