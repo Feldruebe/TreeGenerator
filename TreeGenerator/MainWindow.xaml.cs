@@ -30,16 +30,15 @@ namespace TreeGenerator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-
-            var tree = this.GenerateTree();
-            this.DrawTree(tree);
-            //}
-            //catch (Exception exception)
-            //{
-            //    MessageBox.Show(exception.Message);
-            //}
+            try
+            {
+                var tree = this.GenerateTree();
+                this.DrawTree(tree);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
 
         private TreeModel GenerateTree()
@@ -48,10 +47,10 @@ namespace TreeGenerator
 
             Vector growDirection = new Vector(0, 1);
 
-            float rotationStep = (float)mainViewModel.RotationAngle / (float)(mainViewModel.TreeTrunkSize - mainViewModel.RotationAngleStart);
+            float rotationStep = (float)mainViewModel.TrunkRotationAngle / (float)(mainViewModel.TreeTrunkSize - mainViewModel.TrunkRotationAngleStart);
 
             Matrix skewMatrix = Matrix.Identity;
-            skewMatrix.Rotate(mainViewModel.SkewAngle);
+            skewMatrix.Rotate(mainViewModel.TrunkSkewAngle);
 
             Matrix rotationMatrix = Matrix.Identity;
             rotationMatrix.Rotate(rotationStep);
@@ -69,12 +68,12 @@ namespace TreeGenerator
 
             for (int y = 0; y < mainViewModel.TreeTrunkSize - 1; y++)
             {
-                if (y == mainViewModel.SkewAngleStart)
+                if (y == mainViewModel.TrunkSkewAngleStart)
                 {
                     growDirection = skewMatrix.Transform(growDirection);
                 }
 
-                if (y > mainViewModel.RotationAngleStart)
+                if (y > mainViewModel.TrunkRotationAngleStart)
                 {
                     growDirection = rotationMatrix.Transform(growDirection);
                 }
