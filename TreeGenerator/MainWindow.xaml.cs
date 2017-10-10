@@ -257,8 +257,8 @@ namespace TreeGenerator
 
                 trunkArray[trunkArrayLength - 2] = trunkArray[0];
                 trunkArray[trunkArrayLength - 1] = trunkArray[1];
-                treeImage.FillPolygonOriginLeftBot(trunkArray, Colors.SaddleBrown);
-                treeImage.DrawPolylineOriginLeftBot(trunkArray.Take(trunkArray.Length - 2).ToArray(), Colors.Black);
+                treeImage.FillPolygonOriginLeftBot(trunkArray, this.mainViewModel.TrunkColor);
+                treeImage.DrawPolylineOriginLeftBot(trunkArray.Take(trunkArray.Length - 2).ToArray(), this.mainViewModel.OutlineColor);
 
                 // Draw branches.
                 foreach (var branch in tree.Branches)
@@ -281,8 +281,8 @@ namespace TreeGenerator
                         branchArray[reverseIndex + 1] = (int)resizePointRight.Y;
                     }
 
-                    Color branchOutlineColor = Colors.Black;
-                    Color branchColor = Colors.SaddleBrown;
+                    Color branchOutlineColor = this.mainViewModel.OutlineColor;
+                    Color branchColor = this.mainViewModel.BranchColor;
 
                     branchArray[branchArrayLength - 2] = branchArray[0];
                     branchArray[branchArrayLength - 1] = branchArray[1];

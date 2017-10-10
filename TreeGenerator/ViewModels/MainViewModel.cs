@@ -4,6 +4,7 @@
     using System.Linq.Expressions;
     using System.Windows.Media.Imaging;
     using GalaSoft.MvvmLight;
+    using System.Windows.Media;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -41,6 +42,10 @@
         private float branchRotationAngle;
         private int trunkWidthStart;
         private int trunkWidthEnd;
+        private Color trunkColor;
+        private Color branchColor;
+        private Color outlineColor = false;
+
 
         public int TreeTrunkSize
         {
@@ -164,21 +169,49 @@
             get { return trunkWidthEnd; }
             set { this.Set(ref trunkWidthEnd, value); }
         }
+                
+        public Color TrunkColor
+        {
+            get
+            {
+                return trunkColor;
+            }
+            set
+            {
+                Set(ref trunkColor, value);
+            }
+        }    
+
+        public Color BranchColor
+        {
+            get
+            {
+                return branchColor;
+            }
+
+            set
+            {
+                Set(ref branchColor, value);
+            }
+        }
+
+        public Color OutlineColor
+        {
+            get
+            {
+                return this.outlineColor;
+            }
+            set
+            {
+                Set(ref outlineColor, value);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
-
             this.ImageWidth = 60;
             this.ImageHeight = 100;
             this.TreeTrunkSize = 2 * this.ImageHeight / 3;
@@ -195,8 +228,11 @@
             this.BranchSkewDeviation = 10;
             this.BranchRotationAngleStart = 0;
             this.BranchRotationAngle = 30;
-            this.trunkWidthStart = 8;
-            this.trunkWidthEnd = 2;
+            this.TrunkWidthStart = 8;
+            this.TrunkWidthEnd = 2;
+            this.TrunkColor = Colors.SaddleBrown;
+            this.BranchColor = Colors.SaddleBrown;
+            this.OutlineColor = Colors.Black;
 
         }
     }
