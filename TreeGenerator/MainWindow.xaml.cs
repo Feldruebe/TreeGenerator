@@ -30,16 +30,15 @@ namespace TreeGenerator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-
-            var tree = this.GenerateTree();
-            this.DrawTree(tree);
-            //}
-            //catch (Exception exception)
-            //{
-            //    MessageBox.Show(exception.Message);
-            //}
+            try
+            {
+                var tree = this.GenerateTree();
+                this.DrawTree(tree);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
 
         private TreeModel GenerateTree()
@@ -48,16 +47,16 @@ namespace TreeGenerator
 
             Vector growDirection = new Vector(0, 1);
 
-            float rotationStep = (float)mainViewModel.RotationAngle / (float)(mainViewModel.TreeTrunkSize - mainViewModel.RotationAngleStart);
+            float rotationStep = (float)mainViewModel.TrunkRotationAngle / (float)(mainViewModel.TreeTrunkSize - mainViewModel.TrunkRotationAngleStart);
 
             Matrix skewMatrix = Matrix.Identity;
-            skewMatrix.Rotate(mainViewModel.SkewAngle);
+            skewMatrix.Rotate(mainViewModel.TrunkSkewAngle);
 
             Matrix rotationMatrix = Matrix.Identity;
             rotationMatrix.Rotate(rotationStep);
 
             Vector currentPoint = new Vector(0, 0);
-            var trunkStartWidth = mainViewModel.TrunkWidthStart;
+            var trunkStartWidth = mainViewModel.TrunkWidthStart ;
             var trunkEndWidth = mainViewModel.TrunkWidthEnd;
             tree.Trunk.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth });
 
@@ -69,12 +68,12 @@ namespace TreeGenerator
 
             for (int y = 0; y < mainViewModel.TreeTrunkSize - 1; y++)
             {
-                if (y == mainViewModel.SkewAngleStart)
+                if (y == mainViewModel.TrunkSkewAngleStart)
                 {
                     growDirection = skewMatrix.Transform(growDirection);
                 }
 
-                if (y > mainViewModel.RotationAngleStart)
+                if (y > mainViewModel.TrunkRotationAngleStart)
                 {
                     growDirection = rotationMatrix.Transform(growDirection);
                 }
@@ -176,7 +175,7 @@ namespace TreeGenerator
 
             var branch = new Branch();
             var branchStartWidth = width;
-            var branchEndWidth = 1;
+            var branchEndWidth = 2;
             for (int y = 0; y < branchLength; y++)
             {
                 if (y == 0)
@@ -213,9 +212,10 @@ namespace TreeGenerator
         private void DrawTree(TreeModel tree)
         {
             var treePoints = tree.Trunk.Concat(tree.Branches.SelectMany(branch => branch.BranchPoints));
-            var xOffset = -treePoints.Min(point => (int)point.Position.X);
-            var imageWidth = treePoints.Max(point => (int)point.Position.X) + xOffset + 1 + mainViewModel.TrunkWidthStart;
-            var imageHeight = treePoints.Max(point => (int)point.Position.Y);
+            var xOffset = -treePoints.Min(point => (int)point.Position.X) + (int)(this.mainViewModel.TrunkWidthStart * 0.5);
+            var yOffset = 0;
+            var imageWidth = treePoints.Max(point => (int)Math.Abs(point.Position.X)) * 2 + mainViewModel.TrunkWidthStart;
+            var imageHeight = treePoints.Max(point => (int)Math.Abs(point.Position.Y)) + 2;
 
             var bitmap = BitmapFactory.New(imageWidth, imageHeight);
             mainViewModel.ImageSkeletton = bitmap;
@@ -244,15 +244,15 @@ namespace TreeGenerator
                 {
                     var trunkElement = tree.Trunk[i];
                     var trunkElementRightDirection = rotation90RightMatrix.Transform(trunkElement.GrowDirection);
-                    var resizePointLeft = -trunkElement.Width * trunkElementRightDirection + trunkElement.Position;
-                    var resizePointRight = trunkElement.Width * trunkElementRightDirection + trunkElement.Position;
+                    var resizePointLeft = -trunkElement.Width * 0.5 * trunkElementRightDirection + trunkElement.Position;
+                    var resizePointRight = trunkElement.Width * 0.5 * trunkElementRightDirection + trunkElement.Position;
 
                     trunkArray[i * 2] = (int)resizePointLeft.X + xOffset;
-                    trunkArray[i * 2 + 1] = (int)resizePointLeft.Y;
+                    trunkArray[i * 2 + 1] = (int)resizePointLeft.Y - yOffset;
 
                     int reverseIndex = (tree.Trunk.Count) * 4 - 2 - i * 2;
                     trunkArray[reverseIndex] = (int)resizePointRight.X + xOffset;
-                    trunkArray[reverseIndex + 1] = (int)resizePointRight.Y;
+                    trunkArray[reverseIndex + 1] = (int)resizePointRight.Y - yOffset;
                 }
 
                 trunkArray[trunkArrayLength - 2] = trunkArray[0];
@@ -270,15 +270,15 @@ namespace TreeGenerator
                     {
                         var branchElement = branch.BranchPoints[i];
                         var branchElementRightDirection = rotation90RightMatrix.Transform(branchElement.GrowDirection);
-                        var resizePointLeft = -branchElement.Width * branchElementRightDirection + branchElement.Position;
-                        var resizePointRight = branchElement.Width * branchElementRightDirection + branchElement.Position;
+                        var resizePointLeft = -branchElement.Width * 0.5 * branchElementRightDirection + branchElement.Position;
+                        var resizePointRight = branchElement.Width * 0.5 * branchElementRightDirection + branchElement.Position;
 
                         branchArray[i * 2] = (int)resizePointLeft.X + xOffset;
-                        branchArray[i * 2 + 1] = (int)resizePointLeft.Y;
+                        branchArray[i * 2 + 1] = (int)resizePointLeft.Y - yOffset;
 
                         int reverseIndex = (branch.BranchPoints.Count) * 4 - 2 - i * 2;
                         branchArray[reverseIndex] = (int)resizePointRight.X + xOffset;
-                        branchArray[reverseIndex + 1] = (int)resizePointRight.Y;
+                        branchArray[reverseIndex + 1] = (int)resizePointRight.Y - yOffset;
                     }
 
                     Color branchOutlineColor = this.mainViewModel.OutlineColor;

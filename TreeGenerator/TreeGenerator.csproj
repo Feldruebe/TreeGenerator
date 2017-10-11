@@ -96,9 +96,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModels\BranchType.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="CustomAccents\BranchType.cs" />
+    <Compile Include="CustomAccents\MainViewModel.cs" />
+    <Compile Include="CustomAccents\ViewModelLocator.cs" />
+    <Page Include="CustomAccents\TreeGeneratorAccent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -138,6 +142,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\Tree.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\BranchLength.png" />
+    <Resource Include="Images\TreeHeight.png" />
+    <Resource Include="Images\TreeSkew.png" />
+    <Resource Include="Images\TreeWidth.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

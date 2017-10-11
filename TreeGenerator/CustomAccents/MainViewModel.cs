@@ -3,6 +3,7 @@
     using System;
     using System.Linq.Expressions;
     using System.Windows.Media.Imaging;
+
     using GalaSoft.MvvmLight;
     using System.Windows.Media;
 
@@ -21,16 +22,14 @@
     public class MainViewModel : ViewModelBase
     {
         private int treeTrunkSize;
-        private int imageHeight;
-        private int imageWidth;
         private WriteableBitmap imageSkeletton;
         private WriteableBitmap imageTree;
 
-        private int rotationAngle;
-        private float rotationAngleStart;
+        private int trunkRotationAngle;
+        private float trunkRotationAngleStart;
 
-        private int skewAngle;
-        private int skewAngleStart;
+        private int trunkSkewAngle;
+        private int trunkSkewAngleStart;
         private int branchCount;
         private int branchStart;
         private int branchLengthMin;
@@ -44,26 +43,49 @@
         private int trunkWidthEnd;
         private Color trunkColor;
         private Color branchColor;
-        private Color outlineColor = false;
+        private Color outlineColor;
+        private bool isColorFlyoutOpen = false;
 
+        /// <summary>
+        /// Initializes a new instance of the MainViewModel class.
+        /// </summary>
+        public MainViewModel()
+        {
+            ////if (IsInDesignMode)
+            ////{
+            ////    // Code runs in Blend --> create design time data.
+            ////}
+            ////else
+            ////{
+            ////    // Code runs "for real"
+            ////}
+
+            this.TreeTrunkSize = 60;
+            this.TrunkSkewAngle = 0;
+            this.TrunkSkewAngleStart = 0;
+            this.TrunkRotationAngle = 0;
+            this.TrunkRotationAngleStart = 0;
+            this.TrunkWidthStart = 8;
+            this.TrunkWidthEnd = 2;
+            this.BranchCount = 4;
+            this.BranchStart = this.TreeTrunkSize / 3;
+            this.BranchLengthMin = this.TreeTrunkSize;
+            this.BranchLengthMax = this.TreeTrunkSize;
+            this.BranchDistance = 20;
+            this.BranchSkew = 35;
+            this.BranchSkewDeviation = 10;
+            this.BranchRotationAngleStart = 0;
+            this.BranchRotationAngle = 30;
+            this.TrunkColor = Colors.SaddleBrown;
+            this.BranchColor = Colors.SaddleBrown;
+            this.OutlineColor = Colors.Black;
+
+        }
 
         public int TreeTrunkSize
         {
             get { return this.treeTrunkSize; }
             set { this.Set(ref this.treeTrunkSize, value); }
-        }
-
-        public int ImageHeight
-        {
-            get { return this.imageHeight; }
-            set { this.Set(ref this.imageHeight, value); }
-        }
-
-        public int ImageWidth
-        {
-            get { return this.imageWidth; }
-
-            set { this.Set(ref this.imageWidth, value); }
         }
 
         public WriteableBitmap ImageSkeletton
@@ -78,29 +100,29 @@
             set { this.Set(ref this.imageTree, value); }
         }
 
-        public int RotationAngle
+        public int TrunkRotationAngle
         {
-            get { return this.rotationAngle; }
-            set { this.Set(ref this.rotationAngle, value); }
+            get { return this.trunkRotationAngle; }
+            set { this.Set(ref this.trunkRotationAngle, value); }
         }
 
-        public float RotationAngleStart
+        public float TrunkRotationAngleStart
         {
-            get { return this.rotationAngleStart; }
+            get { return this.trunkRotationAngleStart; }
 
-            set { this.Set(ref this.rotationAngleStart, value); }
+            set { this.Set(ref this.trunkRotationAngleStart, value); }
         }
 
-        public int SkewAngle
+        public int TrunkSkewAngle
         {
-            get { return this.skewAngle; }
-            set { this.Set(ref this.skewAngle, value); }
+            get { return this.trunkSkewAngle; }
+            set { this.Set(ref this.trunkSkewAngle, value); }
         }
 
-        public int SkewAngleStart
+        public int TrunkSkewAngleStart
         {
-            get { return this.skewAngleStart; }
-            set { this.Set(ref this.skewAngleStart, value); }
+            get { return this.trunkSkewAngleStart; }
+            set { this.Set(ref this.trunkSkewAngleStart, value); }
         }
 
         public int BranchCount
@@ -142,26 +164,34 @@
 
         public int BranchSkewDeviation
         {
-            get { return branchSkewDeviation; }
-            set { this.Set(ref branchSkewDeviation, value); }
+            get { return this.branchSkewDeviation; }
+            set { this.Set(ref this.branchSkewDeviation, value); }
         }
 
         public int BranchRotationAngleStart
         {
-            get { return branchRotationAngleStart; }
-            set { this.Set(ref branchRotationAngleStart, value); }
+            get { return this.branchRotationAngleStart; }
+            set { this.Set(ref this.branchRotationAngleStart, value); }
         }
 
         public float BranchRotationAngle
         {
-            get { return branchRotationAngle; }
-            set { this.Set(ref branchRotationAngle, value); }
+            get { return this.branchRotationAngle; }
+            set { this.Set(ref this.branchRotationAngle, value); }
         }
 
         public int TrunkWidthStart
         {
-            get { return trunkWidthStart; }
-            set { this.Set(ref trunkWidthStart, value); }
+            get { return this.trunkWidthStart; }
+            set
+            {
+                if (value < this.TrunkWidthEnd)
+                {
+                    this.TrunkWidthEnd = value;
+                }
+
+                this.Set(ref this.trunkWidthStart, value);
+            }
         }
 
         public int TrunkWidthEnd
@@ -207,33 +237,16 @@
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
-        public MainViewModel()
+        public bool IsColorFlyoutOpen
         {
-            this.ImageWidth = 60;
-            this.ImageHeight = 100;
-            this.TreeTrunkSize = 2 * this.ImageHeight / 3;
-            this.SkewAngle = 0;
-            this.SkewAngleStart = 0;
-            this.RotationAngle = 0;
-            this.RotationAngleStart = 0;
-            this.BranchCount = 4;
-            this.BranchStart = 2 * this.TreeTrunkSize / 3;
-            this.BranchLengthMin = this.TreeTrunkSize / 6;
-            this.BranchLengthMax = this.TreeTrunkSize / 3;
-            this.BranchDistance = 1;
-            this.BranchSkew = 35;
-            this.BranchSkewDeviation = 10;
-            this.BranchRotationAngleStart = 0;
-            this.BranchRotationAngle = 30;
-            this.TrunkWidthStart = 8;
-            this.TrunkWidthEnd = 2;
-            this.TrunkColor = Colors.SaddleBrown;
-            this.BranchColor = Colors.SaddleBrown;
-            this.OutlineColor = Colors.Black;
-
+            get
+            {
+                return this.isColorFlyoutOpen;
+            }
+            set
+            {
+                this.Set(ref this.isColorFlyoutOpen, value);
+            }
         }
     }
 }
