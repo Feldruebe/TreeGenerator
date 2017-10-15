@@ -10,7 +10,7 @@ namespace TreeGenerator
         {
             y = (int)bitmap.Height - 1 - y;
 
-            if (x < bitmap.Width && x >= 0 && y <= bitmap.Height && y >= 0)
+            if (x < bitmap.Width && x >= 0 && y < bitmap.Height && y >= 0)
             {
                 bitmap.SetPixel(x, y, color);
             }

@@ -9,306 +9,327 @@
                       mc:Ignorable="d"
                       Title="MainWindow"
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
-                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
-                      SizeToContent="Height">
-  <controls:MetroWindow.Flyouts>
-    <controls:FlyoutsControl>
-      <controls:Flyout IsOpen="{Binding IsColorFlyoutOpen}" Theme="Dark" Header="Color" Position="Right" Width="300">
-        <Grid>
-          
-        </Grid>
-      </controls:Flyout>
-    </controls:FlyoutsControl>
-  </controls:MetroWindow.Flyouts>
+                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}">
+    <controls:MetroWindow.Flyouts>
+        <controls:FlyoutsControl>
+            <controls:Flyout IsOpen="{Binding IsColorFlyoutOpen}" Theme="Dark" Header="Color" Position="Right" Width="300">
+                <Grid>
 
-  <Grid IsSharedSizeScope="True">
-    <Grid.Resources>
-      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-        <Setter Property="Margin" Value="0,5,10,0"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-      </Style>
-      <Style TargetType="{x:Type controls:NumericUpDown}" BasedOn="{StaticResource {x:Type controls:NumericUpDown}}">
-        <Setter Property="Margin" Value="5,5,10,5"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-      </Style>
-      <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
-        <Setter Property="Margin" Value="5,5,10,5"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-      </Style>
-    </Grid.Resources>
+                </Grid>
+            </controls:Flyout>
+        </controls:FlyoutsControl>
+    </controls:MetroWindow.Flyouts>
 
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="Auto" />
-    </Grid.ColumnDefinitions>
+    <Grid IsSharedSizeScope="True">
 
-    <GroupBox Header="Image" Grid.Column="0" Grid.Row="0">
-      <Grid HorizontalAlignment="Center">
+        <Grid.Resources>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="Margin" Value="0,5,10,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="{x:Type controls:NumericUpDown}" BasedOn="{StaticResource {x:Type controls:NumericUpDown}}">
+                <Setter Property="Margin" Value="5,5,10,5"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
+                <Setter Property="Margin" Value="5,5,10,5"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+        </Grid.Resources>
+
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageSkeletton}"/>
-        <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
-          <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageTree}"/>
-        </Border>
-      </Grid>
-    </GroupBox>
 
-    <StackPanel Grid.Column="1" Grid.Row="0">
-      <GroupBox Header="Trunk">
-        <StackPanel>
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-            </Grid.ColumnDefinitions>
+        <GroupBox Header="Image" Grid.Column="0" Grid.Row="0">
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageSkeletton}"/>
+                <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
+                    <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageTree}"/>
+                </Border>
+            </Grid>
+        </GroupBox>
+
+        <Grid Grid.Column="1" Grid.Row="0">
             <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeHeight.png" Height="60" Margin="5,5,10,5"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Size</TextBlock>
-            <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding TreeTrunkSize}" MinWidth="50" />
-            <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TreeTrunkSize}" MinWidth="100" Maximum="1000" Minimum="1" />
-          </Grid>
+            <GroupBox Grid.Row="0" Header="Settings">
+                <ScrollViewer>
+                    <StackPanel>
+                        <GroupBox Header="Trunk">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeHeight.png" Height="60" Margin="5,5,10,5"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Size</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding TreeTrunkSize}" MinWidth="50" />
+                                    <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TreeTrunkSize}" MinWidth="100" Maximum="1000" Minimum="1" />
+                                </Grid>
 
-          <Separator Height="5"/>
+                                <Separator Height="5"/>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Skew Angle</TextBlock>
-            <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkSkewAngle}" />
-            <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkSkewAngle}" MinWidth="100" Maximum="80" Minimum="-80"  />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Skew Angle</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkSkewAngle}" />
+                                    <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkSkewAngle}" MinWidth="100" Maximum="80" Minimum="-80"  />
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
-            <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkSkewAngleStart}" />
-            <Slider Grid.Column="4" Grid.Row="1" Value="{Binding TrunkSkewAngleStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                    <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkSkewAngleStart}" />
+                                    <Slider Grid.Column="4" Grid.Row="1" Value="{Binding TrunkSkewAngleStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-          <Separator Height="5"/>
+                                <Separator Height="5"/>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Rotation Angle</TextBlock>
-            <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkRotationAngle}" />
-            <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Rotation Angle</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkRotationAngle}" />
+                                    <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240"/>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" >Start</TextBlock>
-            <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkRotationAngleStart}" />
-            <Slider Grid.Column="4" Grid.Row="1" Value="{Binding TrunkRotationAngleStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                    <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" >Start</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkRotationAngleStart}" />
+                                    <Slider Grid.Column="4" Grid.Row="1" Value="{Binding TrunkRotationAngleStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-          <Separator Height="5"/>
+                                <Separator Height="5"/>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Start Width</TextBlock>
-            <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkWidthStart}" />
-            <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkWidthStart}" MinWidth="100" Maximum="200" Minimum="1"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Start Width</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Value="{Binding TrunkWidthStart}" />
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2">End Width</TextBlock>
-            <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkWidthEnd}" />
-            <Slider Grid.Column="4" Grid.Row="1" Value="{Binding TrunkWidthEnd}" MinWidth="100" Maximum="{Binding TrunkWidthStart}" Minimum="1" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                    <TextBlock Grid.Column="3" Grid.Row="0" Grid.RowSpan="2">End Width</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="4" Grid.Row="0" MinWidth="50" Value="{Binding TrunkWidthEnd}" />
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
-            <ToggleButton x:Name="ColorToggleButton"  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=ColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
-              <Rectangle Width="20" Height="20">
-                <Rectangle.Fill>
-                  <SolidColorBrush Color="{Binding TrunkColor}" />
-                </Rectangle.Fill>
-              </Rectangle>
-            </ToggleButton>
+                                    <controls:RangeSlider Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="3" LowerValue="{Binding TrunkWidthEnd}" UpperValue="{Binding TrunkWidthStart}" Minimum="1" Maximum="200" MaxWidth="300" MinRangeWidth="1"/>
+                                </Grid>
 
-          </Grid>
-          <Popup Name="ColorPopup" PlacementTarget="{Binding ElementName=ColorToggleButton}" Placement="Right" >
-            <controls1:ColorCanvas SelectedColor="{Binding TrunkColor}" />
-          </Popup>
-        </StackPanel>
-      </GroupBox>
-      <GroupBox Header="Branches">
-        <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
+                                    <ToggleButton x:Name="ColorToggleButton"  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=ColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
+                                        <Rectangle Width="20" Height="20">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding TrunkColor}" />
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </ToggleButton>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Count</TextBlock>
-            <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchCount}" />
-            <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchCount}" MinWidth="100" Maximum="100" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-            <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
-            <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchStart}" />
-            <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                </Grid>
+                                <Popup Name="ColorPopup" PlacementTarget="{Binding ElementName=ColorToggleButton}" StaysOpen="False" Placement="Left" >
+                                    <controls1:ColorCanvas SelectedColor="{Binding TrunkColor}" />
+                                </Popup>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Branches">
+                            <StackPanel>
 
-          <Separator Height="5"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Count</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchCount}" />
+                                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchCount}" MinWidth="100" Maximum="100" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchStart}" />
+                                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Length Min</TextBlock>
-            <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchLengthMin}" />
-            <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >Length Max</TextBlock>
-            <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchLengthMax}" />
-          </Grid>
+                                <Separator Height="5"/>
 
-          <Separator Height="5"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" >Length Min</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchLengthMin}" />
+                                    <TextBlock Grid.Column="2" Grid.Row="0" >Length Max</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="3"  MinWidth="50" Value="{Binding BranchLengthMax}" />
+                                    <controls:RangeSlider Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" LowerValue="{Binding BranchLengthMin}" UpperValue="{Binding BranchLengthMax}" Maximum="500" Minimum="1" />
+                                </Grid>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
-            <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchDistance}" />
-            <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                <Separator Height="5"/>
 
-          <Separator Height="5"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchDistance}" />
+                                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Skew</TextBlock>
-            <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchSkew}" />
-            <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchSkew}" MinWidth="100" Maximum="120" Minimum="10" SmallChange="1"  IsSnapToTickEnabled="True" />
-            <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Skew Deviation</TextBlock>
-            <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchSkewDeviation}" />
-            <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchSkewDeviation}" MinWidth="100" Maximum="50" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                <Separator Height="5"/>
 
-          <Separator Height="5"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Skew</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchSkew}" />
+                                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchSkew}" MinWidth="100" Maximum="120" Minimum="10" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Skew Deviation</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchSkewDeviation}" />
+                                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchSkewDeviation}" MinWidth="100" Maximum="50" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-              <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-              <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-              <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Rotation</TextBlock>
-            <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchRotationAngle}" />
-            <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240" SmallChange="1"  IsSnapToTickEnabled="True" />
-            <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Rotation Start</TextBlock>
-            <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchRotationAngleStart}" />
-            <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchRotationAngleStart}" MinWidth="100" Maximum="{Binding BranchLengthMax}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
-          </Grid>
+                                <Separator Height="5"/>
 
-        </StackPanel>
-      </GroupBox>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
+                                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Rotation</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0"  MinWidth="50" Value="{Binding BranchRotationAngle}" />
+                                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Rotation Start</TextBlock>
+                                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchRotationAngleStart}" />
+                                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchRotationAngleStart}" MinWidth="100" Maximum="{Binding BranchLengthMax}" Minimum="0" SmallChange="1"  IsSnapToTickEnabled="True" />
+                                </Grid>
 
-      <GroupBox Header="Crown">
+                            </StackPanel>
+                        </GroupBox>
 
-      </GroupBox>
+                        <GroupBox Header="Crown">
 
-      <GroupBox Header="Controls">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-          <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
-            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-              <Rectangle.OpacityMask>
-                <VisualBrush Visual="{StaticResource appbar_tree}" Stretch="Fill" />
-              </Rectangle.OpacityMask>
-            </Rectangle>
-          </Button>
-        </StackPanel>
-      </GroupBox>
-    </StackPanel>
-  </Grid>
+                        </GroupBox>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Controls">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
+                        <Grid>
+                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Visual="{StaticResource appbar_acorn}" Stretch="Fill" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Grid>
+                    </Button>
+
+                    <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
+                        <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </Grid>
 </controls:MetroWindow>
 

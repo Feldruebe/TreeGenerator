@@ -11,6 +11,9 @@
     using System.Windows.Media;
 
     using GalaSoft.MvvmLight.CommandWpf;
+    using System.Diagnostics;
+    using System.IO;
+    using Microsoft.Win32;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -62,6 +65,7 @@
         public MainViewModel()
         {
             this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
+            this.ExportImageCommand = new RelayCommand(this.ExportImage);
             this.TreeTrunkSize = 60;
             this.TrunkSkewAngle = 0;
             this.TrunkSkewAngleStart = 0;
@@ -89,7 +93,14 @@
         public int TreeTrunkSize
         {
             get { return this.treeTrunkSize; }
-            set { this.Set(ref this.treeTrunkSize, value); }
+            set
+            {
+                this.Set(ref this.treeTrunkSize, value);
+                if (value < this.BranchStart)
+                {
+                    this.BranchStart = value;
+                }
+            }
         }
 
         public WriteableBitmap ImageSkeletton
@@ -265,16 +276,40 @@
 
         public RelayCommand GenerateTreeCommand { get; set; }
 
+        public RelayCommand ExportImageCommand { get; set; }
+
         private void GenerateTreeAndDraw()
         {
-            try
+            //try
+            //{
+            var tree = this.GenerateTree();
+            this.DrawTree(tree);
+            //}
+            //catch (Exception exception)
+            //{
+            //    MessageBox.Show(exception.Message);
+            //}
+        }
+
+        private void ExportImage()
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            if (dialog.ShowDialog() == true)
             {
-                var tree = this.GenerateTree();
-                this.DrawTree(tree);
+                this.CreatePng(dialog.FileName, this.ImageTree);
             }
-            catch (Exception exception)
+        }
+
+        private void CreatePng(string filename, BitmapSource image5)
+        {
+            if (filename != string.Empty)
             {
-                MessageBox.Show(exception.Message);
+                using (FileStream stream5 = new FileStream(filename, FileMode.Create))
+                {
+                    PngBitmapEncoder encoder5 = new PngBitmapEncoder();
+                    encoder5.Frames.Add(BitmapFrame.Create(image5));
+                    encoder5.Save(stream5);
+                }
             }
         }
 
@@ -398,7 +433,7 @@
                 return;
             }
 
-            int branchLength = rand.Next(this.BranchLengthMin, this.BranchLengthMax + 1) / level;
+            int branchLength = Math.Max(rand.Next(this.BranchLengthMin, this.BranchLengthMax + 1) / level, 1);
             int branchRotationAngleStart = this.BranchRotationAngleStart;
 
             float rotationStep = (float)this.BranchRotationAngle / (float)(branchLength - branchRotationAngleStart);
@@ -443,14 +478,20 @@
                 }
             }
 
+            if(branch.BranchPoints.Count == 0)
+            {
+                Debug.WriteLine("sdfsf");
+            }
+
             tree.Branches.Add(branch);
         }
 
         private void DrawTree(TreeModel tree)
         {
             var xOffset = -tree.AllBorderPoints.Min(point => (int)point.X);
-            var yOffset = 0;
-            var imageWidth = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.X)) * 2 + (int)Math.Ceiling(this.TrunkWidthStart * 0.5);
+            var yOffset = -tree.AllBorderPoints.Min(point => (int)point.Y);
+            var borderWidth = tree.AllBorderPoints.Max(point => (int)Math.Ceiling(point.X)) - tree.AllBorderPoints.Min(point => (int)Math.Ceiling(point.X)) + 1;
+            var imageWidth = Math.Max(borderWidth, (int)Math.Ceiling(this.TrunkWidthStart * 0.5));
             var imageHeight = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.Y)) + 1;
 
             var bitmap = BitmapFactory.New(imageWidth, imageHeight);
@@ -463,7 +504,7 @@
             {
                 foreach (var point in tree.AllTreePoints)
                 {
-                    this.ImageSkeletton.SetPixelSafeLeftBot((int)point.Position.X + xOffset, (int)point.Position.Y, Colors.Black);
+                    this.ImageSkeletton.SetPixelSafeLeftBot((int)point.Position.X + xOffset, (int)point.Position.Y + yOffset, Colors.Black);
                 }
             }
 
@@ -472,6 +513,7 @@
             {
                 this.DrawBranch(this.ImageTree, tree.Trunk, xOffset, yOffset, this.TrunkColor, this.OutlineColor);
 
+                tree.Branches.Reverse();
                 // Draw branches.
                 foreach (var branch in tree.Branches)
                 {
@@ -485,7 +527,7 @@
             var allPoints = branch.LeftBorderPoints;
             var reversedRightPoints = branch.RightBorderPoints.Reverse();
             allPoints = allPoints.Concat(reversedRightPoints).ToList();
-            var flattend = allPoints.SelectMany(point => new[] { (int)point.X + xOffset, (int)point.Y - yOffset }).ToList();
+            var flattend = allPoints.SelectMany(point => new[] { (int)point.X + xOffset, (int)point.Y + yOffset }).ToList();
             flattend.Add(flattend[0]);
             flattend.Add(flattend[1]);
 
