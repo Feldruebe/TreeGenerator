@@ -4,16 +4,28 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Windows;
     using System.Windows.Media.Imaging;
 
     using GalaSoft.MvvmLight;
-    using System.Windows.Media;
 
     using GalaSoft.MvvmLight.CommandWpf;
     using System.Diagnostics;
+    using System.Drawing;
+    using System.Drawing.Imaging;
     using System.IO;
+    using System.Windows.Media;
+
+    using MathNet.Numerics.LinearAlgebra;
+    using MathNet.Numerics.LinearAlgebra.Double;
+    using MathNet.Spatial.Euclidean;
+    using MathNet.Spatial.Units;
+
     using Microsoft.Win32;
+
+    using SkiaSharp;
+
+    using Color = System.Windows.Media.Color;
+    using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -31,12 +43,13 @@
     {
         private Random rand = new Random();
 
-        private Matrix leftSkewMatrix = Matrix.Identity;
-        private Matrix rightSkewMatrix = Matrix.Identity;
-
         private int treeTrunkSize;
         private WriteableBitmap imageSkeletton;
         private WriteableBitmap imageTree;
+
+        private BitmapSource skiaImage;
+
+        private SKCanvas skCanvas;
 
         private int trunkRotationAngle;
         private float trunkRotationAngleStart;
@@ -113,6 +126,19 @@
         {
             get { return this.imageTree; }
             set { this.Set(ref this.imageTree, value); }
+        }
+
+        public BitmapSource SkiaImage
+        {
+            get
+            {
+                return this.skiaImage;
+            }
+
+            set
+            {
+                this.Set(ref this.skiaImage, value);
+            }
         }
 
         public int TrunkRotationAngle
@@ -317,17 +343,11 @@
         {
             var tree = new TreeModel();
 
-            Vector growDirection = new Vector(0, 1);
+            Vector2D growDirection = new Vector2D(0d, 1d);
 
             float rotationStep = (float)this.TrunkRotationAngle / (float)(this.TreeTrunkSize - this.TrunkRotationAngleStart);
 
-            Matrix skewMatrix = Matrix.Identity;
-            skewMatrix.Rotate(this.TrunkSkewAngle);
-
-            Matrix rotationMatrix = Matrix.Identity;
-            rotationMatrix.Rotate(rotationStep);
-
-            Vector currentPoint = new Vector(0, 0);
+            Point2D currentPoint = new Point2D(0d, 0d);
             var trunkStartWidth = this.TrunkWidthStart;
             var trunkEndWidth = this.TrunkWidthEnd;
             tree.Trunk.BranchPoints.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth });
@@ -342,12 +362,12 @@
             {
                 if (y == this.TrunkSkewAngleStart)
                 {
-                    growDirection = skewMatrix.Transform(growDirection);
+                    growDirection = growDirection.Rotate(new Angle(this.TrunkSkewAngle, new Degrees()));
                 }
 
                 if (y > this.TrunkRotationAngleStart)
                 {
-                    growDirection = rotationMatrix.Transform(growDirection);
+                    growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
                 }
 
                 // Generate trunk.
@@ -407,26 +427,22 @@
             }
         }
 
-        private void GenerateBranch(TreeModel tree, Vector growDirection, Vector currentPoint, BranchType branchType, double width, int level = 1)
+        private void GenerateBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, BranchType branchType, double width, int level = 1)
         {
             int angle = this.BranchSkew + rand.Next(-this.BranchSkewDeviation, this.BranchSkewDeviation);
-            this.leftSkewMatrix = Matrix.Identity;
-            this.leftSkewMatrix.Rotate(-angle);
-            this.rightSkewMatrix = Matrix.Identity;
-            this.rightSkewMatrix.Rotate(angle);
 
             if (branchType == BranchType.Left)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, this.leftSkewMatrix, BranchType.Left, width, level);
+                this.GrowBranch(tree, growDirection, currentPoint, -angle, BranchType.Left, width, level);
             }
 
             if (branchType == BranchType.Right)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, this.rightSkewMatrix, BranchType.Right, width, level);
+                this.GrowBranch(tree, growDirection, currentPoint, angle, BranchType.Right, width, level);
             }
         }
 
-        private void GrowBranch(TreeModel tree, Vector growDirection, Vector currentPoint, Matrix skewMatrix, BranchType branchType, double width, int level)
+        private void GrowBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, double angle, BranchType branchType, double width, int level)
         {
             if (level == 4)
             {
@@ -438,8 +454,6 @@
 
             float rotationStep = (float)this.BranchRotationAngle / (float)(branchLength - branchRotationAngleStart);
             rotationStep = branchType == BranchType.Right ? -rotationStep : rotationStep;
-            Matrix rotationMatrix = Matrix.Identity;
-            rotationMatrix.Rotate(rotationStep);
 
             HashSet<int> leftBranches;
             HashSet<int> rightBranches;
@@ -452,12 +466,12 @@
             {
                 if (y == 0)
                 {
-                    growDirection = skewMatrix.Transform(growDirection);
+                    growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
                 }
 
                 if (y > branchRotationAngleStart)
                 {
-                    growDirection = rotationMatrix.Transform(growDirection);
+                    growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
                 }
 
                 currentPoint += growDirection;
@@ -478,11 +492,6 @@
                 }
             }
 
-            if(branch.BranchPoints.Count == 0)
-            {
-                Debug.WriteLine("sdfsf");
-            }
-
             tree.Branches.Add(branch);
         }
 
@@ -500,39 +509,164 @@
             var bitmap2 = BitmapFactory.New(imageWidth, imageHeight);
             this.ImageTree = bitmap2;
 
-            using (this.ImageSkeletton.GetBitmapContext())
+
+            var width = imageWidth;
+            var height = imageHeight;
+
+            using (var skiaBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
             {
-                foreach (var point in tree.AllTreePoints)
+                var data = skiaBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, skiaBitmap.PixelFormat);
+                using (var surface = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, data.Scan0, width * 4))
                 {
-                    this.ImageSkeletton.SetPixelSafeLeftBot((int)point.Position.X + xOffset, (int)point.Position.Y + yOffset, Colors.Black);
+                    this.skCanvas = surface.Canvas;
+                    // DoDraw (skcanvas);
+
+
+                    using (this.ImageSkeletton.GetBitmapContext())
+                    {
+                        foreach (var point in tree.AllTreePoints)
+                        {
+                            this.ImageSkeletton.SetPixelSafeLeftBot((int)point.Position.X + xOffset, (int)point.Position.Y + yOffset, Colors.Black);
+                        }
+                    }
+
+                    var treeImage = this.ImageTree;
+                    using (treeImage.GetBitmapContext())
+                    {
+                        this.DrawBranch(this.ImageTree, tree.Trunk, xOffset, yOffset, this.TrunkColor, this.OutlineColor);
+
+                        tree.Branches.Reverse();
+                        // Draw branches.
+                        foreach (var branch in tree.Branches)
+                        {
+                            this.DrawBranch(this.ImageTree, branch, xOffset, yOffset, this.BranchColor, this.BranchOutlineColor);
+                        }
+                    }
+
+                    //List<Point2D> conture = new List<Point2D>();
+                    //Polygon2D polygon = new Polygon2D(tree.Trunk.PolygonPoints.ToList());
+                    //for (int i = -xOffset; i < imageWidth - xOffset; i++)
+                    //{
+                    //    for (int j = -yOffset; j < imageHeight - yOffset; j++)
+                    //    {
+                    //        if (this.IsConturePoint(new Point2D(i, j), polygon))
+                    //        {
+                    //            conture.Add(new Point2D(i, j));
+                    //        }
+                    //    }
+                    //}
+
+                    //this.CalculateSDF(tree.Trunk);
+
                 }
+
+                skiaBitmap.UnlockBits(data);
+                this.SkiaImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(skiaBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
+            }
+        }
+
+        private void CalculateSDF(Branch branch)
+        {
+            int disctance = 0;
+            var currentPoints = branch.PolygonPoints;
+            var nextpoints = new HashSet<Point2D>();
+
+            Polygon2D polygon = new Polygon2D(branch.PolygonPoints.ToList());
+
+            while (currentPoints.Any())
+            {
+                foreach (var point in currentPoints)
+                {
+                    var target = point + new Vector2D(1d, 0d);
+                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
+                    {
+                        branch.SDF[target] = disctance + 1;
+                        nextpoints.Add(target);
+                    }
+
+                    target = point + new Vector2D(-1, 0);
+                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
+                    {
+                        branch.SDF[target] = disctance + 1;
+                        nextpoints.Add(target);
+                    }
+
+                    target = point + new Vector2D(0, 1);
+                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
+                    {
+                        branch.SDF[target] = disctance + 1;
+                        nextpoints.Add(target);
+                    }
+
+                    target = point + new Vector2D(0, -1);
+                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
+                    {
+                        branch.SDF[target] = disctance + 1;
+                        nextpoints.Add(target);
+                    }
+                }
+
+                disctance++;
+                currentPoints = nextpoints.ToList();
+                nextpoints.Clear();
+            }
+        }
+
+        private bool IsNotInSDF(Point2D target, Dictionary<Point2D, int> sdf)
+        {
+            return !sdf.ContainsKey(target);
+        }
+
+        private bool IsInPolygon(Point2D target, Polygon2D polygon)
+        {
+            if (polygon.EnclosesPoint(target) || polygon.Contains(target))
+            {
+                return true;
             }
 
-            var treeImage = this.ImageTree;
-            using (treeImage.GetBitmapContext())
-            {
-                this.DrawBranch(this.ImageTree, tree.Trunk, xOffset, yOffset, this.TrunkColor, this.OutlineColor);
+            return false;
+        }
 
-                tree.Branches.Reverse();
-                // Draw branches.
-                foreach (var branch in tree.Branches)
-                {
-                    this.DrawBranch(this.ImageTree, branch, xOffset, yOffset, this.BranchColor, this.BranchOutlineColor);
-                }
+        private bool IsConturePoint(Point2D point, Polygon2D polygon)
+        {
+            var isInside = this.IsInPolygon(point, polygon);
+            var isLeftInside = this.IsInPolygon(point + new Vector2D(-1, 0), polygon);
+            var isRightInside = this.IsInPolygon(point + new Vector2D(1, 0), polygon);
+            var isTopInside = this.IsInPolygon(point + new Vector2D(0, 1), polygon);
+            var isBotInside = this.IsInPolygon(point + new Vector2D(0, -1), polygon);
+
+            if (isInside && (!isLeftInside || !isRightInside || !isTopInside || !isBotInside))
+            {
+                return true;
             }
+
+            return false;
         }
 
         private void DrawBranch(WriteableBitmap bitmap, Branch branch, int xOffset, int yOffset, Color color, Color outline)
         {
-            var allPoints = branch.LeftBorderPoints;
-            var reversedRightPoints = branch.RightBorderPoints.Reverse();
-            allPoints = allPoints.Concat(reversedRightPoints).ToList();
-            var flattend = allPoints.SelectMany(point => new[] { (int)point.X + xOffset, (int)point.Y + yOffset }).ToList();
-            flattend.Add(flattend[0]);
-            flattend.Add(flattend[1]);
+            var points = branch.PolygonPoints.SelectMany(point => new[] { (int)point.X + xOffset, (int)point.Y + yOffset }).ToList();
+            var polygon = points.ToArray().ToList();
+            polygon.Add(polygon[0]);
+            polygon.Add(polygon[1]);
+            bitmap.FillPolygonOriginLeftBot(polygon.ToArray(), color);
+            bitmap.DrawPolylineOriginLeftBot(points.Take(points.Count).ToArray(), outline);
 
-            bitmap.FillPolygonOriginLeftBot(flattend.ToArray(), color);
-            bitmap.DrawPolylineOriginLeftBot(flattend.Take(flattend.Count - 2).ToArray(), outline);
+            var copy = points.Select(element => element).ToArray();
+            for (int i = 1; i < points.ToArray().Length; i += 2)
+            {
+                copy[i] = (int)bitmap.Height - 1 - points[i];
+            }
+
+            SKPaint p = new SKPaint();
+            p.Color = SKColors.SaddleBrown;
+            var path = new SKPath();
+            for (int i = 0; i < copy.Length; i+=2)
+            {
+                path.LineTo(copy[i], copy[i+1]);
+            }
+
+            this.skCanvas.DrawPath(path, p);
         }
     }
 }

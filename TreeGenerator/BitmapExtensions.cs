@@ -33,7 +33,6 @@ namespace TreeGenerator
             for (int i = 1; i < polyline.Length; i += 2)
             {
                 copy[i] = (int)bitmap.Height - 1 - polyline[i];
-
             }
 
             bitmap.DrawPolyline(copy, color);

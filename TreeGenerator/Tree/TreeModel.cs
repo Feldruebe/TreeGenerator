@@ -2,7 +2,8 @@ namespace TreeGenerator
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows;
+
+    using MathNet.Spatial.Euclidean;
 
     class TreeModel
     {
@@ -10,7 +11,7 @@ namespace TreeGenerator
 
         public List<Branch> Branches { get; } = new List<Branch>();
 
-        public IList<Vector> AllBorderPoints
+        public IList<Point2D> AllBorderPoints
         {
             get
             {
