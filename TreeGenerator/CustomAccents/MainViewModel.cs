@@ -44,12 +44,8 @@
         private Random rand = new Random();
 
         private int treeTrunkSize;
-        private WriteableBitmap imageSkeletton;
-        private WriteableBitmap imageTree;
-
-        private BitmapSource skiaImage;
-
-        private SKCanvas skCanvas;
+        private BitmapSource imageSkeletton;
+        private BitmapSource imageTree;
 
         private int trunkRotationAngle;
         private float trunkRotationAngleStart;
@@ -67,9 +63,10 @@
         private float branchRotationAngle;
         private int trunkWidthStart;
         private int trunkWidthEnd;
-        private Color trunkColor;
-        private Color branchColor;
-        private Color outlineColor;
+        private SKColor trunkColor;
+        private SKColor branchColor;
+        private SKColor outlineColor;
+        private SKColor branchOutlineColor;
         private bool isColorFlyoutOpen = false;
 
         /// <summary>
@@ -98,6 +95,7 @@
             this.TrunkColor = Colors.SaddleBrown;
             this.BranchColor = Colors.SaddleBrown;
             this.OutlineColor = Colors.Black;
+            this.BranchOutlineColor = Colors.Black;
 
             var tree = this.GenerateTree();
             this.DrawTree(tree);
@@ -116,29 +114,16 @@
             }
         }
 
-        public WriteableBitmap ImageSkeletton
+        public BitmapSource ImageSkeletton
         {
             get { return this.imageSkeletton; }
             set { this.Set(ref this.imageSkeletton, value); }
         }
 
-        public WriteableBitmap ImageTree
+        public BitmapSource ImageTree
         {
             get { return this.imageTree; }
             set { this.Set(ref this.imageTree, value); }
-        }
-
-        public BitmapSource SkiaImage
-        {
-            get
-            {
-                return this.skiaImage;
-            }
-
-            set
-            {
-                this.Set(ref this.skiaImage, value);
-            }
         }
 
         public int TrunkRotationAngle
@@ -249,12 +234,13 @@
         {
             get
             {
-                return this.trunkColor;
+                return Color.FromArgb(this.trunkColor.Alpha, this.trunkColor.Red, this.trunkColor.Green, this.trunkColor.Blue);
             }
 
             set
             {
-                Set(ref this.trunkColor, value);
+                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
+                this.Set(ref this.trunkColor, c);
             }
         }
 
@@ -262,12 +248,13 @@
         {
             get
             {
-                return this.branchColor;
+                return Color.FromArgb(this.branchColor.Alpha, this.branchColor.Red, this.branchColor.Green, this.branchColor.Blue);
             }
 
             set
             {
-                this.Set(ref this.branchColor, value);
+                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
+                this.Set(ref this.branchColor, c);
             }
         }
 
@@ -275,12 +262,13 @@
         {
             get
             {
-                return this.outlineColor;
+                return Color.FromArgb(this.outlineColor.Alpha, this.outlineColor.Red, this.outlineColor.Green, this.outlineColor.Blue);
             }
 
             set
             {
-                this.Set(ref this.outlineColor, value);
+                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
+                this.Set(ref this.outlineColor, c);
                 this.RaisePropertyChanged();
             }
         }
@@ -298,7 +286,20 @@
             }
         }
 
-        public Color BranchOutlineColor => this.OutlineColor;
+        public Color BranchOutlineColor
+        {
+            get
+            {
+                return Color.FromArgb(this.branchOutlineColor.Alpha, this.branchOutlineColor.Red, this.branchOutlineColor.Green, this.branchOutlineColor.Blue);
+            }
+
+            set
+            {
+                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
+                this.Set(ref this.branchOutlineColor, c);
+                this.RaisePropertyChanged();
+            }
+        }
 
         public RelayCommand GenerateTreeCommand { get; set; }
 
@@ -503,65 +504,46 @@
             var imageWidth = Math.Max(borderWidth, (int)Math.Ceiling(this.TrunkWidthStart * 0.5));
             var imageHeight = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.Y)) + 1;
 
-            var bitmap = BitmapFactory.New(imageWidth, imageHeight);
-            this.ImageSkeletton = bitmap;
-
-            var bitmap2 = BitmapFactory.New(imageWidth, imageHeight);
-            this.ImageTree = bitmap2;
-
-
             var width = imageWidth;
             var height = imageHeight;
 
-            using (var skiaBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
+            using (var treeBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
+            using (var skelettonBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
             {
-                var data = skiaBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, skiaBitmap.PixelFormat);
-                using (var surface = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, data.Scan0, width * 4))
+                var dataTree = treeBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, treeBitmap.PixelFormat);
+                var dataSkeletton = skelettonBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, skelettonBitmap.PixelFormat);
+                using (var surfaceTree = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataTree.Scan0, width * 4))
+                using (var surfaceSkeletton = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataSkeletton.Scan0, width * 4))
                 {
-                    this.skCanvas = surface.Canvas;
-                    // DoDraw (skcanvas);
+                    // Move origin to left bottom.
+                    surfaceTree.Canvas.Translate(0, height);
+                    surfaceTree.Canvas.Scale(1, -1);
+                    surfaceSkeletton.Canvas.Translate(0, height);
+                    surfaceSkeletton.Canvas.Scale(1, -1);
 
-
-                    using (this.ImageSkeletton.GetBitmapContext())
+                    SKPaint paint = new SKPaint() { Color = SKColors.Black };
+                    var skelettonPath = new SKPath();
+                    skelettonPath.MoveTo(new SKPoint((float)tree.AllTreePoints.First().Position.X, (float)tree.AllTreePoints.First().Position.Y));
+                    foreach (var point in tree.AllTreePoints)
                     {
-                        foreach (var point in tree.AllTreePoints)
-                        {
-                            this.ImageSkeletton.SetPixelSafeLeftBot((int)point.Position.X + xOffset, (int)point.Position.Y + yOffset, Colors.Black);
-                        }
+                        skelettonPath.LineTo((float)point.Position.X, (float)point.Position.Y);
                     }
 
-                    var treeImage = this.ImageTree;
-                    using (treeImage.GetBitmapContext())
+                    surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
+
+                    this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
+
+                    tree.Branches.Reverse();
+                    foreach (var branch in tree.Branches)
                     {
-                        this.DrawBranch(this.ImageTree, tree.Trunk, xOffset, yOffset, this.TrunkColor, this.OutlineColor);
-
-                        tree.Branches.Reverse();
-                        // Draw branches.
-                        foreach (var branch in tree.Branches)
-                        {
-                            this.DrawBranch(this.ImageTree, branch, xOffset, yOffset, this.BranchColor, this.BranchOutlineColor);
-                        }
+                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, this.branchColor, this.branchOutlineColor);
                     }
-
-                    //List<Point2D> conture = new List<Point2D>();
-                    //Polygon2D polygon = new Polygon2D(tree.Trunk.PolygonPoints.ToList());
-                    //for (int i = -xOffset; i < imageWidth - xOffset; i++)
-                    //{
-                    //    for (int j = -yOffset; j < imageHeight - yOffset; j++)
-                    //    {
-                    //        if (this.IsConturePoint(new Point2D(i, j), polygon))
-                    //        {
-                    //            conture.Add(new Point2D(i, j));
-                    //        }
-                    //    }
-                    //}
-
-                    //this.CalculateSDF(tree.Trunk);
-
                 }
 
-                skiaBitmap.UnlockBits(data);
-                this.SkiaImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(skiaBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
+                treeBitmap.UnlockBits(dataTree);
+                this.ImageTree = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(treeBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
+                skelettonBitmap.UnlockBits(dataTree);
+                this.ImageSkeletton = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(skelettonBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
             }
         }
 
@@ -643,30 +625,31 @@
             return false;
         }
 
-        private void DrawBranch(WriteableBitmap bitmap, Branch branch, int xOffset, int yOffset, Color color, Color outline)
+        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, SKColor color, SKColor outlineColor)
         {
-            var points = branch.PolygonPoints.SelectMany(point => new[] { (int)point.X + xOffset, (int)point.Y + yOffset }).ToList();
-            var polygon = points.ToArray().ToList();
-            polygon.Add(polygon[0]);
-            polygon.Add(polygon[1]);
-            bitmap.FillPolygonOriginLeftBot(polygon.ToArray(), color);
-            bitmap.DrawPolylineOriginLeftBot(points.Take(points.Count).ToArray(), outline);
+            var outlinePoints = branch.PolygonPoints.Select(point => new SKPoint((int)point.X + xOffset, (int)point.Y + yOffset)).ToList();
+            var polygonPoints = outlinePoints.ToList();
+            polygonPoints.Add(polygonPoints[0]);
 
-            var copy = points.Select(element => element).ToArray();
-            for (int i = 1; i < points.ToArray().Length; i += 2)
+            SKPaint fill = new SKPaint { Color = color, Style = SKPaintStyle.Fill };
+            SKPaint outline = new SKPaint { Color = outlineColor, Style = SKPaintStyle.Stroke };
+
+            var polygonPath = new SKPath();
+            polygonPath.MoveTo(polygonPoints.First());
+            foreach (var point in polygonPoints)
             {
-                copy[i] = (int)bitmap.Height - 1 - points[i];
+                polygonPath.LineTo(point);
             }
 
-            SKPaint p = new SKPaint();
-            p.Color = SKColors.SaddleBrown;
-            var path = new SKPath();
-            for (int i = 0; i < copy.Length; i+=2)
+            var outlinePath = new SKPath();
+            outlinePath.MoveTo(outlinePoints.First());
+            foreach (var point in outlinePoints)
             {
-                path.LineTo(copy[i], copy[i+1]);
+                outlinePath.LineTo(point);
             }
 
-            this.skCanvas.DrawPath(path, p);
+            canvas.DrawPath(polygonPath, fill);
+            canvas.DrawPath(outlinePath, outline);
         }
     }
 }

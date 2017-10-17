@@ -48,7 +48,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding SkiaImage}"/>
+                <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageSkeletton}"/>
                 <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
                     <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageTree}"/>
                 </Border>
