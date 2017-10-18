@@ -374,7 +374,7 @@
                 // Generate trunk.
                 var currentWidth = trunkEndWidth + (trunkStartWidth - trunkEndWidth) * ((this.TreeTrunkSize - y) / (double)this.TreeTrunkSize);
                 currentPoint += growDirection;
-                tree.Trunk.BranchPoints.Add(new TreePoint(currentPoint, growDirection) { Width = (int)currentWidth });
+                tree.Trunk.BranchPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
 
                 // Generate branches.
                 if (y > this.BranchStart)
@@ -392,6 +392,11 @@
             }
 
             return tree;
+        }
+
+        private void GenerateStartAndEndOfBranchContour(Branch branch)
+        {
+
         }
 
         private void GenerateBranchPositions(int branchStart, int treeCrownSize, int branchDistance, out HashSet<int> leftBranches, out HashSet<int> rightBranches)
@@ -477,7 +482,7 @@
 
                 currentPoint += growDirection;
                 var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
-                branch.BranchPoints.Add(new TreePoint(currentPoint, growDirection) { Width = (int)currentWidth });
+                branch.BranchPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
 
                 if (y > BranchStart)
                 {
@@ -500,9 +505,9 @@
         {
             var xOffset = -tree.AllBorderPoints.Min(point => (int)point.X);
             var yOffset = -tree.AllBorderPoints.Min(point => (int)point.Y);
-            var borderWidth = tree.AllBorderPoints.Max(point => (int)Math.Ceiling(point.X)) - tree.AllBorderPoints.Min(point => (int)Math.Ceiling(point.X)) + 1;
+            var borderWidth = tree.AllBorderPoints.Max(point => (int)Math.Ceiling(point.X)) - tree.AllBorderPoints.Min(point => (int)Math.Ceiling(point.X));
             var imageWidth = Math.Max(borderWidth, (int)Math.Ceiling(this.TrunkWidthStart * 0.5));
-            var imageHeight = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.Y)) + 1;
+            var imageHeight = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.Y));
 
             var width = imageWidth;
             var height = imageHeight;
@@ -521,12 +526,16 @@
                     surfaceSkeletton.Canvas.Translate(0, height);
                     surfaceSkeletton.Canvas.Scale(1, -1);
 
-                    SKPaint paint = new SKPaint() { Color = SKColors.Black };
+                    SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
                     var skelettonPath = new SKPath();
-                    skelettonPath.MoveTo(new SKPoint((float)tree.AllTreePoints.First().Position.X, (float)tree.AllTreePoints.First().Position.Y));
-                    foreach (var point in tree.AllTreePoints)
+                    var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
+                    foreach (var branch in treeBranches)
                     {
-                        skelettonPath.LineTo((float)point.Position.X, (float)point.Position.Y);
+                        skelettonPath.MoveTo((float)branch.BranchPoints.First().Position.X + xOffset, (float)branch.BranchPoints.First().Position.Y + yOffset);
+                        foreach (var point in branch.BranchPoints)
+                        {
+                            skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
+                        }
                     }
 
                     surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
@@ -635,11 +644,7 @@
             SKPaint outline = new SKPaint { Color = outlineColor, Style = SKPaintStyle.Stroke };
 
             var polygonPath = new SKPath();
-            polygonPath.MoveTo(polygonPoints.First());
-            foreach (var point in polygonPoints)
-            {
-                polygonPath.LineTo(point);
-            }
+            polygonPath.AddPoly(polygonPoints.ToArray());
 
             var outlinePath = new SKPath();
             outlinePath.MoveTo(outlinePoints.First());
@@ -647,9 +652,14 @@
             {
                 outlinePath.LineTo(point);
             }
-
+            
             canvas.DrawPath(polygonPath, fill);
             canvas.DrawPath(outlinePath, outline);
+
+            SKPaint outlineScaled = new SKPaint { Color = SKColors.Green, Style = SKPaintStyle.Fill };
+            var factor = 0.5f;
+            outlinePath.Transform(SKMatrix.MakeScale(factor, 1, outlinePath.TightBounds.MidX, outlinePath.TightBounds.MidY));
+            canvas.DrawPath(outlinePath, outlineScaled);
         }
     }
 }
