@@ -47,73 +47,76 @@ namespace TreeGenerator
             }
         }
 
-        public Dictionary<Point2D, int> SDF { get; set; } = new Dictionary<Point2D, int>();
-
-        public void GenerateContoure()
+        public void GenerateContour()
         {
-            List<Point2D> contour = new List<Point2D>();
+            HashSet<Point2D> contour = new HashSet<Point2D>();
+            var leftBorder = this.LeftBorderPoints.ToList();
+            var rightBorder = this.RightBorderPoints.Reverse().ToList();
 
             // Generate left contour.
-            //var leftBorder = this.LeftBorderPoints.ToList();
-            //for (int i = 0; i < leftBorder.Count - 1; i++)
-            //{
-            //    var point1 = leftBorder[i];
-            //    var point2 = leftBorder[i + 1];
+            contour.UnionWith(leftBorder);
+            for (int i = 0; i < leftBorder.Count - 1; i++)
+            {
+                var point1 = leftBorder[i];
+                var point2 = leftBorder[i + 1];
 
-            //    this.AddContourPointsBetweenPoints(point1, point2, contour);
-            //}
-
-            this.AddContourPointsBetweenPoints(new Point2D(0,0), new Point2D(5,10), contour);
-
-            // Generate right contour.
+                this.AddContourPointsBetweenPoints(point1, point2, contour);
+            }
 
             // Generate top contour.
+            this.AddContourPointsBetweenPoints(leftBorder.Last(), rightBorder.First(), contour);
+
+            // Generate right contour.
+            contour.UnionWith(rightBorder);
+            for (int i = 0; i < leftBorder.Count - 1; i++)
+            {
+                var point1 = rightBorder[i];
+                var point2 = rightBorder[i + 1];
+
+                this.AddContourPointsBetweenPoints(point1, point2, contour);
+            }
 
             // Generate bot contour.
+            //this.AddContourPointsBetweenPoints(rightBorder.Last(), leftBorder.First(), contour);
+
+            this.ContourPoints = contour.ToList();
         }
 
-        private void AddContourPointsBetweenPoints(Point2D point1, Point2D point2, List<Point2D> contour)
+        private void AddContourPointsBetweenPoints(Point2D point1, Point2D point2, HashSet<Point2D> contour)
         {
-            List<Vector2D> octagonOffsets = new List<Vector2D> {
-                new Vector2D(-1, -1),
-                new Vector2D(0, -1),
-                new Vector2D(1, -1),
-                new Vector2D(1, 0),
-                new Vector2D(1, 1),
-                new Vector2D(0, 1),
-                new Vector2D(-1, 1),
-                new Vector2D(-1, 0)
-            };
+            int p1X = (int)Math.Round(point1.X);
+            int p1Y = (int)Math.Round(point1.Y);
+            int p2X = (int)Math.Round(point2.X);
+            int p2Y = (int)Math.Round(point2.Y);
 
-            var currentPosition = point1;
-            // Add points till we reach the otehr point.
-            while (currentPosition != point2)
+            int deltaX = Math.Abs(p2X - p1X);
+            int signX = p1X < p2X ? 1 : -1;
+            int deltaY = Math.Abs(p2Y - p1Y);
+            int signY = p1Y < p2Y ? 1 : -1;
+
+            int error = (deltaX > deltaY ? deltaX : -deltaY) / 2;
+
+            while (true)
             {
-                var minDistance = double.MaxValue;
-                Point2D? minPoint = null;
-                foreach (var offset in octagonOffsets)
+                var error2 = error;
+                if (error2 > -deltaX)
                 {
-                    var nextPosition = currentPosition + offset;
-                    var distance = point2.DistanceTo(nextPosition);
-
-                    // On reaching the target stop.
-                    if(nextPosition == point2)
-                    {
-                        return;
-                    }
-
-                    if(distance < minDistance)
-                    {
-                        minDistance = distance;
-                        minPoint = nextPosition;
-                    }
+                    error -= deltaY;
+                    p1X += signX;
                 }
 
-                if(minPoint != null)
+                if (error2 < deltaY)
                 {
-                    contour.Add(minPoint.Value);
-                    currentPosition = minPoint.Value;
+                    error += deltaX;
+                    p1Y += signY;
                 }
+
+                if (p1X == p2X && p1Y == p2Y)
+                {
+                    break;
+                }
+
+                contour.Add(new Point2D(p1X, p1Y));
             }
         }
     }

@@ -24,7 +24,7 @@ namespace TreeGenerator
         public Point2D GetLeftPosition()
         {
             var trunkElementRightDirection = this.GrowDirection.Rotate(new Angle(90, new Degrees()));
-            var resizePointLeft = this.Position + (-this.Width * 0.5 * trunkElementRightDirection);
+            var resizePointLeft = this.Position + (this.Width * 0.5 * trunkElementRightDirection);
             resizePointLeft = new Point2D((int)Math.Round(resizePointLeft.X), (int)Math.Round(resizePointLeft.Y));
             return resizePointLeft;
         }
@@ -32,7 +32,7 @@ namespace TreeGenerator
         public Point2D GetRightPosition()
         {
             var trunkElementRightDirection = this.GrowDirection.Rotate(new Angle(90, new Degrees()));
-            var resizePointRight = this.Position + (this.Width * 0.5 * trunkElementRightDirection);
+            var resizePointRight = this.Position + (-this.Width * 0.5 * trunkElementRightDirection);
             resizePointRight = new Point2D((int)Math.Round(resizePointRight.X), (int)Math.Round(resizePointRight.Y));
             return resizePointRight;
         }

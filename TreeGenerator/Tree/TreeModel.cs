@@ -19,12 +19,26 @@ namespace TreeGenerator
             }
         }
 
-        public IList<TreePoint> AllTreePoints
+        public IList<TreePoint> AllTreeSkelletonPoints
         {
             get
             {
                 return this.Branches.SelectMany(branch => branch.SkelletonPoints).Concat(this.Trunk.SkelletonPoints).ToList();
             }
+        }
+
+        public IList<Point2D> ContourPoints
+        {
+            get
+            {
+                return this.Trunk.ContourPoints.Concat(this.Branches.SelectMany(branch => branch.ContourPoints)).ToList();
+            }
+        }
+
+        public void GenerateContour()
+        {
+            this.Trunk.GenerateContour();
+            this.Branches.ForEach(branch => branch.GenerateContour());
         }
     }
 }

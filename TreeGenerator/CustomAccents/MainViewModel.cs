@@ -392,14 +392,10 @@
                 }
             }
 
-            tree.Trunk.GenerateContoure();
+            tree.GenerateContour();
+            tree.Branches.ForEach(branch => branch.GenerateContour());
 
             return tree;
-        }
-
-        private void GenerateStartAndEndOfBranchContour(Branch branch)
-        {
-
         }
 
         private void GenerateBranchPositions(int branchStart, int treeCrownSize, int branchDistance, out HashSet<int> leftBranches, out HashSet<int> rightBranches)
@@ -530,18 +526,20 @@
                     surfaceSkeletton.Canvas.Scale(1, -1);
 
                     SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
-                    var skelettonPath = new SKPath();
-                    var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
-                    foreach (var branch in treeBranches)
-                    {
-                        skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
-                        foreach (var point in branch.SkelletonPoints)
-                        {
-                            skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
-                        }
-                    }
+                    //var skelettonPath = new SKPath();
+                    //var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
+                    //foreach (var branch in treeBranches)
+                    //{
+                    //    skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
+                    //    foreach (var point in branch.SkelletonPoints)
+                    //    {
+                    //        skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
+                    //    }
+                    //}
 
-                    surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
+                    //surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
+
+                    surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.ContourPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paint);
 
                     this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
 
@@ -557,84 +555,6 @@
                 skelettonBitmap.UnlockBits(dataTree);
                 this.ImageSkeletton = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(skelettonBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
             }
-        }
-
-        private void CalculateSDF(Branch branch)
-        {
-            int disctance = 0;
-            var currentPoints = branch.PolygonPoints;
-            var nextpoints = new HashSet<Point2D>();
-
-            Polygon2D polygon = new Polygon2D(branch.PolygonPoints.ToList());
-
-            while (currentPoints.Any())
-            {
-                foreach (var point in currentPoints)
-                {
-                    var target = point + new Vector2D(1d, 0d);
-                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
-                    {
-                        branch.SDF[target] = disctance + 1;
-                        nextpoints.Add(target);
-                    }
-
-                    target = point + new Vector2D(-1, 0);
-                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
-                    {
-                        branch.SDF[target] = disctance + 1;
-                        nextpoints.Add(target);
-                    }
-
-                    target = point + new Vector2D(0, 1);
-                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
-                    {
-                        branch.SDF[target] = disctance + 1;
-                        nextpoints.Add(target);
-                    }
-
-                    target = point + new Vector2D(0, -1);
-                    if (this.IsInPolygon(target, polygon) && this.IsNotInSDF(target, branch.SDF))
-                    {
-                        branch.SDF[target] = disctance + 1;
-                        nextpoints.Add(target);
-                    }
-                }
-
-                disctance++;
-                currentPoints = nextpoints.ToList();
-                nextpoints.Clear();
-            }
-        }
-
-        private bool IsNotInSDF(Point2D target, Dictionary<Point2D, int> sdf)
-        {
-            return !sdf.ContainsKey(target);
-        }
-
-        private bool IsInPolygon(Point2D target, Polygon2D polygon)
-        {
-            if (polygon.EnclosesPoint(target) || polygon.Contains(target))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool IsConturePoint(Point2D point, Polygon2D polygon)
-        {
-            var isInside = this.IsInPolygon(point, polygon);
-            var isLeftInside = this.IsInPolygon(point + new Vector2D(-1, 0), polygon);
-            var isRightInside = this.IsInPolygon(point + new Vector2D(1, 0), polygon);
-            var isTopInside = this.IsInPolygon(point + new Vector2D(0, 1), polygon);
-            var isBotInside = this.IsInPolygon(point + new Vector2D(0, -1), polygon);
-
-            if (isInside && (!isLeftInside || !isRightInside || !isTopInside || !isBotInside))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, SKColor color, SKColor outlineColor)
@@ -655,14 +575,9 @@
             {
                 outlinePath.LineTo(point);
             }
-            
+
             canvas.DrawPath(polygonPath, fill);
             canvas.DrawPath(outlinePath, outline);
-
-            SKPaint outlineScaled = new SKPaint { Color = SKColors.Green, Style = SKPaintStyle.Fill };
-            var factor = 0.5f;
-            outlinePath.Transform(SKMatrix.MakeScale(factor, 1, outlinePath.TightBounds.MidX, outlinePath.TightBounds.MidY));
-            canvas.DrawPath(outlinePath, outlineScaled);
         }
     }
 }
