@@ -9,11 +9,8 @@ namespace TreeGenerator
 
     public class TreePoint
     {
-        private Matrix rotation90RightMatrix = Matrix.Identity;
-
         public TreePoint(Point2D position, Vector2D growDirection)
         {
-            this.rotation90RightMatrix.Rotate(90);
             this.Position = position;
             this.GrowDirection = growDirection;
         }
@@ -28,7 +25,7 @@ namespace TreeGenerator
         {
             var trunkElementRightDirection = this.GrowDirection.Rotate(new Angle(90, new Degrees()));
             var resizePointLeft = this.Position + (-this.Width * 0.5 * trunkElementRightDirection);
-            resizePointLeft = new Point2D(Math.Round(resizePointLeft.X), Math.Round(resizePointLeft.Y));
+            resizePointLeft = new Point2D((int)Math.Round(resizePointLeft.X), (int)Math.Round(resizePointLeft.Y));
             return resizePointLeft;
         }
 
@@ -36,7 +33,7 @@ namespace TreeGenerator
         {
             var trunkElementRightDirection = this.GrowDirection.Rotate(new Angle(90, new Degrees()));
             var resizePointRight = this.Position + (this.Width * 0.5 * trunkElementRightDirection);
-            resizePointRight = new Point2D(Math.Round(resizePointRight.X), Math.Round(resizePointRight.Y));
+            resizePointRight = new Point2D((int)Math.Round(resizePointRight.X), (int)Math.Round(resizePointRight.Y));
             return resizePointRight;
         }
     }

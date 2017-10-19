@@ -1,5 +1,6 @@
 namespace TreeGenerator
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -7,13 +8,17 @@ namespace TreeGenerator
 
     class Branch
     {
-        public List<TreePoint> BranchPoints { get; set; } = new List<TreePoint>();
+        public List<Point2D> ContourPoints { get; set; } = new List<Point2D>();
+
+        public List<Point2D> AreaPoints { get; set; } = new List<Point2D>();
+
+        public List<TreePoint> SkelletonPoints { get; set; } = new List<TreePoint>();
 
         public IList<Point2D> LeftBorderPoints
         {
             get
             {
-                return this.BranchPoints.Select(point => point.GetLeftPosition()).ToList();
+                return this.SkelletonPoints.Select(point => point.GetLeftPosition()).ToList();
             }
         }
 
@@ -21,7 +26,7 @@ namespace TreeGenerator
         {
             get
             {
-                return this.BranchPoints.Select(point => point.GetRightPosition()).ToList();
+                return this.SkelletonPoints.Select(point => point.GetRightPosition()).ToList();
             }
         }
 
@@ -33,8 +38,6 @@ namespace TreeGenerator
             {
                 var allPoints = this.LeftBorderPoints;
                 var reversedRightPoints = this.RightBorderPoints.Reverse();
-                //var endPoints = this.GetEndPoints();
-                //var startPoints = this.GetStartPoints();
                 allPoints = allPoints.Concat(reversedRightPoints).ToList();
                 allPoints.Add(allPoints[0]);
                 allPoints.Add(allPoints[1]);
@@ -44,26 +47,74 @@ namespace TreeGenerator
             }
         }
 
-        //private IEnumerable<Point2D> GetStartPoints()
-        //{
-        //    var leftPoint = this.LeftBorderPoints.First().ToVector();
-        //    var rightPoint = this.RightBorderPoints.First().ToVector();
+        public Dictionary<Point2D, int> SDF { get; set; } = new Dictionary<Point2D, int>();
 
-        //    var direction = rightPoint - leftPoint;
-        //    var normDirection = direction.Normalize(1);
-
-        //    var currentPosition = leftPoint + direction;
-        //    for (double i = 0; i < direction.L2Norm(); i+=)
-        //    {
-                
-        //    }
-        //}
-
-        private object GetEndPoints()
+        public void GenerateContoure()
         {
-            throw new System.NotImplementedException();
+            List<Point2D> contour = new List<Point2D>();
+
+            // Generate left contour.
+            //var leftBorder = this.LeftBorderPoints.ToList();
+            //for (int i = 0; i < leftBorder.Count - 1; i++)
+            //{
+            //    var point1 = leftBorder[i];
+            //    var point2 = leftBorder[i + 1];
+
+            //    this.AddContourPointsBetweenPoints(point1, point2, contour);
+            //}
+
+            this.AddContourPointsBetweenPoints(new Point2D(0,0), new Point2D(5,10), contour);
+
+            // Generate right contour.
+
+            // Generate top contour.
+
+            // Generate bot contour.
         }
 
-        public Dictionary<Point2D, int> SDF { get; set; } = new Dictionary<Point2D, int>();
+        private void AddContourPointsBetweenPoints(Point2D point1, Point2D point2, List<Point2D> contour)
+        {
+            List<Vector2D> octagonOffsets = new List<Vector2D> {
+                new Vector2D(-1, -1),
+                new Vector2D(0, -1),
+                new Vector2D(1, -1),
+                new Vector2D(1, 0),
+                new Vector2D(1, 1),
+                new Vector2D(0, 1),
+                new Vector2D(-1, 1),
+                new Vector2D(-1, 0)
+            };
+
+            var currentPosition = point1;
+            // Add points till we reach the otehr point.
+            while (currentPosition != point2)
+            {
+                var minDistance = double.MaxValue;
+                Point2D? minPoint = null;
+                foreach (var offset in octagonOffsets)
+                {
+                    var nextPosition = currentPosition + offset;
+                    var distance = point2.DistanceTo(nextPosition);
+
+                    // On reaching the target stop.
+                    if(nextPosition == point2)
+                    {
+                        return;
+                    }
+
+                    if(distance < minDistance)
+                    {
+                        minDistance = distance;
+                        minPoint = nextPosition;
+                    }
+                }
+
+                if(minPoint != null)
+                {
+                    contour.Add(minPoint.Value);
+                    currentPosition = minPoint.Value;
+                }
+            }
+        }
     }
 }

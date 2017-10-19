@@ -351,7 +351,7 @@
             Point2D currentPoint = new Point2D(0d, 0d);
             var trunkStartWidth = this.TrunkWidthStart;
             var trunkEndWidth = this.TrunkWidthEnd;
-            tree.Trunk.BranchPoints.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth });
+            tree.Trunk.SkelletonPoints.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth });
 
             int treeCrownSize = this.TreeTrunkSize - this.BranchStart;
 
@@ -359,6 +359,7 @@
             HashSet<int> rightBranches;
             this.GenerateBranchPositions(this.BranchStart, treeCrownSize, this.BranchDistance, out leftBranches, out rightBranches);
 
+            // Generate skelleton.
             for (int y = 0; y < this.TreeTrunkSize - 1; y++)
             {
                 if (y == this.TrunkSkewAngleStart)
@@ -374,7 +375,7 @@
                 // Generate trunk.
                 var currentWidth = trunkEndWidth + (trunkStartWidth - trunkEndWidth) * ((this.TreeTrunkSize - y) / (double)this.TreeTrunkSize);
                 currentPoint += growDirection;
-                tree.Trunk.BranchPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
+                tree.Trunk.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
 
                 // Generate branches.
                 if (y > this.BranchStart)
@@ -390,6 +391,8 @@
                     }
                 }
             }
+
+            tree.Trunk.GenerateContoure();
 
             return tree;
         }
@@ -482,7 +485,7 @@
 
                 currentPoint += growDirection;
                 var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
-                branch.BranchPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
+                branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
 
                 if (y > BranchStart)
                 {
@@ -531,8 +534,8 @@
                     var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
                     foreach (var branch in treeBranches)
                     {
-                        skelettonPath.MoveTo((float)branch.BranchPoints.First().Position.X + xOffset, (float)branch.BranchPoints.First().Position.Y + yOffset);
-                        foreach (var point in branch.BranchPoints)
+                        skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
+                        foreach (var point in branch.SkelletonPoints)
                         {
                             skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
                         }

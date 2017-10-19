@@ -23,7 +23,7 @@ namespace TreeGenerator
         {
             get
             {
-                return this.Branches.SelectMany(branch => branch.BranchPoints).Concat(this.Trunk.BranchPoints).ToList();
+                return this.Branches.SelectMany(branch => branch.SkelletonPoints).Concat(this.Trunk.SkelletonPoints).ToList();
             }
         }
     }
