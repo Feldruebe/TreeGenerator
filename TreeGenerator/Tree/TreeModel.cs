@@ -27,11 +27,19 @@ namespace TreeGenerator
             }
         }
 
-        public IList<Point2D> ContourPoints
+        public IList<Point2D> ContourPointsWithoutBot
         {
             get
             {
-                return this.Trunk.ContourPoints.Concat(this.Branches.SelectMany(branch => branch.ContourPoints)).ToList();
+                return this.Trunk.ContourPoints.Concat(this.Branches.SelectMany(branch => branch.ContourPointsWithoutBot)).ToList();
+            }
+        }
+
+        public IList<Point2D> FillPoints
+        {
+            get
+            {
+                return this.Trunk.FillPoints.Concat(this.Branches.SelectMany(branch => branch.FillPoints)).ToList();
             }
         }
 
@@ -39,6 +47,9 @@ namespace TreeGenerator
         {
             this.Trunk.GenerateContour();
             this.Branches.ForEach(branch => branch.GenerateContour());
+
+            this.Trunk.GenerateFillPoints();
+            this.Branches.ForEach(branch => branch.GenerateFillPoints());
         }
     }
 }
