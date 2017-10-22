@@ -147,8 +147,16 @@
 
         public int TrunkSkewAngleStart
         {
-            get { return this.trunkSkewAngleStart; }
-            set { this.Set(ref this.trunkSkewAngleStart, value); }
+            get
+            {
+                return this.trunkSkewAngleStart;
+            }
+
+            set
+            {
+                var max = Math.Max(this.TrunkWidthStart, value);
+                this.Set(ref this.trunkSkewAngleStart, max);
+            }
         }
 
         public int BranchCount
@@ -218,6 +226,11 @@
                 if (value < this.TrunkWidthEnd)
                 {
                     this.TrunkWidthEnd = value;
+                }
+
+                if(value > this.TrunkSkewAngleStart)
+                {
+                    this.TrunkSkewAngleStart = value;
                 }
 
                 this.Set(ref this.trunkWidthStart, value);
@@ -393,6 +406,7 @@
             }
 
             tree.GenerateContour();
+            tree.GenerateSDF();
 
             return tree;
         }
@@ -501,11 +515,10 @@
 
         private void DrawTree(TreeModel tree)
         {
-            var xOffset = -tree.AllBorderPoints.Min(point => (int)point.X);
-            var yOffset = -tree.AllBorderPoints.Min(point => (int)point.Y);
-            var borderWidth = tree.AllBorderPoints.Max(point => (int)Math.Ceiling(point.X)) - tree.AllBorderPoints.Min(point => (int)Math.Ceiling(point.X));
-            var imageWidth = Math.Max(borderWidth, (int)Math.Ceiling(this.TrunkWidthStart * 0.5));
-            var imageHeight = tree.AllBorderPoints.Max(point => (int)Math.Abs(point.Y));
+            var xOffset = -tree.ContourPoints.Min(point => (int)point.X);
+            var yOffset = -tree.ContourPoints.Min(point => (int)point.Y);
+            var imageWidth = tree.ContourPoints.Max(point => (int)point.X) - tree.ContourPoints.Min(point => (int)point.X) + 1;
+            var imageHeight = tree.ContourPoints.Max(point => (int)point.Y) - tree.ContourPoints.Min(point => (int)point.Y) + 1;
 
             var width = imageWidth;
             var height = imageHeight;
@@ -526,21 +539,21 @@
 
                     SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
                     SKPaint paintBrown = new SKPaint() { Color = SKColors.SaddleBrown, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
-                    //var skelettonPath = new SKPath();
-                    //var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
-                    //foreach (var branch in treeBranches)
-                    //{
-                    //    skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
-                    //    foreach (var point in branch.SkelletonPoints)
-                    //    {
-                    //        skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
-                    //    }
-                    //}
+                    var skelettonPath = new SKPath();
+                    var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
+                    foreach (var branch in treeBranches)
+                    {
+                        skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
+                        foreach (var point in branch.SkelletonPoints)
+                        {
+                            skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
+                        }
+                    }
 
-                    //surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
+                    surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
 
-                    surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paintBrown);
-                    surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paint);
+                    //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paintBrown);
+                    //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paint);
 
                     this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
 
@@ -577,8 +590,11 @@
                 outlinePath.LineTo(point);
             }
 
-            canvas.DrawPath(polygonPath, fill);
-            canvas.DrawPath(outlinePath, outline);
+            //canvas.DrawPath(polygonPath, fill);
+            //canvas.DrawPath(outlinePath, outline);
+
+            canvas.DrawPoints(SKPointMode.Points, branch.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), fill);
+            canvas.DrawPoints(SKPointMode.Points, branch.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
         }
     }
 }

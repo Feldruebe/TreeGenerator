@@ -1,5 +1,6 @@
 namespace TreeGenerator
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -27,6 +28,14 @@ namespace TreeGenerator
             }
         }
 
+        public IList<Point2D> ContourPoints
+        {
+            get
+            {
+                return this.Trunk.ContourPoints.Concat(this.Branches.SelectMany(branch => branch.ContourPoints)).ToList();
+            }
+        }
+
         public IList<Point2D> ContourPointsWithoutBot
         {
             get
@@ -50,6 +59,12 @@ namespace TreeGenerator
 
             this.Trunk.GenerateFillPoints();
             this.Branches.ForEach(branch => branch.GenerateFillPoints());
+        }
+
+        public void GenerateSDF()
+        {
+            this.Trunk.GenerateSDF();
+            this.Branches.ForEach(branch => branch.GenerateSDF());
         }
     }
 }

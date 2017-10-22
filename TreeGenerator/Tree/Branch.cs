@@ -59,6 +59,11 @@ namespace TreeGenerator
             }
         }
 
+        public void GenerateSDF()
+        {
+
+        }
+
         public void GenerateContour()
         {
             var leftBorder = this.LeftBorderPoints.ToList();
@@ -67,7 +72,7 @@ namespace TreeGenerator
             // Generate left contour.
             this.LeftContourPoints.Clear();
             this.LeftContourPoints.UnionWith(leftBorder);
-            for (int i = 0; i < leftBorder.Count - 1; i++)
+            for (int i = 1; i < leftBorder.Count - 1; i++)
             {
                 var point1 = leftBorder[i];
                 var point2 = leftBorder[i + 1];
@@ -82,7 +87,7 @@ namespace TreeGenerator
             // Generate right contour.
             this.RightContourPoints.Clear();
             this.RightContourPoints.UnionWith(rightBorder);
-            for (int i = 0; i < rightBorder.Count - 1; i++)
+            for (int i = 0; i < rightBorder.Count - 2; i++)
             {
                 var point1 = rightBorder[i];
                 var point2 = rightBorder[i + 1];
@@ -100,7 +105,6 @@ namespace TreeGenerator
             this.ContourPointsWithoutBot = new HashSet<Point2D>(contourPoints);
             contourPoints.UnionWith(this.BotContourPoints);
             this.ContourPoints = contourPoints;
-
         }
 
         public void GenerateFillPoints()
@@ -110,57 +114,88 @@ namespace TreeGenerator
             int minY = (int)this.ContourPoints.Min(point => point.Y);
             int maxY = (int)this.ContourPoints.Max(point => point.Y);
 
-            HashSet<Point2D> walkedPoints = new HashSet<Point2D>();
+            HashSet<Point2D> pointsToCheck = new HashSet<Point2D>();
             for (int x = minX; x <= maxX; x++)
             {
                 for (int y = minY; y <= maxY; y++)
                 {
                     var newPoint = new Point2D(x, y);
-                    if (!walkedPoints.Contains(newPoint))
+                    pointsToCheck.Add(newPoint);
+                }
+            }
+
+            HashSet<Point2D> checkedPoints = new HashSet<Point2D>();
+            HashSet<Point2D> currentFillPoints = new HashSet<Point2D>();
+            foreach (var pointToCheck in pointsToCheck)
+            {
+                var hitBounds = false;
+                Queue<Point2D> currentPointsToCheck = new Queue<Point2D>();
+                if (!checkedPoints.Contains(pointToCheck) && !this.ContourPoints.Contains(pointToCheck))
+                {
+                    currentPointsToCheck.Enqueue(pointToCheck);                    
+                    while (currentPointsToCheck.Count > 0)
                     {
-                        bool hitBounds = false;
-                        this.CheckPoint(newPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
+                        var currentPoint = currentPointsToCheck.Dequeue();
+                        hitBounds |= this.CheckPointAndAddDecandants(currentPoint, checkedPoints, currentFillPoints, currentPointsToCheck, minX, maxX, minY, maxY);
                     }
 
-                    walkedPoints.Add(newPoint);
+                    if(hitBounds)
+                    {
+                        currentFillPoints = new HashSet<Point2D>();
+                    }
+                    else
+                    {
+                        this.FillPoints.UnionWith(currentFillPoints);
+                    }
                 }
             }
         }
 
-        private void BackTrackPointToBorder(Point2D point, HashSet<Point2D> walkedPoints, ref bool hitBounds, int minX, int maxX, int minY, int maxY)
+        private bool CheckPointAndAddDecandants(Point2D pointToCheck, HashSet<Point2D> checkedPoints, HashSet<Point2D> currentFillPoints, Queue<Point2D> pointsToCheck, int minX, int maxX, int minY, int maxY)
         {
-            Point2D currentPoint = point;
-            var leftPoint = currentPoint + new Vector2D(-1, 0);
-            this.CheckPoint(leftPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
-            var topPoint = currentPoint + new Vector2D(0, 1);
-            this.CheckPoint(topPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
-            var rightPoint = currentPoint + new Vector2D(1, 0);
-            this.CheckPoint(rightPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
-            var botPoint = currentPoint + new Vector2D(0, -1);
-            this.CheckPoint(botPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
-        }
-
-        private void CheckPoint(Point2D currentPoint, HashSet<Point2D> walkedPoints, ref bool hitBounds, int minX, int maxX, int minY, int maxY)
-        {
-            if (currentPoint.X >= minX && currentPoint.X <= maxX && currentPoint.Y >= minY && currentPoint.Y <= maxY)
+            var hitBounds = false;
+            if (pointToCheck.X >= minX && pointToCheck.X <= maxX && pointToCheck.Y >= minY && pointToCheck.Y <= maxY)
             {
-                hitBounds |= false;
-                var hitContour = this.ContourPoints.Contains(currentPoint);
-                if (!hitContour && !walkedPoints.Contains(currentPoint))
+                if (!checkedPoints.Contains(pointToCheck))
                 {
-                    walkedPoints.Add(currentPoint);
-                    this.BackTrackPointToBorder(currentPoint, walkedPoints, ref hitBounds, minX, maxX, minY, maxY);
-                    if (!hitBounds)
+                    if (!this.ContourPoints.Contains(pointToCheck))
                     {
-                        this.FillPoints.Add(currentPoint);
+                        currentFillPoints.Add(pointToCheck);
+                    }
+
+                    var leftPoint = pointToCheck + new Vector2D(-1, 0);
+                    if (!this.ContourPoints.Contains(leftPoint))
+                    {
+                        pointsToCheck.Enqueue(leftPoint);
+                    }
+
+                    var topPoint = pointToCheck + new Vector2D(0, 1);
+                    if (!this.ContourPoints.Contains(topPoint))
+                    {
+                        pointsToCheck.Enqueue(topPoint);
+                    }
+
+                    var rightPoint = pointToCheck + new Vector2D(1, 0);
+                    if (!this.ContourPoints.Contains(rightPoint))
+                    {
+                        pointsToCheck.Enqueue(rightPoint);
+                    }
+
+                    var botPoint = pointToCheck + new Vector2D(0, -1);
+                    if (!this.ContourPoints.Contains(botPoint))
+                    {
+                        pointsToCheck.Enqueue(botPoint);
                     }
                 }
             }
             else
             {
-                walkedPoints.Add(currentPoint);
-                hitBounds |= true;
+                hitBounds = true;
             }
+
+            checkedPoints.Add(pointToCheck);
+
+            return hitBounds;
         }
 
         private void AddContourPointsBetweenPoints(Point2D point1, Point2D point2, HashSet<Point2D> contour)
