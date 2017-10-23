@@ -17,6 +17,7 @@
 
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Double;
+    using MathNet.Numerics.Random;
     using MathNet.Spatial.Euclidean;
     using MathNet.Spatial.Units;
 
@@ -41,7 +42,8 @@
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private Random rand = new Random();
+        private Random rand;
+        private Random randomRand = new Random();
 
         private int treeTrunkSize;
         private BitmapSource imageSkeletton;
@@ -68,6 +70,12 @@
         private SKColor outlineColor;
         private SKColor branchOutlineColor;
         private bool isColorFlyoutOpen = false;
+
+        private int randomSeed;
+
+        private bool regenerateRandomSeed;
+
+        private int branchCount1;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -97,8 +105,33 @@
             this.OutlineColor = Colors.Black;
             this.BranchOutlineColor = Colors.Black;
 
-            var tree = this.GenerateTree();
-            this.DrawTree(tree);
+            this.GenerateTreeAndDraw();
+        }
+
+        public int RandomSeed
+        {
+            get
+            {
+                return this.randomSeed;
+            }
+
+            set
+            {
+                this.Set(ref this.randomSeed, value);
+            }
+        }
+
+        public bool RegenerateRandomSeed
+        {
+            get
+            {
+                return this.regenerateRandomSeed;
+            }
+
+            set
+            {
+                this.Set(ref this.regenerateRandomSeed, value);
+            }
         }
 
         public int TreeTrunkSize
@@ -228,7 +261,7 @@
                     this.TrunkWidthEnd = value;
                 }
 
-                if(value > this.TrunkSkewAngleStart)
+                if (value > this.TrunkSkewAngleStart)
                 {
                     this.TrunkSkewAngleStart = value;
                 }
@@ -314,6 +347,19 @@
             }
         }
 
+        public int BranchCount
+        {
+            get
+            {
+                bool 💩 = false;
+                return this.branchCount1;
+            }
+            set
+            {
+                this.branchCount1 = value;
+            }
+        }
+
         public RelayCommand GenerateTreeCommand { get; set; }
 
         public RelayCommand ExportImageCommand { get; set; }
@@ -322,6 +368,7 @@
         {
             //try
             //{
+            this.ManageRandom();
             var tree = this.GenerateTree();
             this.DrawTree(tree);
             //}
@@ -329,6 +376,17 @@
             //{
             //    MessageBox.Show(exception.Message);
             //}
+        }
+
+        private void ManageRandom()
+        {
+            if (this.RegenerateRandomSeed || this.rand == null)
+            {
+                var seed = this.randomRand.Next();
+                this.RandomSeed = seed;
+            }
+
+            this.rand = new Random(this.RandomSeed);
         }
 
         private void ExportImage()

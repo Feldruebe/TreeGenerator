@@ -35,6 +35,14 @@
         <Setter Property="Margin" Value="5,5,10,5"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
       </Style>
+      <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+      <Style TargetType="{x:Type controls:ToggleSwitch}" BasedOn="{StaticResource {x:Type controls:ToggleSwitch}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
     </Grid.Resources>
 
     <Grid.ColumnDefinitions>
@@ -311,25 +319,36 @@
         </ScrollViewer>
       </GroupBox>
       <GroupBox Grid.Row="1" Header="Controls">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-          <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
-            <Grid>
-              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <StackPanel Grid.Column="0" Orientation="Horizontal">
+            <controls:ToggleSwitch IsChecked="{Binding RegenerateRandomSeed}" Content="New seed:" />
+            <TextBox Text="{Binding RandomSeed}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
+              <Grid>
+                <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+                  <Rectangle.OpacityMask>
+                    <VisualBrush Visual="{StaticResource appbar_acorn}" Stretch="Fill" />
+                  </Rectangle.OpacityMask>
+                </Rectangle>
+              </Grid>
+            </Button>
+
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
+              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
                 <Rectangle.OpacityMask>
-                  <VisualBrush Visual="{StaticResource appbar_acorn}" Stretch="Fill" />
+                  <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
                 </Rectangle.OpacityMask>
               </Rectangle>
-            </Grid>
-          </Button>
-
-          <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
-            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-              <Rectangle.OpacityMask>
-                <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
-              </Rectangle.OpacityMask>
-            </Rectangle>
-          </Button>
-        </StackPanel>
+            </Button>
+          </StackPanel>
+        </Grid>
       </GroupBox>
     </Grid>
   </Grid>
