@@ -10,15 +10,35 @@
                       Title="MainWindow"
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
                       d:DataContext="{d:DesignInstance viewmodel:MainViewModel}">
+  <controls:MetroWindow.Resources>
+    <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+  </controls:MetroWindow.Resources>
   <controls:MetroWindow.Flyouts>
     <controls:FlyoutsControl>
-      <controls:Flyout IsOpen="{Binding IsColorFlyoutOpen}" Theme="Dark" Header="Color" Position="Right" Width="300">
-        <Grid>
-
-        </Grid>
+      <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
+        <StackPanel Margin="5,0,0,0">
+          <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
+          <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
+          <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
+        </StackPanel>
       </controls:Flyout>
     </controls:FlyoutsControl>
   </controls:MetroWindow.Flyouts>
+
+  <controls:MetroWindow.RightWindowCommands>
+    <controls:WindowCommands>
+      <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+        <CheckBox Content="Debug" IsChecked="{Binding DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
+        <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
+          <Rectangle Width="15" Height="15" Fill="White">
+            <Rectangle.OpacityMask>
+              <VisualBrush Visual="{StaticResource appbar_bug}" Stretch="Fill" />
+            </Rectangle.OpacityMask>
+          </Rectangle>
+        </ToggleButton>
+      </StackPanel>
+    </controls:WindowCommands>
+  </controls:MetroWindow.RightWindowCommands>
 
   <Grid IsSharedSizeScope="True">
 

@@ -20,7 +20,7 @@ namespace TreeGenerator
         // add custom accent and theme resource dictionaries to the ThemeManager
         // you should replace MahAppsMetroThemesSample with your application name
         // and correct place where your custom accent lives
-        ThemeManager.AddAccent("TreeGeneratorAccent", new Uri("pack://application:,,,/TreeGenerator;component/CustomAccents/TreeGeneratorAccent.xaml"));
+        ThemeManager.AddAccent("TreeGeneratorAccent", new Uri("pack://application:,,,/TreeGenerator;component/MVVM/TreeGeneratorAccent.xaml"));
 
         // get the current app style (theme and accent) from the application
         Tuple<AppTheme, Accent> theme = ThemeManager.DetectAppStyle(Application.Current);

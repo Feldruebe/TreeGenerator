@@ -75,13 +75,21 @@
 
         private bool regenerateRandomSeed;
 
-        private int branchCount1;
+        private bool debugModeEnabled;
+
+        private TreeModel tree;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
+#if DEBUG
+            this.DebugModeEnabled = true;
+#endif
+
+            this.DebugViewModel = new DebugViewModel(this);
+
             this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
             this.ExportImageCommand = new RelayCommand(this.ExportImage);
             this.TreeTrunkSize = 60;
@@ -196,6 +204,14 @@
         {
             get { return this.branchCount; }
             set { this.Set(ref this.branchCount, value); }
+        }
+
+        public int AllBranchesCount
+        {
+            get
+            {
+                return this.Tree.Branches.Count - 1;
+            }
         }
 
         public int BranchStart
@@ -347,36 +363,66 @@
             }
         }
 
-        public int BranchCount
-        {
-            get
-            {
-                bool 💩 = false;
-                return this.branchCount1;
-            }
-            set
-            {
-                this.branchCount1 = value;
-            }
-        }
-
         public RelayCommand GenerateTreeCommand { get; set; }
 
         public RelayCommand ExportImageCommand { get; set; }
+
+        public bool DebugModeEnabled
+        {
+            get
+            {
+                return this.debugModeEnabled;
+            }
+
+            set
+            {
+                this.Set(ref this.debugModeEnabled, value);
+                this.ReDrawTree();
+            }
+        }
+
+        public bool IsDebugMode
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#endif
+
+                return false;
+            }
+        }
+
+        public DebugViewModel DebugViewModel { get; }
+
+        public TreeModel Tree
+        {
+            get
+            {
+                return this.tree;
+            }
+
+            private set
+            {
+                this.tree = value;
+                this.RaisePropertyChanged(nameof(this.AllBranchesCount));
+            }
+        }
 
         private void GenerateTreeAndDraw()
         {
             //try
             //{
             this.ManageRandom();
-            var tree = this.GenerateTree();
-            this.DrawTree(tree);
+            this.Tree = this.GenerateTree();
+            this.DrawTree(this.Tree);
             //}
             //catch (Exception exception)
             //{
             //    MessageBox.Show(exception.Message);
             //}
         }
+
 
         private void ManageRandom()
         {
@@ -571,7 +617,15 @@
             tree.Branches.Add(branch);
         }
 
-        private void DrawTree(TreeModel tree)
+        public void ReDrawTree()
+        {
+            if (this.Tree != null)
+            {
+                this.DrawTree(this.Tree);
+            }
+        }
+
+        public void DrawTree(TreeModel tree)
         {
             var xOffset = -tree.ContourPoints.Min(point => (int)point.X);
             var yOffset = -tree.ContourPoints.Min(point => (int)point.Y);
@@ -613,12 +667,21 @@
                     //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paintBrown);
                     //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paint);
 
-                    this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
-
-                    tree.Branches.Reverse();
-                    foreach (var branch in tree.Branches)
+                    if (!this.DebugModeEnabled || this.DebugViewModel.DrawTrunk)
                     {
-                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, this.branchColor, this.branchOutlineColor);
+                        this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
+                    }
+
+                    var reversedBranches = tree.Branches.ToList();
+                    reversedBranches.Reverse();
+                    for (int i = 0; i < reversedBranches.Count; i++)
+                    {
+                        if (this.DebugModeEnabled && i != this.DebugViewModel.BranchToDraw)
+                        {
+                            continue;
+                        }
+
+                        this.DrawBranch(surfaceTree.Canvas, reversedBranches[i], xOffset, yOffset, this.branchColor, this.branchOutlineColor);
                     }
                 }
 

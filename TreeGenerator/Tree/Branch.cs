@@ -6,7 +6,7 @@ namespace TreeGenerator
 
     using MathNet.Spatial.Euclidean;
 
-    class Branch
+    public class Branch
     {
         public HashSet<Point2D> ContourPoints { get; set; } = new HashSet<Point2D>();
 

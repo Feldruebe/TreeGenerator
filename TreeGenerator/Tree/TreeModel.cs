@@ -6,7 +6,7 @@ namespace TreeGenerator
 
     using MathNet.Spatial.Euclidean;
 
-    class TreeModel
+    public class TreeModel
     {
         public Branch Trunk { get; } = new Branch();
 
