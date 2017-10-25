@@ -303,6 +303,7 @@
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.trunkColor, c);
+                this.ReDrawTree();
             }
         }
 
@@ -331,7 +332,7 @@
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.outlineColor, c);
-                this.RaisePropertyChanged();
+                this.ReDrawTree();
             }
         }
 
@@ -681,7 +682,7 @@
                             continue;
                         }
 
-                        this.DrawBranch(surfaceTree.Canvas, reversedBranches[i], xOffset, yOffset, this.branchColor, this.branchOutlineColor);
+                        this.DrawBranch(surfaceTree.Canvas, reversedBranches[i], xOffset, yOffset, this.trunkColor, this.outlineColor);
                     }
                 }
 
