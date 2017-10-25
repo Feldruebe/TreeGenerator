@@ -72,7 +72,7 @@ namespace TreeGenerator
             // Generate left contour.
             this.LeftContourPoints.Clear();
             this.LeftContourPoints.UnionWith(leftBorder);
-            for (int i = 1; i < leftBorder.Count - 1; i++)
+            for (int i = 0; i < leftBorder.Count - 1; i++)
             {
                 var point1 = leftBorder[i];
                 var point2 = leftBorder[i + 1];
@@ -87,7 +87,7 @@ namespace TreeGenerator
             // Generate right contour.
             this.RightContourPoints.Clear();
             this.RightContourPoints.UnionWith(rightBorder);
-            for (int i = 0; i < rightBorder.Count - 2; i++)
+            for (int i = 0; i < rightBorder.Count - 1; i++)
             {
                 var point1 = rightBorder[i];
                 var point2 = rightBorder[i + 1];
@@ -105,6 +105,11 @@ namespace TreeGenerator
             this.ContourPointsWithoutBot = new HashSet<Point2D>(contourPoints);
             contourPoints.UnionWith(this.BotContourPoints);
             this.ContourPoints = contourPoints;
+
+            var newContour = new HashSet<Point2D>(this.ContourPoints);
+            this.ContourPoints = new HashSet<Point2D>(this.ContourPoints.Where(point => this.CheckIfNeededForConnectionAndRemove(point, newContour)));
+            newContour = new HashSet<Point2D>(this.ContourPointsWithoutBot);
+            this.ContourPointsWithoutBot = new HashSet<Point2D>(this.ContourPointsWithoutBot.Where(point => this.CheckIfNeededForConnectionAndRemove(point, newContour)));
         }
 
         public void GenerateFillPoints()
@@ -132,14 +137,14 @@ namespace TreeGenerator
                 Queue<Point2D> currentPointsToCheck = new Queue<Point2D>();
                 if (!checkedPoints.Contains(pointToCheck) && !this.ContourPoints.Contains(pointToCheck))
                 {
-                    currentPointsToCheck.Enqueue(pointToCheck);                    
+                    currentPointsToCheck.Enqueue(pointToCheck);
                     while (currentPointsToCheck.Count > 0)
                     {
                         var currentPoint = currentPointsToCheck.Dequeue();
                         hitBounds |= this.CheckPointAndAddDecandants(currentPoint, checkedPoints, currentFillPoints, currentPointsToCheck, minX, maxX, minY, maxY);
                     }
 
-                    if(hitBounds)
+                    if (hitBounds)
                     {
                         currentFillPoints = new HashSet<Point2D>();
                     }
@@ -149,6 +154,48 @@ namespace TreeGenerator
                     }
                 }
             }
+        }
+
+        private bool CheckIfNeededForConnectionAndRemove(Point2D point, HashSet<Point2D> neighbours)
+        {
+            var leftPoint = point + new Vector2D(-1, 0);
+            var leftBotPoint = point + new Vector2D(-1, -1);
+            var botPoint = point + new Vector2D(0, -1);
+            var botRightPoint = point + new Vector2D(1, -1);
+            var rightPoint = point + new Vector2D(1, 0);
+            var rightTopPoint = point + new Vector2D(1, 1);
+            var topPoint = point + new Vector2D(0, 1);
+            var topLeftPoint = point + new Vector2D(-1, 1);
+
+            if ((neighbours.Contains(leftPoint) && neighbours.Contains(topPoint)) &&
+                !neighbours.Contains(botRightPoint))
+            {
+                neighbours.Remove(point);
+                return false;
+            }
+
+            if ((neighbours.Contains(topPoint) && neighbours.Contains(rightPoint)) &&
+                !neighbours.Contains(leftBotPoint))
+            {
+                neighbours.Remove(point);
+                return false;
+            }
+
+            if ((neighbours.Contains(rightPoint) && neighbours.Contains(botPoint)) &&
+                !neighbours.Contains(topLeftPoint))
+            {
+                neighbours.Remove(point);
+                return false;
+            }
+
+            if ((neighbours.Contains(botPoint) && neighbours.Contains(leftPoint)) &&
+                !neighbours.Contains(rightTopPoint))
+            {
+                neighbours.Remove(point);
+                return false;
+            }
+
+            return true;
         }
 
         private bool CheckPointAndAddDecandants(Point2D pointToCheck, HashSet<Point2D> checkedPoints, HashSet<Point2D> currentFillPoints, Queue<Point2D> pointsToCheck, int minX, int maxX, int minY, int maxY)

@@ -510,7 +510,7 @@
                 }
             }
 
-            tree.GenerateContour();
+            tree.GenerateContourAndFillPoints();
             tree.GenerateSDF();
 
             return tree;

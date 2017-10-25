@@ -52,7 +52,7 @@ namespace TreeGenerator
             }
         }
 
-        public void GenerateContour()
+        public void GenerateContourAndFillPoints()
         {
             this.Trunk.GenerateContour();
             this.Branches.ForEach(branch => branch.GenerateContour());
