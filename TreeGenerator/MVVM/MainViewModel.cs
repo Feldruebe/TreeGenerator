@@ -13,7 +13,10 @@
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows.Media;
+
+    using MahApps.Metro.Controls.Dialogs;
 
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Double;
@@ -79,6 +82,8 @@
 
         private TreeModel tree;
 
+        private ProgressDialogController controller;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -112,8 +117,6 @@
             this.BranchColor = Colors.SaddleBrown;
             this.OutlineColor = Colors.Black;
             this.BranchOutlineColor = Colors.Black;
-
-            this.GenerateTreeAndDraw();
         }
 
         public int RandomSeed
@@ -210,7 +213,7 @@
         {
             get
             {
-                return this.Tree.Branches.Count - 1;
+                return this.Tree?.Branches.Count - 1 ?? 0;
             }
         }
 
@@ -410,13 +413,15 @@
             }
         }
 
-        private void GenerateTreeAndDraw()
+        private async void GenerateTreeAndDraw()
         {
             //try
             //{
+            this.controller = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
             this.ManageRandom();
-            this.Tree = this.GenerateTree();
+            this.Tree = await this.GenerateTreeAsync();
             this.DrawTree(this.Tree);
+            await this.controller.CloseAsync();
             //}
             //catch (Exception exception)
             //{
@@ -424,6 +429,10 @@
             //}
         }
 
+        private Task<TreeModel> GenerateTreeAsync()
+        {
+            return Task.Run(() => this.GenerateTree());
+        }
 
         private void ManageRandom()
         {
@@ -478,6 +487,7 @@
             this.GenerateBranchPositions(this.BranchStart, treeCrownSize, this.BranchDistance, out leftBranches, out rightBranches);
 
             // Generate skelleton.
+            this.controller.SetMessage($"Generating trunk pixel.");
             for (int y = 0; y < this.TreeTrunkSize - 1; y++)
             {
                 if (y == this.TrunkSkewAngleStart)
@@ -510,7 +520,10 @@
                 }
             }
 
+            this.controller.SetMessage($"Generating contour and fill.");
             tree.GenerateContourAndFillPoints();
+
+            this.controller.SetMessage($"Generating shading.");
             tree.GenerateSDF();
 
             return tree;

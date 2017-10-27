@@ -6,10 +6,13 @@
                       xmlns:viewmodel="clr-namespace:TreeGenerator.ViewModels"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:treeControls="clr-namespace:TreeGenerator.Controls"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       mc:Ignorable="d"
                       Title="MainWindow"
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
-                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}">
+                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
+                      dialogs:DialogParticipation.Register="{Binding }"
+                      Loaded="MainWindowOnLoaded">
   <controls:MetroWindow.Resources>
     <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
   </controls:MetroWindow.Resources>
