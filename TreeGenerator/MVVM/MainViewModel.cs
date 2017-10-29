@@ -584,7 +584,9 @@
 
             var branch = new Branch();
             var branchStartWidth = width;
-            var branchEndWidth = 2;
+            var branchEndWidth = this.TrunkWidthEnd;
+            branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)branchStartWidth });
+
             for (int y = 0; y < branchLength; y++)
             {
                 if (y == 0)
@@ -656,17 +658,11 @@
                     var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
                     foreach (var branch in treeBranches)
                     {
-                        skelettonPath.MoveTo((float)branch.SkelletonPoints.First().Position.X + xOffset, (float)branch.SkelletonPoints.First().Position.Y + yOffset);
                         foreach (var point in branch.SkelletonPoints)
                         {
-                            skelettonPath.LineTo((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset);
+                            surfaceSkeletton.Canvas.DrawPoint((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset, paint);
                         }
                     }
-
-                    surfaceSkeletton.Canvas.DrawPath(skelettonPath, paint);
-
-                    //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paintBrown);
-                    //surfaceSkeletton.Canvas.DrawPoints(SKPointMode.Points, tree.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), paint);
 
                     if (!this.DebugModeEnabled || this.DebugViewModel.DrawTrunk)
                     {
