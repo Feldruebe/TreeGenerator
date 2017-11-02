@@ -1,5 +1,9 @@
 ﻿namespace TreeGenerator
 {
+    using System.Windows;
+
+    using TreeGenerator.ViewModels;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml.
     /// </summary>
@@ -11,6 +15,12 @@
         public MainWindow()
         {
             this.InitializeComponent();
+        }
+
+        private void MainWindowOnLoaded(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (MainViewModel)((MainWindow)sender).DataContext;
+            viewModel.GenerateTreeCommand.Execute(null);
         }
     }
 }

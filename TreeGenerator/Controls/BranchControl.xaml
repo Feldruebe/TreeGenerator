@@ -70,9 +70,13 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
-                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="{Binding TreeTrunkSize}" Minimum="1" Value="{Binding BranchDistance}" />
-                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" />
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Level Length Factor</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="1" Minimum="0.1" HasDecimals="True" StringFormat="0.##" Value="{Binding BranchLevelLengthFactor}" />
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchLevelLengthFactor}" MinWidth="100" Maximum="1" Minimum="0.1" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False"/>
+
+                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Maximum="{Binding TreeTrunkSize}" Minimum="1" Value="{Binding BranchDistance}" />
+                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" />
                 </Grid>
 
                 <Separator Height="5"/>

@@ -13,7 +13,10 @@
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows.Media;
+
+    using MahApps.Metro.Controls.Dialogs;
 
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Double;
@@ -79,6 +82,10 @@
 
         private TreeModel tree;
 
+        private ProgressDialogController controller;
+        private double branchLevelLengthFactor;
+        private int branchMaxLevel;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -112,8 +119,8 @@
             this.BranchColor = Colors.SaddleBrown;
             this.OutlineColor = Colors.Black;
             this.BranchOutlineColor = Colors.Black;
-
-            this.GenerateTreeAndDraw();
+            this.BranchMaxLevel = 3;
+            this.BranchLevelLengthFactor = 1;
         }
 
         public int RandomSeed
@@ -210,7 +217,7 @@
         {
             get
             {
-                return this.Tree.Branches.Count - 1;
+                return this.Tree?.Branches.Count - 1 ?? 0;
             }
         }
 
@@ -236,6 +243,12 @@
         {
             get { return this.branchDistance; }
             set { this.Set(ref this.branchDistance, value); }
+        }
+
+        public double BranchLevelLengthFactor
+        {
+            get { return this.branchLevelLengthFactor; }
+            set { this.Set(ref this.branchLevelLengthFactor, value); }
         }
 
         public int BranchSkew
@@ -410,13 +423,21 @@
             }
         }
 
-        private void GenerateTreeAndDraw()
+        public int BranchMaxLevel
+        {
+            get { return this.branchMaxLevel; }
+            set { this.Set(ref this.branchMaxLevel, value); }
+        }
+
+        private async void GenerateTreeAndDraw()
         {
             //try
             //{
+            this.controller = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
             this.ManageRandom();
-            this.Tree = this.GenerateTree();
+            this.Tree = await this.GenerateTreeAsync();
             this.DrawTree(this.Tree);
+            await this.controller.CloseAsync();
             //}
             //catch (Exception exception)
             //{
@@ -424,6 +445,10 @@
             //}
         }
 
+        private Task<TreeModel> GenerateTreeAsync()
+        {
+            return Task.Run(() => this.GenerateTree());
+        }
 
         private void ManageRandom()
         {
@@ -478,6 +503,7 @@
             this.GenerateBranchPositions(this.BranchStart, treeCrownSize, this.BranchDistance, out leftBranches, out rightBranches);
 
             // Generate skelleton.
+            this.controller.SetMessage($"Generating trunk pixel.");
             for (int y = 0; y < this.TreeTrunkSize - 1; y++)
             {
                 if (y == this.TrunkSkewAngleStart)
@@ -510,7 +536,10 @@
                 }
             }
 
+            this.controller.SetMessage($"Generating contour and fill.");
             tree.GenerateContourAndFillPoints();
+
+            this.controller.SetMessage($"Generating shading.");
             tree.GenerateSDF();
 
             return tree;
@@ -567,12 +596,16 @@
 
         private void GrowBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, double angle, BranchType branchType, double width, int level)
         {
-            if (level == 4)
+            if (level > this.BranchMaxLevel)
             {
                 return;
             }
 
-            int branchLength = Math.Max(rand.Next(this.BranchLengthMin, this.BranchLengthMax + 1) / level, 1);
+            var t = ((level - 1) / (double)(this.BranchMaxLevel - 1));
+            var lengthFactor = (1 + (this.BranchLevelLengthFactor - 1) * t);
+            int branchLength = rand.Next(this.BranchLengthMin, this.BranchLengthMax + 1);
+            branchLength = (int)(branchLength * lengthFactor);
+            branchLength = Math.Max(branchLength, 1);
             int branchRotationAngleStart = this.BranchRotationAngleStart;
 
             float rotationStep = (float)this.BranchRotationAngle / (float)(branchLength - branchRotationAngleStart);
@@ -695,12 +728,21 @@
             var polygonPoints = outlinePoints.ToList();
             polygonPoints.Add(polygonPoints[0]);
 
-            SKPaint fill = new SKPaint { Color = color, Style = SKPaintStyle.Fill };
+            var maxDistance = branch.SDF.Values.Max();
+            float vReduce = 0.8f;
+            for (int i = 1; i <= maxDistance; i++)
+            {
+                color.ToHsv(out float h, out float s, out float v);
+                var reduceFactor = 1 - (vReduce * ((maxDistance - i) / (float)maxDistance));
+
+                SKColor colorForDistance = SKColor.FromHsv(h, s, v * reduceFactor);
+                SKPaint fillForDistance = new SKPaint { Color = colorForDistance, Style = SKPaintStyle.Fill };
+                var pointsWithDistance = branch.SDF.Where(sdfPoint => sdfPoint.Value == i).Select(sdfPoint => new SKPoint((float)sdfPoint.Key.X + xOffset, (float)sdfPoint.Key.Y + yOffset)).ToArray();
+                canvas.DrawPoints(SKPointMode.Points, pointsWithDistance, fillForDistance);
+            }
+
+
             SKPaint outline = new SKPaint { Color = outlineColor, Style = SKPaintStyle.Stroke };
-
-            var polygonPath = new SKPath();
-            polygonPath.AddPoly(polygonPoints.ToArray());
-
             var outlinePath = new SKPath();
             outlinePath.MoveTo(outlinePoints.First());
             foreach (var point in outlinePoints)
@@ -708,10 +750,6 @@
                 outlinePath.LineTo(point);
             }
 
-            //canvas.DrawPath(polygonPath, fill);
-            //canvas.DrawPath(outlinePath, outline);
-
-            canvas.DrawPoints(SKPointMode.Points, branch.FillPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), fill);
             canvas.DrawPoints(SKPointMode.Points, branch.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
         }
     }

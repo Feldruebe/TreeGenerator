@@ -6,24 +6,27 @@
                       xmlns:viewmodel="clr-namespace:TreeGenerator.ViewModels"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:treeControls="clr-namespace:TreeGenerator.Controls"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       mc:Ignorable="d"
                       Title="MainWindow"
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
-                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}">
-    <controls:MetroWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
-    </controls:MetroWindow.Resources>
-    <controls:MetroWindow.Flyouts>
-        <controls:FlyoutsControl>
-            <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
-                <StackPanel Margin="5,0,0,0">
-                    <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
-                    <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
-                    <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
-                </StackPanel>
-            </controls:Flyout>
-        </controls:FlyoutsControl>
-    </controls:MetroWindow.Flyouts>
+                      d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
+                      dialogs:DialogParticipation.Register="{Binding }"
+                      Loaded="MainWindowOnLoaded">
+  <controls:MetroWindow.Resources>
+    <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+  </controls:MetroWindow.Resources>
+  <controls:MetroWindow.Flyouts>
+    <controls:FlyoutsControl>
+      <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
+        <StackPanel Margin="5,0,0,0">
+          <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
+          <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
+          <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
+        </StackPanel>
+      </controls:Flyout>
+    </controls:FlyoutsControl>
+  </controls:MetroWindow.Flyouts>
 
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
@@ -63,6 +66,7 @@
                 <Setter Property="SmallChange" Value="1"/>
                 <Setter Property="IsSnapToTickEnabled" Value="True"/>
                 <Setter Property="IsMoveToPointEnabled" Value="True"/>
+                <Setter Property="MinRangeWidth" Value="1" />
             </Style>
             <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
                 <Setter Property="Margin" Value="5,5,10,5"/>

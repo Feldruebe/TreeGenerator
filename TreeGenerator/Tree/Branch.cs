@@ -8,6 +8,8 @@ namespace TreeGenerator
 
     public class Branch
     {
+        public Dictionary<Point2D, int> SDF { get; private set; }
+
         public HashSet<Point2D> ContourPoints { get; set; } = new HashSet<Point2D>();
 
         public HashSet<Point2D> ContourPointsWithoutBot { get; set; } = new HashSet<Point2D>();
@@ -61,6 +63,38 @@ namespace TreeGenerator
 
         public void GenerateSDF()
         {
+            HashSet<Point2D> pointsToVisit;
+            HashSet<Point2D> nextPointsToVisit = new HashSet<Point2D>(this.LeftContourPoints.Concat(this.RightContourPoints));
+
+            this.SDF = new Dictionary<Point2D, int>();
+
+            int distance = 1;
+            while (nextPointsToVisit.Any())
+            {
+                pointsToVisit = nextPointsToVisit;
+                nextPointsToVisit = new HashSet<Point2D>();
+                foreach (var point in pointsToVisit)
+                {
+                    var leftPoint = point + new Vector2D(-1, 0);
+                    var botPoint = point + new Vector2D(0, -1);
+                    var rightPoint = point + new Vector2D(1, 0);
+                    var topPoint = point + new Vector2D(0, 1);
+
+                    var neighbours = new[] { leftPoint, topPoint, rightPoint, botPoint };
+
+                    foreach (var neighbour in neighbours)
+                    {
+                        if (this.FillPoints.Contains(neighbour) && !this.SDF.ContainsKey(neighbour))
+                        {
+                            nextPointsToVisit.Add(neighbour);
+                            this.SDF[neighbour] = distance;
+                        }
+                    }
+
+                }
+
+                distance++;                
+            }
 
         }
 
@@ -71,13 +105,15 @@ namespace TreeGenerator
 
             // Generate left contour.
             this.LeftContourPoints.Clear();
-            this.LeftContourPoints.UnionWith(leftBorder);
+            //this.LeftContourPoints.UnionWith(leftBorder);
             for (int i = 0; i < leftBorder.Count - 1; i++)
             {
                 var point1 = leftBorder[i];
                 var point2 = leftBorder[i + 1];
 
+                this.LeftContourPoints.Add(point1);
                 this.AddContourPointsBetweenPoints(point1, point2, this.LeftContourPoints);
+                this.LeftContourPoints.Add(point2);
             }
 
             // Generate top contour.
@@ -86,20 +122,22 @@ namespace TreeGenerator
 
             // Generate right contour.
             this.RightContourPoints.Clear();
-            this.RightContourPoints.UnionWith(rightBorder);
+            //this.RightContourPoints.UnionWith(rightBorder);
             for (int i = 0; i < rightBorder.Count - 1; i++)
             {
                 var point1 = rightBorder[i];
                 var point2 = rightBorder[i + 1];
 
+                this.RightContourPoints.Add(point1);
                 this.AddContourPointsBetweenPoints(point1, point2, this.RightContourPoints);
+                this.RightContourPoints.Add(point2);
             }
 
             // Generate bot contour.
             this.BotContourPoints.Clear();
             this.AddContourPointsBetweenPoints(rightBorder.Last(), leftBorder.First(), this.BotContourPoints);
 
-            HashSet<Point2D> contourPoints = new HashSet<Point2D>(LeftContourPoints);
+            HashSet<Point2D> contourPoints = new HashSet<Point2D>(this.LeftContourPoints);
             contourPoints.UnionWith(this.TopContourPoints);
             contourPoints.UnionWith(this.RightContourPoints);
             this.ContourPointsWithoutBot = new HashSet<Point2D>(contourPoints);
@@ -119,38 +157,15 @@ namespace TreeGenerator
             int minY = (int)this.ContourPoints.Min(point => point.Y);
             int maxY = (int)this.ContourPoints.Max(point => point.Y);
 
-            HashSet<Point2D> pointsToCheck = new HashSet<Point2D>();
+            Polygon2D contourPolygon = new Polygon2D(this.ContourPoints);
             for (int x = minX; x <= maxX; x++)
             {
                 for (int y = minY; y <= maxY; y++)
                 {
                     var newPoint = new Point2D(x, y);
-                    pointsToCheck.Add(newPoint);
-                }
-            }
-
-            HashSet<Point2D> checkedPoints = new HashSet<Point2D>();
-            HashSet<Point2D> currentFillPoints = new HashSet<Point2D>();
-            foreach (var pointToCheck in pointsToCheck)
-            {
-                var hitBounds = false;
-                Queue<Point2D> currentPointsToCheck = new Queue<Point2D>();
-                if (!checkedPoints.Contains(pointToCheck) && !this.ContourPoints.Contains(pointToCheck))
-                {
-                    currentPointsToCheck.Enqueue(pointToCheck);
-                    while (currentPointsToCheck.Count > 0)
+                    if (contourPolygon.EnclosesPoint(newPoint) && !this.ContourPoints.Contains(newPoint))
                     {
-                        var currentPoint = currentPointsToCheck.Dequeue();
-                        hitBounds |= this.CheckPointAndAddDecandants(currentPoint, checkedPoints, currentFillPoints, currentPointsToCheck, minX, maxX, minY, maxY);
-                    }
-
-                    if (hitBounds)
-                    {
-                        currentFillPoints = new HashSet<Point2D>();
-                    }
-                    else
-                    {
-                        this.FillPoints.UnionWith(currentFillPoints);
+                        this.FillPoints.Add(newPoint);
                     }
                 }
             }
