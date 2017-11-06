@@ -30,6 +30,7 @@
 
     using Color = System.Windows.Media.Color;
     using PixelFormat = System.Drawing.Imaging.PixelFormat;
+    using MathNet.Numerics.Interpolation;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -520,18 +521,21 @@
                 var currentWidth = trunkEndWidth + (trunkStartWidth - trunkEndWidth) * ((this.TreeTrunkSize - y) / (double)this.TreeTrunkSize);
                 currentPoint += growDirection;
                 tree.Trunk.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
+                tree.Trunk.ParentBranchConnectPoint = tree.Trunk.SkelletonPoints.First().Position;
 
                 // Generate branches.
                 if (y > this.BranchStart)
                 {
+                    int connectIndex = Math.Max(0, y - 20);
+
                     if (leftBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, BranchType.Left, currentWidth);
+                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkelletonPoints[connectIndex].Position, BranchType.Left, currentWidth);
                     }
 
                     if (rightBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, BranchType.Right, currentWidth);
+                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkelletonPoints[connectIndex].Position, BranchType.Right, currentWidth);
                     }
                 }
             }
@@ -579,22 +583,22 @@
             }
         }
 
-        private void GenerateBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, BranchType branchType, double width, int level = 1)
+        private void GenerateBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, BranchType branchType, double width, int level = 1)
         {
             int angle = this.BranchSkew + rand.Next(-this.BranchSkewDeviation, this.BranchSkewDeviation);
 
             if (branchType == BranchType.Left)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, -angle, BranchType.Left, width, level);
+                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, -angle, BranchType.Left, width, level);
             }
 
             if (branchType == BranchType.Right)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, angle, BranchType.Right, width, level);
+                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, angle, BranchType.Right, width, level);
             }
         }
 
-        private void GrowBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, double angle, BranchType branchType, double width, int level)
+        private void GrowBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, double angle, BranchType branchType, double width, int level)
         {
             if (level > this.BranchMaxLevel)
             {
@@ -616,17 +620,14 @@
             this.GenerateBranchPositions(this.BranchStart, branchLength, this.BranchDistance / 2, out leftBranches, out rightBranches);
 
             var branch = new Branch();
-            var branchStartWidth = width;
+            var branchStartWidth = Math.Max(width * 0.8, this.TrunkWidthEnd);
             var branchEndWidth = this.TrunkWidthEnd;
+            growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
             branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)branchStartWidth });
+            branch.ParentBranchConnectPoint = connectPoint;                   
 
             for (int y = 0; y < branchLength; y++)
             {
-                if (y == 0)
-                {
-                    growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
-                }
-
                 if (y > branchRotationAngleStart)
                 {
                     growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
@@ -635,17 +636,18 @@
                 currentPoint += growDirection;
                 var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
                 branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
-
+                
                 if (y > BranchStart)
                 {
+                    int connectIndex = Math.Max(0, y - 20);
                     if (leftBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, BranchType.Left, currentWidth, level + 1);
+                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkelletonPoints[connectIndex].Position, BranchType.Left, currentWidth, level + 1);
                     }
 
                     if (rightBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, BranchType.Right, currentWidth, level + 1);
+                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkelletonPoints[connectIndex].Position, BranchType.Right, currentWidth, level + 1);
                     }
                 }
             }
@@ -743,14 +745,8 @@
 
 
             SKPaint outline = new SKPaint { Color = outlineColor, Style = SKPaintStyle.Stroke };
-            var outlinePath = new SKPath();
-            outlinePath.MoveTo(outlinePoints.First());
-            foreach (var point in outlinePoints)
-            {
-                outlinePath.LineTo(point);
-            }
-
             canvas.DrawPoints(SKPointMode.Points, branch.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
+            //canvas.DrawPoints(SKPointMode.Points, branch.BotContourPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace TreeGenerator
     using System.Linq;
 
     using MathNet.Spatial.Euclidean;
+    using MathNet.Numerics.Interpolation;
 
     public class Branch
     {
@@ -27,6 +28,8 @@ namespace TreeGenerator
         public List<Point2D> AreaPoints { get; set; } = new List<Point2D>();
 
         public List<TreePoint> SkelletonPoints { get; set; } = new List<TreePoint>();
+
+        public Point2D ParentBranchConnectPoint { get; set; }
 
         public IList<Point2D> LeftBorderPoints
         {
@@ -64,7 +67,7 @@ namespace TreeGenerator
         public void GenerateSDF()
         {
             HashSet<Point2D> pointsToVisit;
-            HashSet<Point2D> nextPointsToVisit = new HashSet<Point2D>(this.LeftContourPoints.Concat(this.RightContourPoints));
+            HashSet<Point2D> nextPointsToVisit = new HashSet<Point2D>(this.LeftContourPoints.Concat(this.RightContourPoints).Concat(this.BotContourPoints));
 
             this.SDF = new Dictionary<Point2D, int>();
 
@@ -90,10 +93,9 @@ namespace TreeGenerator
                             this.SDF[neighbour] = distance;
                         }
                     }
-
                 }
 
-                distance++;                
+                distance++;
             }
 
         }
@@ -135,7 +137,23 @@ namespace TreeGenerator
 
             // Generate bot contour.
             this.BotContourPoints.Clear();
-            this.AddContourPointsBetweenPoints(rightBorder.Last(), leftBorder.First(), this.BotContourPoints);
+            var botContourSamplePoints = new List<Point2D>();
+            for (int i = 0; i < 6; i++)
+            {
+                botContourSamplePoints.Add(InterpolateBezier(rightBorder.Last(), this.ParentBranchConnectPoint, leftBorder.First(), i / 5d));
+            }
+
+            for (int i = 0; i < botContourSamplePoints.Count - 1; i++)
+            {
+                var point1 = botContourSamplePoints[i];
+                var point2 = botContourSamplePoints[i + 1];
+
+                this.BotContourPoints.Add(point1);
+                this.AddContourPointsBetweenPoints(point1, point2, this.BotContourPoints);
+                this.BotContourPoints.Add(point2);
+            }
+
+           // this.AddContourPointsBetweenPoints(rightBorder.Last(), leftBorder.First(), this.BotContourPoints);
 
             HashSet<Point2D> contourPoints = new HashSet<Point2D>(this.LeftContourPoints);
             contourPoints.UnionWith(this.TopContourPoints);
@@ -296,6 +314,15 @@ namespace TreeGenerator
 
                 contour.Add(new Point2D(p1X, p1Y));
             }
+        }
+
+        public static Point2D InterpolateBezier(Point2D p0, Point2D p1, Point2D p2, double factor)
+        {
+            var factor2 = Math.Pow(factor, 2);
+            int xInterpolation = (int)Math.Round((p0.X - 2 * p1.X + p2.X) * factor2 + (-2 * p0.X + 2 * p1.X) * factor + p0.X);
+            int yInterpolation = (int)Math.Round((p0.Y - 2 * p1.Y + p2.Y) * factor2 + (-2 * p0.Y + 2 * p1.Y) * factor + p0.Y);
+
+            return new Point2D(xInterpolation, yInterpolation);
         }
     }
 }
