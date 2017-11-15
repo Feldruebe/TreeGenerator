@@ -31,6 +31,7 @@
     using Color = System.Windows.Media.Color;
     using PixelFormat = System.Drawing.Imaging.PixelFormat;
     using MathNet.Numerics.Interpolation;
+    using TreeGenerator.Properties;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -632,7 +633,7 @@
                 {
                     growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
                 }
-
+                
                 currentPoint += growDirection;
                 var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
                 branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });

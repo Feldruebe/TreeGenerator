@@ -107,6 +107,7 @@
       <DependentUpon>TrunkControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\DebugViewModel.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Tree\Branch.cs" />
     <Compile Include="MVVM\BranchType.cs" />
     <Compile Include="MVVM\MainViewModel.cs" />
