@@ -1,11 +1,10 @@
-namespace TreeGenerator
+namespace TreeGeneratorLib.Tree
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using MathNet.Spatial.Euclidean;
-    using MathNet.Numerics.Interpolation;
 
     public class Branch
     {

@@ -1,4 +1,4 @@
-namespace TreeGenerator.ViewModels
+namespace TreeGeneratorWPF.ViewModels
 {
     using GalaSoft.MvvmLight;
 

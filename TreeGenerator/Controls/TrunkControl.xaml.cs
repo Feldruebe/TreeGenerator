@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TreeGenerator.Controls
+namespace TreeGeneratorWPF.Controls
 {
     /// <summary>
     /// Interaction logic for TrunkControl.xaml

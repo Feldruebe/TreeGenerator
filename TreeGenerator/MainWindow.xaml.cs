@@ -1,8 +1,8 @@
-﻿namespace TreeGenerator
+﻿namespace TreeGeneratorWPF
 {
     using System.Windows;
 
-    using TreeGenerator.ViewModels;
+    using TreeGeneratorWPF.ViewModels;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml.

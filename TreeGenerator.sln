@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeGenerator", "TreeGenerator\TreeGenerator.csproj", "{9831E70C-C869-4C0D-BC09-7A5F217E4119}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeGeneratorWPF", "TreeGenerator\TreeGeneratorWPF.csproj", "{9831E70C-C869-4C0D-BC09-7A5F217E4119}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeGeneratorLib", "TreeGeneratorLib\TreeGeneratorLib.csproj", "{D7974D75-6DD1-4D52-A550-A906CD6AB7D1}"
 EndProject

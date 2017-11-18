@@ -1,4 +1,4 @@
-﻿namespace TreeGenerator.ViewModels
+﻿namespace TreeGeneratorWPF.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,7 @@
     using Color = System.Windows.Media.Color;
     using PixelFormat = System.Drawing.Imaging.PixelFormat;
     using MathNet.Numerics.Interpolation;
-    using TreeGenerator.Properties;
+    using TreeGeneratorWPF.Properties;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -50,13 +50,12 @@
         private Random rand;
         private Random randomRand = new Random();
 
-        private int treeTrunkSize;
         private BitmapSource imageSkeletton;
         private BitmapSource imageTree;
 
+        private int treeTrunkSize;
         private int trunkRotationAngle;
         private float trunkRotationAngleStart;
-
         private int trunkSkewAngle;
         private int trunkSkewAngleStart;
         private int branchCount;
@@ -75,18 +74,16 @@
         private SKColor outlineColor;
         private SKColor branchOutlineColor;
         private bool isColorFlyoutOpen = false;
-
+        private double branchLevelLengthFactor;
+        private int branchMaxLevel;
         private int randomSeed;
 
         private bool regenerateRandomSeed;
-
         private bool debugModeEnabled;
 
         private TreeModel tree;
-
         private ProgressDialogController controller;
-        private double branchLevelLengthFactor;
-        private int branchMaxLevel;
+
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -472,15 +469,15 @@
             }
         }
 
-        private void CreatePng(string filename, BitmapSource image5)
+        private void CreatePng(string filename, BitmapSource image)
         {
             if (filename != string.Empty)
             {
-                using (FileStream stream5 = new FileStream(filename, FileMode.Create))
+                using (FileStream stream = new FileStream(filename, FileMode.Create))
                 {
                     PngBitmapEncoder encoder5 = new PngBitmapEncoder();
-                    encoder5.Frames.Add(BitmapFrame.Create(image5));
-                    encoder5.Save(stream5);
+                    encoder5.Frames.Add(BitmapFrame.Create(image));
+                    encoder5.Save(stream);
                 }
             }
         }

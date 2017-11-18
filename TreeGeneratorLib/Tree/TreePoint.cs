@@ -1,8 +1,6 @@
-namespace TreeGenerator
+namespace TreeGeneratorLib.Tree
 {
     using System;
-    using System.Windows;
-    using System.Windows.Media;
 
     using MathNet.Spatial.Euclidean;
     using MathNet.Spatial.Units;

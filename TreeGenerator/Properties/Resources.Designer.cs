@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TreeGenerator.Properties {
+namespace TreeGeneratorWPF.Properties {
     using System;
     
     
