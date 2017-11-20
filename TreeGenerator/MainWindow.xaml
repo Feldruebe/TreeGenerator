@@ -31,8 +31,8 @@
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
-                <CheckBox Content="Debug" IsChecked="{Binding DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
-                <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
+        <CheckBox Content="Debug" IsChecked="{Binding DebugViewModel.DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
+        <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugViewModel.DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
                     <Rectangle Width="15" Height="15" Fill="White">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_bug}" Stretch="Fill" />

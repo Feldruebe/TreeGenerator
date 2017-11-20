@@ -10,6 +10,8 @@ namespace TreeGeneratorWPF.ViewModels
 
         private MainViewModel mainViewModel;
 
+        private bool debugModeEnabled;
+
         public DebugViewModel(MainViewModel mainViewModel)
         {
             this.mainViewModel = mainViewModel;
@@ -26,7 +28,7 @@ namespace TreeGeneratorWPF.ViewModels
             set
             {
                 this.Set(ref this.drawTrunk, value);
-                this.mainViewModel.ReDrawTree();
+                this.mainViewModel.RedrawTree();
             }
         }
 
@@ -40,7 +42,21 @@ namespace TreeGeneratorWPF.ViewModels
             set
             {
                 this.Set(ref this.branchToDraw, value);
-                this.mainViewModel.ReDrawTree();
+                this.mainViewModel.RedrawTree();
+            }
+        }
+
+        public bool DebugModeEnabled
+        {
+            get
+            {
+                return this.debugModeEnabled;
+            }
+
+            set
+            {
+                this.Set(ref this.debugModeEnabled, value);
+                this.mainViewModel.RedrawTree();
             }
         }
     }

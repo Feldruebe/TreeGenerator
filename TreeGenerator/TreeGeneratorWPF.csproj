@@ -108,9 +108,9 @@
     </Compile>
     <Compile Include="MVVM\DebugViewModel.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="MVVM\BranchType.cs" />
     <Compile Include="MVVM\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModelLocator.cs" />
+    <Compile Include="Wrapper\WPFColorWrapper.cs" />
     <Compile Include="Wrapper\WPFImageSourceWrapper.cs" />
     <Page Include="Controls\BranchControl.xaml">
       <SubType>Designer</SubType>

@@ -31,7 +31,12 @@
     using Color = System.Windows.Media.Color;
     using PixelFormat = System.Drawing.Imaging.PixelFormat;
     using MathNet.Numerics.Interpolation;
+
+    using TreeGeneratorLib.Generator;
+    using TreeGeneratorLib.Tree;
+
     using TreeGeneratorWPF.Properties;
+    using TreeGeneratorWPF.Wrapper;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -81,20 +86,18 @@
         private bool regenerateRandomSeed;
         private bool debugModeEnabled;
 
-        private TreeModel tree;
-        private ProgressDialogController controller;
-
+        private TreeModel<WpfTreeVisualWrapper> tree;
+        private WPFProgressController controller = new WPFProgressController();
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
-#if DEBUG
-            this.DebugModeEnabled = true;
-#endif
-
             this.DebugViewModel = new DebugViewModel(this);
+#if DEBUG
+            this.DebugViewModel.DebugModeEnabled = true;
+#endif
 
             this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
             this.ExportImageCommand = new RelayCommand(this.ExportImage);
@@ -115,9 +118,7 @@
             this.BranchRotationAngleStart = 0;
             this.BranchRotationAngle = 30;
             this.TrunkColor = Colors.SaddleBrown;
-            this.BranchColor = Colors.SaddleBrown;
             this.OutlineColor = Colors.Black;
-            this.BranchOutlineColor = Colors.Black;
             this.BranchMaxLevel = 3;
             this.BranchLevelLengthFactor = 1;
         }
@@ -315,21 +316,7 @@
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.trunkColor, c);
-                this.ReDrawTree();
-            }
-        }
-
-        public Color BranchColor
-        {
-            get
-            {
-                return Color.FromArgb(this.branchColor.Alpha, this.branchColor.Red, this.branchColor.Green, this.branchColor.Blue);
-            }
-
-            set
-            {
-                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
-                this.Set(ref this.branchColor, c);
+                this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
             }
         }
 
@@ -344,55 +331,13 @@
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.outlineColor, c);
-                this.ReDrawTree();
-            }
-        }
-
-        public bool IsColorFlyoutOpen
-        {
-            get
-            {
-                return this.isColorFlyoutOpen;
-            }
-
-            set
-            {
-                this.Set(ref this.isColorFlyoutOpen, value);
-            }
-        }
-
-        public Color BranchOutlineColor
-        {
-            get
-            {
-                return Color.FromArgb(this.branchOutlineColor.Alpha, this.branchOutlineColor.Red, this.branchOutlineColor.Green, this.branchOutlineColor.Blue);
-            }
-
-            set
-            {
-                SKColor c = new SKColor(value.R, value.G, value.B, value.A);
-                this.Set(ref this.branchOutlineColor, c);
-                this.RaisePropertyChanged();
+                this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
             }
         }
 
         public RelayCommand GenerateTreeCommand { get; set; }
 
         public RelayCommand ExportImageCommand { get; set; }
-
-        public bool DebugModeEnabled
-        {
-            get
-            {
-                return this.debugModeEnabled;
-            }
-
-            set
-            {
-                this.Set(ref this.debugModeEnabled, value);
-                this.ReDrawTree();
-            }
-        }
 
         public bool IsDebugMode
         {
@@ -408,7 +353,7 @@
 
         public DebugViewModel DebugViewModel { get; }
 
-        public TreeModel Tree
+        public TreeModel<WpfTreeVisualWrapper> Tree
         {
             get
             {
@@ -422,21 +367,30 @@
             }
         }
 
+        public TreeParameters Parameters { get; set; }
+
         public int BranchMaxLevel
         {
             get { return this.branchMaxLevel; }
             set { this.Set(ref this.branchMaxLevel, value); }
         }
 
+        public void RedrawTree()
+        {
+            this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
+        }
+
         private async void GenerateTreeAndDraw()
         {
             //try
             //{
-            this.controller = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
+            this.controller.ProgressDialogController = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
             this.ManageRandom();
-            this.Tree = await this.GenerateTreeAsync();
-            this.DrawTree(this.Tree);
-            await this.controller.CloseAsync();
+            this.Parameters = this.CreateTreeParameters();
+            this.Tree = await this.GenerateAndDrawTreeAsync();
+            this.Tree.TreeVisual.DrawTree(this.Tree, this.Parameters);
+            //this.DrawTree(this.Tree);
+            await this.controller.ProgressDialogController.CloseAsync();
             //}
             //catch (Exception exception)
             //{
@@ -444,9 +398,44 @@
             //}
         }
 
-        private Task<TreeModel> GenerateTreeAsync()
+        private TreeParameters CreateTreeParameters()
         {
-            return Task.Run(() => this.GenerateTree());
+            return new TreeParameters
+            {
+                TreeTrunkSize = this.TreeTrunkSize,
+                TrunkRotationAngle = this.TrunkRotationAngle,
+                TrunkRotationAngleStart = this.TrunkRotationAngle,
+                TrunkSkewAngle = this.TrunkSkewAngle,
+                TrunkSkewAngleStart = this.TrunkSkewAngleStart,
+                BranchCount = this.BranchCount,
+                BranchStart = this.BranchStart,
+                BranchLengthMin = this.BranchLengthMin,
+                BranchLengthMax = this.BranchLengthMax,
+                BranchDistance = this.BranchDistance,
+                BranchSkew = this.BranchSkew,
+                BranchSkewDeviation = this.BranchSkewDeviation,
+                BranchRotationAngleStart = this.BranchRotationAngleStart,
+                BranchRotationAngle = this.BranchRotationAngle,
+                TrunkWidthStart = this.TrunkWidthStart,
+                TrunkWidthEnd = this.TrunkWidthEnd,
+                TrunkColor = new WPFColorWrapper(this.TrunkColor),
+                OutlineColor = new WPFColorWrapper(this.OutlineColor),
+                BranchLevelLengthFactor = this.BranchLevelLengthFactor,
+                BranchMaxLevel = this.BranchMaxLevel,
+                RandomSeed = this.RandomSeed,
+            };
+        }
+
+        private Task<TreeModel<WpfTreeVisualWrapper>> GenerateAndDrawTreeAsync()
+        {
+            return Task.Run(
+                () =>
+                    {
+                        TreeGenerator<WpfTreeVisualWrapper> generator = new TreeGenerator<WpfTreeVisualWrapper>();
+                        generator.Initialize(this.Parameters, this.controller, this.RandomSeed);
+                        var tree = generator.GenerateTree();
+                        return tree;
+                    });
         }
 
         private void ManageRandom()
@@ -481,270 +470,15 @@
                 }
             }
         }
+    }
 
-        private TreeModel GenerateTree()
+    public class WPFProgressController : IProgress<string>
+    {
+        public ProgressDialogController ProgressDialogController { get; set; }
+
+        public void Report(string value)
         {
-            var tree = new TreeModel();
-
-            Vector2D growDirection = new Vector2D(0d, 1d);
-
-            float rotationStep = (float)this.TrunkRotationAngle / (float)(this.TreeTrunkSize - this.TrunkRotationAngleStart);
-
-            Point2D currentPoint = new Point2D(0d, 0d);
-            var trunkStartWidth = this.TrunkWidthStart;
-            var trunkEndWidth = this.TrunkWidthEnd;
-            tree.Trunk.SkelletonPoints.Add(new TreePoint(currentPoint, growDirection) { Width = trunkStartWidth });
-
-            int treeCrownSize = this.TreeTrunkSize - this.BranchStart;
-
-            HashSet<int> leftBranches;
-            HashSet<int> rightBranches;
-            this.GenerateBranchPositions(this.BranchStart, treeCrownSize, this.BranchDistance, out leftBranches, out rightBranches);
-
-            // Generate skelleton.
-            this.controller.SetMessage($"Generating trunk pixel.");
-            for (int y = 0; y < this.TreeTrunkSize - 1; y++)
-            {
-                if (y == this.TrunkSkewAngleStart)
-                {
-                    growDirection = growDirection.Rotate(new Angle(this.TrunkSkewAngle, new Degrees()));
-                }
-
-                if (y > this.TrunkRotationAngleStart)
-                {
-                    growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
-                }
-
-                // Generate trunk.
-                var currentWidth = trunkEndWidth + (trunkStartWidth - trunkEndWidth) * ((this.TreeTrunkSize - y) / (double)this.TreeTrunkSize);
-                currentPoint += growDirection;
-                tree.Trunk.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
-                tree.Trunk.ParentBranchConnectPoint = tree.Trunk.SkelletonPoints.First().Position;
-
-                // Generate branches.
-                if (y > this.BranchStart)
-                {
-                    int connectIndex = Math.Max(0, y - 20);
-
-                    if (leftBranches.Contains(y))
-                    {
-                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkelletonPoints[connectIndex].Position, BranchType.Left, currentWidth);
-                    }
-
-                    if (rightBranches.Contains(y))
-                    {
-                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkelletonPoints[connectIndex].Position, BranchType.Right, currentWidth);
-                    }
-                }
-            }
-
-            this.controller.SetMessage($"Generating contour and fill.");
-            tree.GenerateContourAndFillPoints();
-
-            this.controller.SetMessage($"Generating shading.");
-            tree.GenerateSDF();
-
-            return tree;
-        }
-
-        private void GenerateBranchPositions(int branchStart, int treeCrownSize, int branchDistance, out HashSet<int> leftBranches, out HashSet<int> rightBranches)
-        {
-            HashSet<int> leftCrown = new HashSet<int>(Enumerable.Range(branchStart, treeCrownSize));
-            HashSet<int> rightCrown = new HashSet<int>(Enumerable.Range(branchStart, treeCrownSize));
-            leftBranches = new HashSet<int>();
-            rightBranches = new HashSet<int>();
-
-            // Generate branch starts
-            for (int i = 0; i < this.BranchCount; i++)
-            {
-                if (!leftCrown.Any() && !rightCrown.Any())
-                {
-                    break;
-                }
-
-                int sign = this.rand.Next(-1, 1);
-                var selectedCrown = sign < 0 ? leftCrown.Count > 0 ? leftCrown : rightCrown : rightCrown.Count > 0 ? rightCrown : leftCrown;
-
-                var selectedBranches = sign < 0 ? leftCrown.Count > 0 ? leftBranches : rightBranches : rightCrown.Count > 0 ? rightBranches : leftBranches;
-
-                var selectedCrownList = selectedCrown.ToList();
-                int newBranch = selectedCrownList[this.rand.Next(0, selectedCrownList.Count)];
-
-                if (selectedCrown.Contains(newBranch))
-                {
-                    selectedBranches.Add(newBranch);
-                    for (int j = newBranch - branchDistance; j < newBranch + branchDistance; j++)
-                    {
-                        selectedCrown.Remove(j);
-                    }
-                }
-            }
-        }
-
-        private void GenerateBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, BranchType branchType, double width, int level = 1)
-        {
-            int angle = this.BranchSkew + rand.Next(-this.BranchSkewDeviation, this.BranchSkewDeviation);
-
-            if (branchType == BranchType.Left)
-            {
-                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, -angle, BranchType.Left, width, level);
-            }
-
-            if (branchType == BranchType.Right)
-            {
-                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, angle, BranchType.Right, width, level);
-            }
-        }
-
-        private void GrowBranch(TreeModel tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, double angle, BranchType branchType, double width, int level)
-        {
-            if (level > this.BranchMaxLevel)
-            {
-                return;
-            }
-
-            var t = ((level - 1) / (double)(this.BranchMaxLevel - 1));
-            var lengthFactor = (1 + (this.BranchLevelLengthFactor - 1) * t);
-            int branchLength = rand.Next(this.BranchLengthMin, this.BranchLengthMax + 1);
-            branchLength = (int)(branchLength * lengthFactor);
-            branchLength = Math.Max(branchLength, 1);
-            int branchRotationAngleStart = this.BranchRotationAngleStart;
-
-            float rotationStep = (float)this.BranchRotationAngle / (float)(branchLength - branchRotationAngleStart);
-            rotationStep = branchType == BranchType.Right ? -rotationStep : rotationStep;
-
-            HashSet<int> leftBranches;
-            HashSet<int> rightBranches;
-            this.GenerateBranchPositions(this.BranchStart, branchLength, this.BranchDistance / 2, out leftBranches, out rightBranches);
-
-            var branch = new Branch();
-            var branchStartWidth = Math.Max(width * 0.8, this.TrunkWidthEnd);
-            var branchEndWidth = this.TrunkWidthEnd;
-            growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
-            branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)branchStartWidth });
-            branch.ParentBranchConnectPoint = connectPoint;                   
-
-            for (int y = 0; y < branchLength; y++)
-            {
-                if (y > branchRotationAngleStart)
-                {
-                    growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
-                }
-                
-                currentPoint += growDirection;
-                var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
-                branch.SkelletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
-                
-                if (y > BranchStart)
-                {
-                    int connectIndex = Math.Max(0, y - 20);
-                    if (leftBranches.Contains(y))
-                    {
-                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkelletonPoints[connectIndex].Position, BranchType.Left, currentWidth, level + 1);
-                    }
-
-                    if (rightBranches.Contains(y))
-                    {
-                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkelletonPoints[connectIndex].Position, BranchType.Right, currentWidth, level + 1);
-                    }
-                }
-            }
-
-            tree.Branches.Add(branch);
-        }
-
-        public void ReDrawTree()
-        {
-            if (this.Tree != null)
-            {
-                this.DrawTree(this.Tree);
-            }
-        }
-
-        public void DrawTree(TreeModel tree)
-        {
-            var xOffset = -tree.ContourPoints.Min(point => (int)point.X);
-            var yOffset = -tree.ContourPoints.Min(point => (int)point.Y);
-            var imageWidth = tree.ContourPoints.Max(point => (int)point.X) - tree.ContourPoints.Min(point => (int)point.X) + 1;
-            var imageHeight = tree.ContourPoints.Max(point => (int)point.Y) - tree.ContourPoints.Min(point => (int)point.Y) + 1;
-
-            var width = imageWidth;
-            var height = imageHeight;
-
-            using (var treeBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
-            using (var skelettonBitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
-            {
-                var dataTree = treeBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, treeBitmap.PixelFormat);
-                var dataSkeletton = skelettonBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, skelettonBitmap.PixelFormat);
-                using (var surfaceTree = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataTree.Scan0, width * 4))
-                using (var surfaceSkeletton = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataSkeletton.Scan0, width * 4))
-                {
-                    // Move origin to left bottom.
-                    surfaceTree.Canvas.Translate(0, height);
-                    surfaceTree.Canvas.Scale(1, -1);
-                    surfaceSkeletton.Canvas.Translate(0, height);
-                    surfaceSkeletton.Canvas.Scale(1, -1);
-
-                    SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
-                    SKPaint paintBrown = new SKPaint() { Color = SKColors.SaddleBrown, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
-                    var skelettonPath = new SKPath();
-                    var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
-                    foreach (var branch in treeBranches)
-                    {
-                        foreach (var point in branch.SkelletonPoints)
-                        {
-                            surfaceSkeletton.Canvas.DrawPoint((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset, paint);
-                        }
-                    }
-
-                    if (!this.DebugModeEnabled || this.DebugViewModel.DrawTrunk)
-                    {
-                        this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, this.trunkColor, this.outlineColor);
-                    }
-
-                    var reversedBranches = tree.Branches.ToList();
-                    reversedBranches.Reverse();
-                    for (int i = 0; i < reversedBranches.Count; i++)
-                    {
-                        if (this.DebugModeEnabled && i != this.DebugViewModel.BranchToDraw)
-                        {
-                            continue;
-                        }
-
-                        this.DrawBranch(surfaceTree.Canvas, reversedBranches[i], xOffset, yOffset, this.trunkColor, this.outlineColor);
-                    }
-                }
-
-                treeBitmap.UnlockBits(dataTree);
-                this.ImageTree = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(treeBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
-                skelettonBitmap.UnlockBits(dataTree);
-                this.ImageSkeletton = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(skelettonBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(width, height));
-            }
-        }
-
-        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, SKColor color, SKColor outlineColor)
-        {
-            var outlinePoints = branch.PolygonPoints.Select(point => new SKPoint((int)point.X + xOffset, (int)point.Y + yOffset)).ToList();
-            var polygonPoints = outlinePoints.ToList();
-            polygonPoints.Add(polygonPoints[0]);
-
-            var maxDistance = branch.SDF.Values.Max();
-            float vReduce = 0.8f;
-            for (int i = 1; i <= maxDistance; i++)
-            {
-                color.ToHsv(out float h, out float s, out float v);
-                var reduceFactor = 1 - (vReduce * ((maxDistance - i) / (float)maxDistance));
-
-                SKColor colorForDistance = SKColor.FromHsv(h, s, v * reduceFactor);
-                SKPaint fillForDistance = new SKPaint { Color = colorForDistance, Style = SKPaintStyle.Fill };
-                var pointsWithDistance = branch.SDF.Where(sdfPoint => sdfPoint.Value == i).Select(sdfPoint => new SKPoint((float)sdfPoint.Key.X + xOffset, (float)sdfPoint.Key.Y + yOffset)).ToArray();
-                canvas.DrawPoints(SKPointMode.Points, pointsWithDistance, fillForDistance);
-            }
-
-
-            SKPaint outline = new SKPaint { Color = outlineColor, Style = SKPaintStyle.Stroke };
-            canvas.DrawPoints(SKPointMode.Points, branch.ContourPointsWithoutBot.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
-            //canvas.DrawPoints(SKPointMode.Points, branch.BotContourPoints.Select(point => new SKPoint((float)point.X + xOffset, (float)point.Y + yOffset)).ToArray(), outline);
+            this.ProgressDialogController?.SetMessage(value);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace TreeGeneratorLib.Tree
 
         public List<Point2D> AreaPoints { get; set; } = new List<Point2D>();
 
-        public List<TreePoint> SkelletonPoints { get; set; } = new List<TreePoint>();
+        public List<TreePoint> SkeletonPoints { get; set; } = new List<TreePoint>();
 
         public Point2D ParentBranchConnectPoint { get; set; }
 
@@ -34,7 +34,7 @@ namespace TreeGeneratorLib.Tree
         {
             get
             {
-                return this.SkelletonPoints.Select(point => point.GetLeftPosition()).ToList();
+                return this.SkeletonPoints.Select(point => point.GetLeftPosition()).ToList();
             }
         }
 
@@ -42,7 +42,7 @@ namespace TreeGeneratorLib.Tree
         {
             get
             {
-                return this.SkelletonPoints.Select(point => point.GetRightPosition()).ToList();
+                return this.SkeletonPoints.Select(point => point.GetRightPosition()).ToList();
             }
         }
 

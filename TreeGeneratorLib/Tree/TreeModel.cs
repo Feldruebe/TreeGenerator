@@ -1,12 +1,23 @@
 namespace TreeGeneratorLib.Tree
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using MathNet.Spatial.Euclidean;
 
-    public class TreeModel
+    using TreeGeneratorLib.Wrappers;
+
+    public class TreeModel<T> where T : TreeVisual
     {
+        public TreeModel()
+        {
+            var type = typeof(T);
+            this.TreeVisual = (T)Activator.CreateInstance(type);
+        }
+
+        public T TreeVisual { get; private set; }
+
         public Branch Trunk { get; } = new Branch();
 
         public List<Branch> Branches { get; } = new List<Branch>();
@@ -23,7 +34,7 @@ namespace TreeGeneratorLib.Tree
         {
             get
             {
-                return this.Branches.SelectMany(branch => branch.SkelletonPoints).Concat(this.Trunk.SkelletonPoints).ToList();
+                return this.Branches.SelectMany(branch => branch.SkeletonPoints).Concat(this.Trunk.SkeletonPoints).ToList();
             }
         }
 

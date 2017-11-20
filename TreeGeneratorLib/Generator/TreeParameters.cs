@@ -3,6 +3,8 @@ using TreeGeneratorLib.Wrappers;
 
 namespace TreeGeneratorLib.Generator
 {
+    using System;
+
     public class TreeParameters
     {
         public int TreeTrunkSize { get; set; }
@@ -39,19 +41,12 @@ namespace TreeGeneratorLib.Generator
 
         public IColor TrunkColor { get; set; }
 
-        public IColor BranchColor { get; set; }
-
         public IColor OutlineColor { get; set; }
-
-        public IColor BranchOutlineColor { get; set; }
 
         public double BranchLevelLengthFactor { get; set; }
 
         public int BranchMaxLevel { get; set; }
 
         public int RandomSeed { get; set; }
-
-        private IImageSource imageSkeletton;
-        private IImageSource imageTree;
     }
 }
