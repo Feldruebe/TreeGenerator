@@ -102,8 +102,9 @@ namespace TreeGeneratorWPF.Wrapper
             float vReduce = 0.8f;
             for (int i = 1; i <= maxDistance; i++)
             {
+                SKColor trunkColor = new SKColor(color.R, color.G, color.B, color.A);
                 float h, s, v;
-                color.ToHsv(out h, out s, out v);
+                trunkColor.ToHsv(out h, out s, out v);
                 var reduceFactor = 1 - (vReduce * ((maxDistance - i) / (float)maxDistance));
 
                 SKColor colorForDistance = SKColor.FromHsv(h, s, v * reduceFactor);

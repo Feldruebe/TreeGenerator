@@ -357,12 +357,12 @@
         {
             get
             {
-                return this.tree;
+                return this.tree; 
             }
 
             private set
             {
-                this.tree = value;
+                this.Set(ref this.tree, value);
                 this.RaisePropertyChanged(nameof(this.AllBranchesCount));
             }
         }
@@ -387,8 +387,10 @@
             this.controller.ProgressDialogController = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
             this.ManageRandom();
             this.Parameters = this.CreateTreeParameters();
-            this.Tree = await this.GenerateAndDrawTreeAsync();
-            this.Tree.TreeVisual.DrawTree(this.Tree, this.Parameters);
+            var tree = await this.GenerateAndDrawTreeAsync();
+            tree.TreeVisual.DrawTree(tree, this.Parameters);
+            this.Tree = tree;
+
             //this.DrawTree(this.Tree);
             await this.controller.ProgressDialogController.CloseAsync();
             //}

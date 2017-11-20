@@ -90,10 +90,10 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Border BorderThickness="1" Grid.Column="0" BorderBrush="Red">
-                    <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageSkeletton}"/>
+                    <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
                 </Border>
                 <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
-                    <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ImageTree}"/>
+                    <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeIamge}"/>
                 </Border>
             </Grid>
         </GroupBox>

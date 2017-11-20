@@ -15,7 +15,5 @@ namespace TreeGeneratorLib.Wrappers
         byte G { get; set; }
 
         byte B { get; set; }
-
-        void ToHsv(out float h, out float s, out float v);
     }
 }

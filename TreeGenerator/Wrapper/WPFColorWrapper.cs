@@ -1,13 +1,12 @@
 ﻿namespace TreeGeneratorWPF.Wrapper
 {
-    using System.Drawing;
-
+    using System.Windows.Media;
     using TreeGeneratorLib.Wrappers;
     public class WPFColorWrapper : IColor
     {
-        public WPFColorWrapper(System.Windows.Media.Color color)
+        public WPFColorWrapper(Color color)
         {
-            this.color = Color.FromArgb(color.A, color.R, color.G, color.B);
+            this.color = color;
         }
 
         private Color color;
@@ -21,7 +20,7 @@
 
             set
             {
-                this.color = Color.FromArgb(value, this.color);
+                this.color = Color.FromArgb(value, value, this.color.G, this.color.B);
             }
         }
 
@@ -62,13 +61,6 @@
             {
                 this.color = Color.FromArgb(this.color.A, this.color.R, this.color.G, value);
             }
-        }
-
-        public void ToHsv(out float h, out float s, out float v)
-        {
-            h = this.color.GetHue();
-            s = this.color.GetSaturation();
-            v = this.color.GetBrightness();
         }
     }
 }
