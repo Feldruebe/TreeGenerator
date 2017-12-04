@@ -47,6 +47,8 @@ namespace TreeGeneratorLib.Generator
 
         public int BranchMaxLevel { get; set; }
 
+        public int BranchMinLevel { get; set; }
+
         public int RandomSeed { get; set; }
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="Tree\BranchType.cs" />
     <Compile Include="Tree\TreeModel.cs" />
     <Compile Include="Tree\TreePoint.cs" />
+    <Compile Include="Wrappers\ICancelableProgress.cs" />
     <Compile Include="Wrappers\IColor.cs" />
     <Compile Include="Wrappers\IPoint.cs" />
     <Compile Include="Wrappers\TreeVisual.cs" />

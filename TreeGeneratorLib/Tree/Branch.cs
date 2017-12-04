@@ -66,7 +66,7 @@ namespace TreeGeneratorLib.Tree
         public void GenerateSDF()
         {
             HashSet<Point2D> pointsToVisit;
-            HashSet<Point2D> nextPointsToVisit = new HashSet<Point2D>(this.LeftContourPoints.Concat(this.RightContourPoints).Concat(this.BotContourPoints));
+            HashSet<Point2D> nextPointsToVisit = new HashSet<Point2D>(this.LeftContourPoints.Concat(this.RightContourPoints));//.Concat(this.BotContourPoints));
 
             this.SDF = new Dictionary<Point2D, int>();
 

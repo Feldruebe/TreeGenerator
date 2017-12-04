@@ -13,12 +13,12 @@
       <StackPanel>
         <Grid>
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
+            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
+            <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
+            <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -40,12 +40,12 @@
 
         <Grid>
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="First"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="Second"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="Third"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="Forth"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="Fiveth"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="Sixth"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
+            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
+            <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
+            <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

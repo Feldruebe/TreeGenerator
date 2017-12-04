@@ -10,11 +10,14 @@ namespace TreeGeneratorLib.Tree
 
     public class TreeModel<T> where T : TreeVisual
     {
-        public TreeModel()
+        public TreeModel(ICancelableProgress progress)
         {
             var type = typeof(T);
             this.TreeVisual = (T)Activator.CreateInstance(type);
+            this.Progress = progress;
         }
+
+        public ICancelableProgress Progress { get; }
 
         public T TreeVisual { get; private set; }
 

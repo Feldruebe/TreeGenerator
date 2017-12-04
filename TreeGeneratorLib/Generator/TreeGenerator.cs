@@ -16,9 +16,9 @@ namespace TreeGeneratorLib.Generator
     {
         private Random rand;
 
-        private IProgress<string> progress;
+        private ICancelableProgress progress;
 
-        public void Initialize(TreeParameters parameters, IProgress<string> progress, int? randomSeed = null)
+        public void Initialize(TreeParameters parameters, ICancelableProgress progress, int? randomSeed = null)
         {
             this.TreeParameters = parameters;
             this.rand = randomSeed.HasValue ? new Random(randomSeed.Value) : new Random();
@@ -34,7 +34,7 @@ namespace TreeGeneratorLib.Generator
 
         private TreeModel<T> GenerateTreeInternal()
         {
-            var tree = new TreeModel<T>();
+            var tree = new TreeModel<T>(this.progress);
 
             Vector2D growDirection = new Vector2D(0d, 1d);
 
@@ -55,6 +55,11 @@ namespace TreeGeneratorLib.Generator
             this.progress.Report($"Generating trunk pixel.");
             for (int y = 0; y < this.TreeParameters.TreeTrunkSize - 1; y++)
             {
+                if (tree.Progress.CancelRequested())
+                {
+                    return null;
+                }
+
                 if (y == this.TreeParameters.TrunkSkewAngleStart)
                 {
                     growDirection = growDirection.Rotate(new Angle(this.TreeParameters.TrunkSkewAngle, new Degrees()));
@@ -90,6 +95,11 @@ namespace TreeGeneratorLib.Generator
 
             this.progress.Report($"Generating contour and fill.");
             tree.GenerateContourAndFillPoints();
+
+            if (tree.Progress.CancelRequested())
+            {
+                return null;
+            }
 
             this.progress.Report($"Generating shading.");
             tree.GenerateSDF();
@@ -148,7 +158,14 @@ namespace TreeGeneratorLib.Generator
 
         private void GrowBranch(TreeModel<T> tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, double angle, BranchType branchType, double width, int level)
         {
+            var branchChance = this.rand.Next(10);
+
             if (level > this.TreeParameters.BranchMaxLevel)
+            {
+                return;
+            }
+
+            if (level >= this.TreeParameters.BranchMinLevel && branchChance < 4)
             {
                 return;
             }

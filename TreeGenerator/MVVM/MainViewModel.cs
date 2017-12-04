@@ -34,6 +34,7 @@
 
     using TreeGeneratorLib.Generator;
     using TreeGeneratorLib.Tree;
+    using TreeGeneratorLib.Wrappers;
 
     using TreeGeneratorWPF.Properties;
     using TreeGeneratorWPF.Wrapper;
@@ -80,6 +81,7 @@
         private SKColor branchOutlineColor;
         private bool isColorFlyoutOpen = false;
         private double branchLevelLengthFactor;
+        private int branchMinLevel;
         private int branchMaxLevel;
         private int randomSeed;
 
@@ -120,6 +122,7 @@
             this.TrunkColor = Colors.SaddleBrown;
             this.OutlineColor = Colors.Black;
             this.BranchMaxLevel = 3;
+            this.BranchMinLevel = 1;
             this.BranchLevelLengthFactor = 1;
         }
 
@@ -160,18 +163,6 @@
                     this.BranchStart = value;
                 }
             }
-        }
-
-        public BitmapSource ImageSkeletton
-        {
-            get { return this.imageSkeletton; }
-            set { this.Set(ref this.imageSkeletton, value); }
-        }
-
-        public BitmapSource ImageTree
-        {
-            get { return this.imageTree; }
-            set { this.Set(ref this.imageTree, value); }
         }
 
         public int TrunkRotationAngle
@@ -357,7 +348,7 @@
         {
             get
             {
-                return this.tree; 
+                return this.tree;
             }
 
             private set
@@ -375,6 +366,12 @@
             set { this.Set(ref this.branchMaxLevel, value); }
         }
 
+        public int BranchMinLevel
+        {
+            get { return this.branchMinLevel; }
+            set { this.Set(ref this.branchMinLevel, value); }
+        }
+
         public void RedrawTree()
         {
             this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
@@ -387,8 +384,8 @@
             this.controller.ProgressDialogController = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
             this.ManageRandom();
             this.Parameters = this.CreateTreeParameters();
-            var tree = await this.GenerateAndDrawTreeAsync();
-            tree.TreeVisual.DrawTree(tree, this.Parameters);
+            var tree = await this.GenerateTreeAsync();
+            tree?.TreeVisual.DrawTree(tree, this.Parameters);
             this.Tree = tree;
 
             //this.DrawTree(this.Tree);
@@ -424,11 +421,12 @@
                 OutlineColor = new WPFColorWrapper(this.OutlineColor),
                 BranchLevelLengthFactor = this.BranchLevelLengthFactor,
                 BranchMaxLevel = this.BranchMaxLevel,
+                BranchMinLevel = this.BranchMinLevel,
                 RandomSeed = this.RandomSeed,
             };
         }
 
-        private Task<TreeModel<WpfTreeVisualWrapper>> GenerateAndDrawTreeAsync()
+        private Task<TreeModel<WpfTreeVisualWrapper>> GenerateTreeAsync()
         {
             return Task.Run(
                 () =>
@@ -456,7 +454,7 @@
             SaveFileDialog dialog = new SaveFileDialog();
             if (dialog.ShowDialog() == true)
             {
-                this.CreatePng(dialog.FileName, this.ImageTree);
+                this.CreatePng(dialog.FileName, this.Tree.TreeVisual.TreeIamge);
             }
         }
 
@@ -474,13 +472,18 @@
         }
     }
 
-    public class WPFProgressController : IProgress<string>
+    public class WPFProgressController : ICancelableProgress
     {
         public ProgressDialogController ProgressDialogController { get; set; }
 
         public void Report(string value)
         {
             this.ProgressDialogController?.SetMessage(value);
+        }
+
+        public bool CancelRequested()
+        {
+            return ProgressDialogController.IsCanceled;
         }
     }
 }
