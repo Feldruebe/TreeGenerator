@@ -30,6 +30,8 @@ namespace TreeGeneratorLib.Tree
 
         public Point2D ParentBranchConnectPoint { get; set; }
 
+        public Branch Parent { get; }
+
         public IList<Point2D> LeftBorderPoints
         {
             get
@@ -61,6 +63,11 @@ namespace TreeGeneratorLib.Tree
 
                 return allPoints;
             }
+        }
+
+        public Branch(Branch parent)
+        {
+            this.Parent = parent;
         }
 
         public void GenerateSDF()

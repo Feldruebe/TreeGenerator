@@ -83,12 +83,12 @@ namespace TreeGeneratorLib.Generator
 
                     if (leftBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkeletonPoints[connectIndex].Position, BranchType.Left, currentWidth);
+                        this.GenerateBranch(tree, tree.Trunk, growDirection, currentPoint, tree.Trunk.SkeletonPoints[connectIndex].Position, BranchType.Left, currentWidth);
                     }
 
                     if (rightBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, tree.Trunk.SkeletonPoints[connectIndex].Position, BranchType.Right, currentWidth);
+                        this.GenerateBranch(tree, tree.Trunk, growDirection, currentPoint, tree.Trunk.SkeletonPoints[connectIndex].Position, BranchType.Right, currentWidth);
                     }
                 }
             }
@@ -141,22 +141,22 @@ namespace TreeGeneratorLib.Generator
             }
         }
 
-        private void GenerateBranch(TreeModel<T> tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, BranchType branchType, double width, int level = 1)
+        private void GenerateBranch(TreeModel<T> tree, Branch parent, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, BranchType branchType, double width, int level = 1)
         {
             int angle = this.TreeParameters.BranchSkew + this.rand.Next(-this.TreeParameters.BranchSkewDeviation, this.TreeParameters.BranchSkewDeviation);
 
             if (branchType == BranchType.Left)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, -angle, BranchType.Left, width, level);
+                this.GrowBranch(tree, parent, growDirection, currentPoint, connectPoint, -angle, BranchType.Left, width, level);
             }
 
             if (branchType == BranchType.Right)
             {
-                this.GrowBranch(tree, growDirection, currentPoint, connectPoint, angle, BranchType.Right, width, level);
+                this.GrowBranch(tree, parent, growDirection, currentPoint, connectPoint, angle, BranchType.Right, width, level);
             }
         }
 
-        private void GrowBranch(TreeModel<T> tree, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, double angle, BranchType branchType, double width, int level)
+        private void GrowBranch(TreeModel<T> tree, Branch parent, Vector2D growDirection, Point2D currentPoint, Point2D connectPoint, double angle, BranchType branchType, double width, int level)
         {
             var branchChance = this.rand.Next(10);
 
@@ -184,7 +184,7 @@ namespace TreeGeneratorLib.Generator
             HashSet<int> rightBranches;
             this.GenerateBranchPositions(this.TreeParameters.BranchStart, branchLength, this.TreeParameters.BranchDistance / 2, out leftBranches, out rightBranches);
 
-            var branch = new Branch();
+            var branch = new Branch(parent);
             var branchStartWidth = Math.Max(width * 0.8, this.TreeParameters.TrunkWidthEnd);
             var branchEndWidth = this.TreeParameters.TrunkWidthEnd;
             growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
@@ -207,12 +207,12 @@ namespace TreeGeneratorLib.Generator
                     int connectIndex = Math.Max(0, y - 20);
                     if (leftBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkeletonPoints[connectIndex].Position, BranchType.Left, currentWidth, level + 1);
+                        this.GenerateBranch(tree, branch, growDirection, currentPoint, branch.SkeletonPoints[connectIndex].Position, BranchType.Left, currentWidth, level + 1);
                     }
 
                     if (rightBranches.Contains(y))
                     {
-                        this.GenerateBranch(tree, growDirection, currentPoint, branch.SkeletonPoints[connectIndex].Position, BranchType.Right, currentWidth, level + 1);
+                        this.GenerateBranch(tree, branch, growDirection, currentPoint, branch.SkeletonPoints[connectIndex].Position, BranchType.Right, currentWidth, level + 1);
                     }
                 }
             }

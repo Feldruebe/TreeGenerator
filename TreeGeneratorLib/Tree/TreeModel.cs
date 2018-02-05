@@ -21,7 +21,7 @@ namespace TreeGeneratorLib.Tree
 
         public T TreeVisual { get; private set; }
 
-        public Branch Trunk { get; } = new Branch();
+        public Branch Trunk { get; } = new Branch(null);
 
         public List<Branch> Branches { get; } = new List<Branch>();
 
