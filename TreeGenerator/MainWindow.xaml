@@ -109,6 +109,7 @@
                         <treeControls:TrunkControl />
                         <treeControls:BranchControl />
                         <treeControls:TreeColorControl />
+                        <treeControls:LeafsControl />
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>

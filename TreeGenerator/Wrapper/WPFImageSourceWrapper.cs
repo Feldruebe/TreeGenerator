@@ -75,6 +75,14 @@ namespace TreeGeneratorWPF.Wrapper
                     {
                         this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor);
                     }
+
+                    if (!string.IsNullOrEmpty(tree.LeafImageFileName))
+                    {
+                        SKBitmap bmp = SKBitmap.Decode(tree.LeafImageFileName);
+                        surfaceTree.Canvas.DrawBitmap(bmp, new SKRect(0, 0, 10.2f, 10.2f));
+
+                        surfaceTree.Canvas.DrawBitmap(bmp, new SKRect(50, 50, 60, 60));
+                    }
                 }
 
                 treeBitmap.UnlockBits(dataTree);

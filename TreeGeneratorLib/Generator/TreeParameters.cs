@@ -50,5 +50,7 @@ namespace TreeGeneratorLib.Generator
         public int BranchMinLevel { get; set; }
 
         public int RandomSeed { get; set; }
+
+        public string LeafImageFileName { get; set; }
     }
 }

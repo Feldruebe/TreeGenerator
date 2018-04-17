@@ -103,6 +103,7 @@
 
             this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
             this.ExportImageCommand = new RelayCommand(this.ExportImage);
+            this.LoadLeafImageCommand = new RelayCommand(this.LoadLeafImage);
             this.TreeTrunkSize = 60;
             this.TrunkSkewAngle = 0;
             this.TrunkSkewAngleStart = 0;
@@ -330,6 +331,8 @@
 
         public RelayCommand ExportImageCommand { get; set; }
 
+        public RelayCommand LoadLeafImageCommand { get; set; }
+
         public bool IsDebugMode
         {
             get
@@ -371,6 +374,8 @@
             get { return this.branchMinLevel; }
             set { this.Set(ref this.branchMinLevel, value); }
         }
+
+        public string LeafImageFileName { get; private set; }
 
         public void RedrawTree()
         {
@@ -423,6 +428,7 @@
                 BranchMaxLevel = this.BranchMaxLevel,
                 BranchMinLevel = this.BranchMinLevel,
                 RandomSeed = this.RandomSeed,
+                LeafImageFileName = this.LeafImageFileName,
             };
         }
 
@@ -468,6 +474,17 @@
                     encoder5.Frames.Add(BitmapFrame.Create(image));
                     encoder5.Save(stream);
                 }
+            }
+        }
+
+        private void LoadLeafImage()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            var result = openFileDialog.ShowDialog();
+
+            if(result == true)
+            {
+                this.LeafImageFileName = openFileDialog.FileName;
             }
         }
     }

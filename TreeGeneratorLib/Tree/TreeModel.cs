@@ -65,6 +65,8 @@ namespace TreeGeneratorLib.Tree
             }
         }
 
+        public string LeafImageFileName { get; internal set; }
+
         public void GenerateContourAndFillPoints()
         {
             this.Trunk.GenerateContour();

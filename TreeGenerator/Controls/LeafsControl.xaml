@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="TreeGeneratorWPF.Controls.LeafsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:TreeGeneratorWPF.ViewModels"
+             xmlns:local="clr-namespace:TreeGeneratorWPF.Controls"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
+    <StackPanel Orientation="Horizontal">
+        <Button Content="Load image" Command="{Binding LoadLeafImageCommand}"/>
+        <Image />
+    </StackPanel>
+</UserControl>

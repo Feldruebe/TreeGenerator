@@ -35,6 +35,7 @@ namespace TreeGeneratorLib.Generator
         private TreeModel<T> GenerateTreeInternal()
         {
             var tree = new TreeModel<T>(this.progress);
+            tree.LeafImageFileName = this.TreeParameters.LeafImageFileName;
 
             Vector2D growDirection = new Vector2D(0d, 1d);
 
