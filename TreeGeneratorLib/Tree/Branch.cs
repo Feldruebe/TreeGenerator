@@ -143,21 +143,21 @@ namespace TreeGeneratorLib.Tree
 
             // Generate bot contour.
             this.BotContourPoints.Clear();
-            var botContourSamplePoints = new List<Point2D>();
-            for (int i = 0; i < 6; i++)
-            {
-                botContourSamplePoints.Add(InterpolateBezier(rightBorder.Last(), this.ParentBranchConnectPoint, leftBorder.First(), i / 5d));
-            }
-
-            for (int i = 0; i < botContourSamplePoints.Count - 1; i++)
-            {
-                var point1 = botContourSamplePoints[i];
-                var point2 = botContourSamplePoints[i + 1];
-
-                this.BotContourPoints.Add(point1);
-                this.AddContourPointsBetweenPoints(point1, point2, this.BotContourPoints);
-                this.BotContourPoints.Add(point2);
-            }
+//            var botContourSamplePoints = new List<Point2D>();
+//            for (int i = 0; i < 6; i++)
+//            {
+//                botContourSamplePoints.Add(InterpolateBezier(rightBorder.Last(), this.ParentBranchConnectPoint, leftBorder.First(), i / 5d));
+//            }
+//
+//            for (int i = 0; i < botContourSamplePoints.Count - 1; i++)
+//            {
+//                var point1 = botContourSamplePoints[i];
+//                var point2 = botContourSamplePoints[i + 1];
+//
+//                this.BotContourPoints.Add(point1);
+//                this.AddContourPointsBetweenPoints(point1, point2, this.BotContourPoints);
+//                this.BotContourPoints.Add(point2);
+//            }
 
            // this.AddContourPointsBetweenPoints(rightBorder.Last(), leftBorder.First(), this.BotContourPoints);
 

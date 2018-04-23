@@ -80,7 +80,7 @@ namespace TreeGeneratorLib.Generator
                 // Generate branches.
                 if (y > this.TreeParameters.BranchStart)
                 {
-                    int connectIndex = Math.Max(0, y - 20);
+                    int connectIndex = Math.Max(0, y - 0);
 
                     if (leftBranches.Contains(y))
                     {
@@ -205,7 +205,7 @@ namespace TreeGeneratorLib.Generator
                 
                 if (y > this.TreeParameters.BranchStart)
                 {
-                    int connectIndex = Math.Max(0, y - 20);
+                    int connectIndex = Math.Max(0, y - 0);
                     if (leftBranches.Contains(y))
                     {
                         this.GenerateBranch(tree, branch, growDirection, currentPoint, branch.SkeletonPoints[connectIndex].Position, BranchType.Left, currentWidth, level + 1);
