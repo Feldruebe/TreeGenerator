@@ -1,14 +1,51 @@
 ﻿<UserControl x:Class="TreeGeneratorWPF.Controls.LeafsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:TreeGeneratorWPF.ViewModels"
              xmlns:local="clr-namespace:TreeGeneratorWPF.Controls"
-             mc:Ignorable="d" 
+             xmlns:mvvm="clr-namespace:TreeGeneratorWPF.MVVM"
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
-    <StackPanel Orientation="Horizontal">
-        <Button Content="Load image" Command="{Binding LoadLeafImageCommand}"/>
-        <Image />
-    </StackPanel>
+  <Expander Header="Leafs" IsExpanded="True">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" SharedSizeGroup="LFirst" />
+        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="LSecond" />
+        <ColumnDefinition Width="Auto" SharedSizeGroup="LThird" />
+        <ColumnDefinition Width="*" SharedSizeGroup="LForth" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Button Grid.Column="0" Grid.Row="0" Command="{Binding LoadLeafImageCommand}">
+        <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+          <Rectangle.OpacityMask>
+            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+          </Rectangle.OpacityMask>
+        </Rectangle>
+      </Button>
+      <ItemsControl Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{Binding LeafImageViewModels}" HorizontalAlignment="Right">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate d:DataContext="{d:DesignInstance mvvm:LeafImageViewModel}">
+            <StackPanel Orientation="Horizontal">
+              <CheckBox IsChecked="{Binding IsIncluded}" />
+              <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Uniform" Source="{Binding LoadedImage}" Width="30" Height="30" />
+              <TextBlock Text="Probability" VerticalAlignment="Center" />
+              <Slider Width="200" Minimum="0.0" Maximum="1.0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" />
+              <Button Command="{Binding DataContext.DeleteLeafCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}" IsEnabled="{Binding CanBeDeleted}">
+                <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                  <Rectangle.OpacityMask>
+                    <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                  </Rectangle.OpacityMask>
+                </Rectangle>
+              </Button>
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Grid>
+  </Expander>
 </UserControl>

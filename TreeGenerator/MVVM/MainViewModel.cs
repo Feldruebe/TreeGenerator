@@ -1,43 +1,32 @@
-﻿namespace TreeGeneratorWPF.ViewModels
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace TreeGeneratorWPF.ViewModels
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
     using System.Windows.Media.Imaging;
 
     using GalaSoft.MvvmLight;
 
     using GalaSoft.MvvmLight.CommandWpf;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Drawing.Imaging;
     using System.IO;
     using System.Threading.Tasks;
+    using System.Collections.ObjectModel;
     using System.Windows.Media;
 
     using MahApps.Metro.Controls.Dialogs;
 
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Double;
-    using MathNet.Numerics.Random;
-    using MathNet.Spatial.Euclidean;
-    using MathNet.Spatial.Units;
-
+    using SkiaSharp;
+    
     using Microsoft.Win32;
 
-    using SkiaSharp;
-
     using Color = System.Windows.Media.Color;
-    using PixelFormat = System.Drawing.Imaging.PixelFormat;
-    using MathNet.Numerics.Interpolation;
-
+    
     using TreeGeneratorLib.Generator;
     using TreeGeneratorLib.Tree;
     using TreeGeneratorLib.Wrappers;
-
-    using TreeGeneratorWPF.Properties;
     using TreeGeneratorWPF.Wrapper;
+    using TreeGeneratorWPF.MVVM;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -90,6 +79,7 @@
 
         private TreeModel<WpfTreeVisualWrapper> tree;
         private WPFProgressController controller = new WPFProgressController();
+        private ObservableCollection<LeafImageViewModel> leafImageViewModels = new ObservableCollection<LeafImageViewModel>();
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -125,6 +115,9 @@
             this.BranchMaxLevel = 3;
             this.BranchMinLevel = 1;
             this.BranchLevelLengthFactor = 1;
+            
+            var defaultLeafImage = new LeafImageViewModel(@"pack://application:,,,/TreeGeneratorWPF;component/Images/Blatt.png", false);
+            this.LeafImageViewModels.Add(defaultLeafImage);
         }
 
         public int RandomSeed
@@ -332,6 +325,8 @@
         public RelayCommand ExportImageCommand { get; set; }
 
         public RelayCommand LoadLeafImageCommand { get; set; }
+        
+        public RelayCommand<LeafImageViewModel> DeleteLeafCommand => new RelayCommand<LeafImageViewModel>(this.Delete);
 
         public bool IsDebugMode
         {
@@ -375,7 +370,11 @@
             set { this.Set(ref this.branchMinLevel, value); }
         }
 
-        public string LeafImageFileName { get; private set; }
+        public ObservableCollection<LeafImageViewModel> LeafImageViewModels
+        {
+            get => leafImageViewModels;
+            set => this.Set(ref leafImageViewModels, value);
+        }
 
         public void RedrawTree()
         {
@@ -408,7 +407,7 @@
             {
                 TreeTrunkSize = this.TreeTrunkSize,
                 TrunkRotationAngle = this.TrunkRotationAngle,
-                TrunkRotationAngleStart = this.TrunkRotationAngle,
+                TrunkRotationAngleStart = this.TrunkRotationAngleStart,
                 TrunkSkewAngle = this.TrunkSkewAngle,
                 TrunkSkewAngleStart = this.TrunkSkewAngleStart,
                 BranchCount = this.BranchCount,
@@ -428,7 +427,7 @@
                 BranchMaxLevel = this.BranchMaxLevel,
                 BranchMinLevel = this.BranchMinLevel,
                 RandomSeed = this.RandomSeed,
-                LeafImageFileName = this.LeafImageFileName,
+                LeafParameters = this.GetLeafParameters(),
             };
         }
 
@@ -484,8 +483,39 @@
 
             if(result == true)
             {
-                this.LeafImageFileName = openFileDialog.FileName;
+                var leafImageviewModel = new LeafImageViewModel(openFileDialog.FileName);
+                this.LeafImageViewModels.Add(leafImageviewModel);
             }
+        }
+        
+        private void Delete(LeafImageViewModel image)
+        {
+            this.LeafImageViewModels.Remove(image);
+        }
+        
+        private List<LeafParameter> GetLeafParameters()
+        {
+            var result = new List<LeafParameter>();
+            foreach (var leafViewModel in this.LeafImageViewModels)
+            {
+                var leafParameter = new LeafParameter
+                {
+                    ImageBuffer = this.GetPngBytesFromImageControl(leafViewModel.LoadedImage),
+                };
+                
+                result.Add(leafParameter);
+            }
+            
+            return result;
+        }
+        
+        private byte[] GetPngBytesFromImageControl(BitmapImage imageC)
+        {
+            MemoryStream memStream = new MemoryStream();              
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageC));
+            encoder.Save(memStream);
+            return memStream.ToArray();
         }
     }
 

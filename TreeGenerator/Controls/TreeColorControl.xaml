@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
-          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeFillColor.png" Height="60" Margin="5,5,10,5"/>
+          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeFillColor.png" Height="60" Margin="5,5,10,5"/>
           <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
           <ToggleButton x:Name="FillColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=FillColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
             <Rectangle Width="20" Height="20">
@@ -51,7 +51,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
-          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeOutlineColor.png" Height="60" Margin="5,5,10,5"/>
+          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeOutlineColor.png" Height="60" Margin="5,5,10,5"/>
           <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
           <ToggleButton x:Name="OutlineColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=OutlineColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
             <Rectangle Width="20" Height="20">

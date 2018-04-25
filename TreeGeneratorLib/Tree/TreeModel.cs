@@ -1,3 +1,5 @@
+using TreeGeneratorLib.Generator;
+
 namespace TreeGeneratorLib.Tree
 {
     using System;
@@ -65,7 +67,7 @@ namespace TreeGeneratorLib.Tree
             }
         }
 
-        public string LeafImageFileName { get; internal set; }
+        public List<LeafParameter> Leafparameters { get; internal set; }
 
         public void GenerateContourAndFillPoints()
         {

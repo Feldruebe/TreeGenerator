@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using TreeGeneratorLib.Wrappers;
 
 namespace TreeGeneratorLib.Generator
@@ -51,6 +52,6 @@ namespace TreeGeneratorLib.Generator
 
         public int RandomSeed { get; set; }
 
-        public string LeafImageFileName { get; set; }
+        public List<LeafParameter> LeafParameters { get; set; }
     }
 }

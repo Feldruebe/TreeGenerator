@@ -51,10 +51,7 @@ namespace TreeGeneratorWPF.Wrapper
                     MoveOriginToLeftBottom(surfaceTree, imageHeight, surfaceSkeletton);
 
                     SKBitmap leafBMP = null;
-                    if (!string.IsNullOrEmpty(tree.LeafImageFileName))
-                    {
-                        leafBMP = SKBitmap.Decode(tree.LeafImageFileName);
-                    }
+                    leafBMP = SKBitmap.Decode(tree.Leafparameters[0].ImageBuffer);
 
                     SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
                     var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
@@ -65,13 +62,12 @@ namespace TreeGeneratorWPF.Wrapper
                     }
 
                     this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor);
-                    
+
                     var reversedBranches = tree.Branches.ToList();
                     foreach (Branch branch in reversedBranches)
                     {
                         this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor, leafBMP);
                     }
-
                 }
 
                 treeBitmap.UnlockBits(dataTree);
@@ -132,10 +128,10 @@ namespace TreeGeneratorWPF.Wrapper
                 {
                     var skeletonPoint = branch.SkeletonPoints[index];
                     var angle = skeletonPoint.GrowDirection.AngleTo(Vector2D.YAxis);
-                    SKPaint bmpPaint = new SKPaint() { IsAntialias = false, FilterQuality = SKFilterQuality.None, IsDither = true};
+                    SKPaint bmpPaint = new SKPaint() { IsAntialias = false, FilterQuality = SKFilterQuality.None, IsDither = true };
 
                     canvas.RotateDegrees((float)-angle.Degrees, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
-                    
+
                     canvas.RotateDegrees(-90, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
                     canvas.Translate(-leafBMP.Width, -leafBMP.Height);
                     canvas.DrawBitmap(leafBMP, new SKRect((float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset, (float)skeletonPoint.Position.X + xOffset + leafBMP.Width, (float)skeletonPoint.Position.Y + yOffset + leafBMP.Height), bmpPaint);
@@ -147,7 +143,7 @@ namespace TreeGeneratorWPF.Wrapper
                     canvas.DrawBitmap(leafBMP, new SKRect((float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset, (float)skeletonPoint.Position.X + xOffset + leafBMP.Width, (float)skeletonPoint.Position.Y + yOffset + leafBMP.Height), bmpPaint);
                     canvas.Translate(leafBMP.Width, leafBMP.Height);
                     canvas.RotateDegrees(180, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
-                    
+
                     canvas.RotateDegrees((float)angle.Degrees, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
                 }
             }

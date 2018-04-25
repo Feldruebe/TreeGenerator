@@ -22,7 +22,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeHeight.png" Height="60" Margin="5,5,10,5"/>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeHeight.png" Height="60" Margin="5,5,10,5"/>
                     <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Size</TextBlock>
                     <controls1:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding TreeTrunkSize}" MinWidth="50" Maximum="1000" Minimum="1" />
                     <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TreeTrunkSize}" MinWidth="100" Maximum="1000" Minimum="1" />
@@ -43,7 +43,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
                     <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Skew Angle</TextBlock>
                     <controls1:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Maximum="80" Minimum="-80" Value="{Binding TrunkSkewAngle}" />
                     <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkSkewAngle}" MinWidth="100" Maximum="80" Minimum="-80"/>
@@ -68,7 +68,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeSkew.png" Height="60" Margin="5,5,10,5"/>
                     <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Rotation Angle</TextBlock>
                     <controls1:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Maximum="240" Minimum="-240" Value="{Binding TrunkRotationAngle}" />
                     <Slider Grid.Column="2" Grid.Row="1" Value="{Binding TrunkRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240"/>
@@ -93,7 +93,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGenerator;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeWidth.png" Height="60" Margin="5,5,10,5"/>
                     <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Start Width</TextBlock>
                     <controls1:NumericUpDown Grid.Column="2" Grid.Row="0" MinWidth="50" Minimum="1" Value="{Binding TrunkWidthStart}" />
 
