@@ -81,6 +81,10 @@ namespace TreeGeneratorWPF.ViewModels
         private WPFProgressController controller = new WPFProgressController();
         private ObservableCollection<LeafImageViewModel> leafImageViewModels = new ObservableCollection<LeafImageViewModel>();
 
+        private int leafDistance;
+
+        private float leafPropability;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -376,6 +380,18 @@ namespace TreeGeneratorWPF.ViewModels
             set => this.Set(ref leafImageViewModels, value);
         }
 
+        public int LeafDistance
+        {
+            get => this.leafDistance;
+            set => this.Set(ref this.leafDistance, value);
+        }
+
+        public float LeafPropability
+        {
+            get => this.leafPropability;
+            set => this.Set(ref this.leafPropability, value);
+        }
+
         public void RedrawTree()
         {
             this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
@@ -428,6 +444,8 @@ namespace TreeGeneratorWPF.ViewModels
                 BranchMinLevel = this.BranchMinLevel,
                 RandomSeed = this.RandomSeed,
                 LeafParameters = this.GetLeafParameters(),
+                LeafDistance = this.LeafDistance,
+                LeafPropability = this.LeafPropability,
             };
         }
 

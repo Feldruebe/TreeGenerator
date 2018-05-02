@@ -53,5 +53,9 @@ namespace TreeGeneratorLib.Generator
         public int RandomSeed { get; set; }
 
         public List<LeafParameter> LeafParameters { get; set; }
+
+        public int LeafDistance { get; set; }
+
+        public float LeafPropability { get; set; }
     }
 }
