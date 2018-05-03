@@ -56,6 +56,12 @@ namespace TreeGeneratorLib.Generator
 
         public int LeafDistance { get; set; }
 
+        public float LeafDistanceDeviation { get; set; }
+
         public float LeafPropability { get; set; }
+
+        public float LeafScale { get; set; }
+
+        public float LeafScaleDeviation { get; set; }
     }
 }

@@ -85,6 +85,12 @@ namespace TreeGeneratorWPF.ViewModels
 
         private float leafPropability;
 
+        private int leafDistanceDeviation;
+
+        private float leafScale;
+
+        private float leafScaleDeviation;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -386,10 +392,28 @@ namespace TreeGeneratorWPF.ViewModels
             set => this.Set(ref this.leafDistance, value);
         }
 
+        public int LeafDistanceDeviation
+        {
+            get => this.leafDistanceDeviation;
+            set => this.Set(ref this.leafDistanceDeviation, value);
+        }
+
         public float LeafPropability
         {
             get => this.leafPropability;
-            set => this.Set(ref this.leafPropability, value);
+            set => this.Set(ref this.leafPropability, (float)Math.Round(value, 2));
+        }
+
+        public float LeafScale
+        {
+            get => this.leafScale;
+            set => this.Set(ref this.leafScale, (float)Math.Round(value, 2));
+        }
+
+        public float LeafScaleDeviation
+        {
+            get => this.leafScaleDeviation;
+            set => this.Set(ref this.leafScaleDeviation, (float)Math.Round(value, 2));
         }
 
         public void RedrawTree()
@@ -445,10 +469,13 @@ namespace TreeGeneratorWPF.ViewModels
                 RandomSeed = this.RandomSeed,
                 LeafParameters = this.GetLeafParameters(),
                 LeafDistance = this.LeafDistance,
+                LeafDistanceDeviation = this.LeafDistanceDeviation,
                 LeafPropability = this.LeafPropability,
+                LeafScale = this.LeafScale,
+                LeafScaleDeviation = this.LeafScaleDeviation,
             };
         }
-
+        
         private Task<TreeModel<WpfTreeVisualWrapper>> GenerateTreeAsync()
         {
             return Task.Run(
@@ -519,6 +546,7 @@ namespace TreeGeneratorWPF.ViewModels
                 var leafParameter = new LeafParameter
                 {
                     ImageBuffer = this.GetPngBytesFromImageControl(leafViewModel.LoadedImage),
+                    Probability = leafViewModel.Probability,
                 };
                 
                 result.Add(leafParameter);

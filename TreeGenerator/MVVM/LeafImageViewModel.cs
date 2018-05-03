@@ -9,6 +9,8 @@
         private bool canBeDeleted;
         private bool isIncluded;
 
+        private float probability;
+
         public LeafImageViewModel(string path, bool deletable = true)
         {
             var uri = new Uri(path);
@@ -29,6 +31,12 @@
         {
             get => isIncluded;
             set => this.Set(ref isIncluded, value);
+        }
+
+        public float Probability
+        {
+            get => this.probability;
+            set => this.Set(ref this.probability, value);
         }
     }
 }
