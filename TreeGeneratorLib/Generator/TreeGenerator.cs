@@ -35,7 +35,7 @@ namespace TreeGeneratorLib.Generator
         private TreeModel<T> GenerateTreeInternal()
         {
             var tree = new TreeModel<T>(this.progress);
-            tree.Leafparameters= this.TreeParameters.LeafParameters;
+            tree.Leafparameters = this.TreeParameters.LeafParameters;
 
             Vector2D growDirection = new Vector2D(0d, 1d);
 
@@ -166,12 +166,12 @@ namespace TreeGeneratorLib.Generator
                 return;
             }
 
-            if (level >= this.TreeParameters.BranchMinLevel && branchChance < 4)
+            if (level > this.TreeParameters.BranchMinLevel && branchChance <= 4)
             {
                 return;
             }
 
-            var t = ((level - 1) / (double)(this.TreeParameters.BranchMaxLevel - 1));
+            var t = this.TreeParameters.BranchMaxLevel == 1 ? 0 : ((level - 1) / (double)(this.TreeParameters.BranchMaxLevel - 1));
             var lengthFactor = (1 + (this.TreeParameters.BranchLevelLengthFactor - 1) * t);
             int branchLength = this.rand.Next(this.TreeParameters.BranchLengthMin, this.TreeParameters.BranchLengthMax + 1);
             branchLength = (int)(branchLength * lengthFactor);
@@ -181,16 +181,20 @@ namespace TreeGeneratorLib.Generator
             float rotationStep = (float)this.TreeParameters.BranchRotationAngle / (float)(branchLength - branchRotationAngleStart);
             rotationStep = branchType == BranchType.Right ? -rotationStep : rotationStep;
 
-            HashSet<int> leftBranches;
-            HashSet<int> rightBranches;
-            this.GenerateBranchPositions(this.TreeParameters.BranchStart, branchLength, this.TreeParameters.BranchDistance / 2, out leftBranches, out rightBranches);
+            HashSet<int> leftBranches = new HashSet<int>();
+            HashSet<int> rightBranches = new HashSet<int>();
+            var branchCrownSize = branchLength - this.TreeParameters.BranchStart;
+            if (branchCrownSize > 0)
+            {
+                this.GenerateBranchPositions(this.TreeParameters.BranchStart, branchCrownSize, this.TreeParameters.BranchDistance / 2, out leftBranches, out rightBranches);
+            }
 
             var branch = new Branch(parent);
             var branchStartWidth = Math.Max(width * 0.8, this.TreeParameters.TrunkWidthEnd);
             var branchEndWidth = this.TreeParameters.TrunkWidthEnd;
             growDirection = growDirection.Rotate(new Angle(angle, new Degrees()));
             branch.SkeletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)branchStartWidth });
-            branch.ParentBranchConnectPoint = connectPoint;                   
+            branch.ParentBranchConnectPoint = connectPoint;
 
             for (int y = 0; y < branchLength; y++)
             {
@@ -198,11 +202,11 @@ namespace TreeGeneratorLib.Generator
                 {
                     growDirection = growDirection.Rotate(new Angle(rotationStep, new Degrees()));
                 }
-                
+
                 currentPoint += growDirection;
                 var currentWidth = branchEndWidth + (branchStartWidth - branchEndWidth) * ((branchLength - y) / (double)branchLength);
                 branch.SkeletonPoints.Add(new TreePoint(new Point2D(Math.Round(currentPoint.X), Math.Round(currentPoint.Y)), growDirection) { Width = (int)currentWidth });
-                
+
                 if (y > this.TreeParameters.BranchStart)
                 {
                     int connectIndex = Math.Max(0, y - 0);
@@ -218,7 +222,43 @@ namespace TreeGeneratorLib.Generator
                 }
             }
 
+            this.GenerateLeafPositions(branch, this.TreeParameters);
+
             tree.Branches.Add(branch);
+        }
+
+        private void GenerateLeafPositions(Branch branch, TreeParameters treeParameters)
+        {
+            List<LeafPosition> leafPositions = new List<LeafPosition>();
+            if(treeParameters.LeafParameters.Count == 0)
+            {
+                return;
+            }
+
+            var leafDistance = Math.Max(1, treeParameters.LeafDistance + rand.Next(-treeParameters.LeafDistanceDeviation, treeParameters.LeafDistanceDeviation));
+            for (int i = branch.SkeletonPoints.Count - 1; i >= 0; i -= leafDistance)
+            {
+                var leafPropability = rand.NextDouble() * treeParameters.LeafParameters.Sum(p => p.Probability);
+                double probabilitySum = 0;
+                LeafParameter selectedLeafType = treeParameters.LeafParameters.First();
+                foreach(var leafParameter in treeParameters.LeafParameters)
+                {
+                    probabilitySum += leafParameter.Probability;
+                    if(leafPropability < probabilitySum)
+                    {
+                        selectedLeafType = leafParameter;
+                        break;
+                    }
+                }
+
+                var scaleDeviation = rand.NextDouble() * selectedLeafType.SacleDeviation;
+
+                var leafPosition = new LeafPosition { PositionInTree = branch.SkeletonPoints[i], Scale = selectedLeafType.Scale + scaleDeviation, ImageBuffer = selectedLeafType.ImageBuffer };
+                leafPositions.Add(leafPosition);
+                leafDistance = Math.Max(1, treeParameters.LeafDistance + rand.Next(-treeParameters.LeafDistanceDeviation, treeParameters.LeafDistanceDeviation));
+            }
+
+            branch.LeafPositions = leafPositions;
         }
     }
 }

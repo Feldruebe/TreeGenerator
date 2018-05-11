@@ -3,13 +3,15 @@
     using System;
     using System.Windows.Media.Imaging;
     using GalaSoft.MvvmLight;
-    
+
     public class LeafImageViewModel : ViewModelBase
     {
         private bool canBeDeleted;
         private bool isIncluded;
 
         private float probability;
+        private float scale;
+        private float scaleDeviation;
 
         public LeafImageViewModel(string path, bool deletable = true)
         {
@@ -24,19 +26,31 @@
         public bool CanBeDeleted
         {
             get => this.canBeDeleted;
-            set => this.Set(ref  canBeDeleted, value);
+            set => this.Set(ref this.canBeDeleted, value);
         }
 
         public bool IsIncluded
         {
-            get => isIncluded;
-            set => this.Set(ref isIncluded, value);
+            get => this.isIncluded;
+            set => this.Set(ref this.isIncluded, value);
         }
 
         public float Probability
         {
             get => this.probability;
             set => this.Set(ref this.probability, value);
+        }
+
+        public float Scale
+        {
+            get => this.scale;
+            set => this.Set(ref this.scale, value);
+        }
+
+        public float ScaleDeviation
+        {
+            get => this.scaleDeviation;
+            set => this.Set(ref this.scaleDeviation, (float)Math.Round(value, 2));
         }
     }
 }

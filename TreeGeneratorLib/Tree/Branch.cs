@@ -32,6 +32,8 @@ namespace TreeGeneratorLib.Tree
 
         public Branch Parent { get; }
 
+        public List<LeafPosition> LeafPositions { get; set; }
+
         public IList<Point2D> LeftBorderPoints
         {
             get

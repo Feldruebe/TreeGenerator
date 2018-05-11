@@ -50,9 +50,6 @@ namespace TreeGeneratorWPF.Wrapper
                 {
                     MoveOriginToLeftBottom(surfaceTree, imageHeight, surfaceSkeletton);
 
-                    SKBitmap leafBMP = null;
-                    leafBMP = SKBitmap.Decode(tree.Leafparameters[0].ImageBuffer);
-
                     SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
                     var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
                     var skeletonPoints = treeBranches.Select(branch => branch.SkeletonPoints).SelectMany(points => points).ToArray();
@@ -66,7 +63,7 @@ namespace TreeGeneratorWPF.Wrapper
                     var reversedBranches = tree.Branches.ToList();
                     foreach (Branch branch in reversedBranches)
                     {
-                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor, leafBMP);
+                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor);
                     }
                 }
 
@@ -85,7 +82,7 @@ namespace TreeGeneratorWPF.Wrapper
             surfaceSkeletton.Canvas.Scale(1, -1);
         }
 
-        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, IColor color, IColor outlineColor, SKBitmap leafBMP = null)
+        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, IColor color, IColor outlineColor)
         {
             var outlinePoints = branch.PolygonPoints.Select(point => new SKPoint((int)point.X + xOffset, (int)point.Y + yOffset)).ToList();
             var polygonPoints = outlinePoints.ToList();
@@ -118,33 +115,41 @@ namespace TreeGeneratorWPF.Wrapper
             SKPaint leafOutlinePaint = new SKPaint { Color = SKColors.Black, Style = SKPaintStyle.Stroke };
             var endPoint = branch.SkeletonPoints.Last();
             leafPaint.Shader = SKShader.CreateRadialGradient(new SKPoint((float)endPoint.Position.X + xOffset, (float)endPoint.Position.Y + yOffset), 20, new[] { leafColorInner, leafColorOuter }, null, SKShaderTileMode.Clamp);
-//            canvas.DrawCircle((float)endPoint.Position.X + xOffset, (float)endPoint.Position.Y + yOffset, 20, leafPaint);
-//            canvas.DrawCircle((float)endPoint.Position.X + xOffset, (float)endPoint.Position.Y + yOffset, 20, leafOutlinePaint);
 
-
-            if (leafBMP != null)
+            if (branch.LeafPositions != null)
             {
-                for (int index = 0; index < branch.SkeletonPoints.Count; index += 15)
+                foreach (var leafPosition in branch.LeafPositions)
                 {
-                    var skeletonPoint = branch.SkeletonPoints[index];
-                    var angle = skeletonPoint.GrowDirection.AngleTo(Vector2D.YAxis);
-                    SKPaint bmpPaint = new SKPaint() { IsAntialias = false, FilterQuality = SKFilterQuality.None, IsDither = true };
+                    SKBitmap leafBMP = null;
+                    leafBMP = SKBitmap.Decode(leafPosition.ImageBuffer);
 
-                    canvas.RotateDegrees((float)-angle.Degrees, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
+                    if (leafBMP != null)
+                    {
+                        var skeletonPoint = leafPosition.PositionInTree;
+                        var leftPoint = skeletonPoint.GetLeftPosition();
+                        var rightPoint = skeletonPoint.GetRightPosition();
+                        var scaledWidth = (int)(leafBMP.Width * leafPosition.Scale);
+                        var scaledHeight = (int)(leafBMP.Height * leafPosition.Scale);
+                        var angle = -skeletonPoint.GrowDirection.SignedAngleTo(Vector2D.YAxis, true, true);
+                        SKPaint bmpPaint = new SKPaint() { IsAntialias = false, FilterQuality = SKFilterQuality.None, IsDither = true };
 
-                    canvas.RotateDegrees(-90, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
-                    canvas.Translate(-leafBMP.Width, -leafBMP.Height);
-                    canvas.DrawBitmap(leafBMP, new SKRect((float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset, (float)skeletonPoint.Position.X + xOffset + leafBMP.Width, (float)skeletonPoint.Position.Y + yOffset + leafBMP.Height), bmpPaint);
-                    canvas.Translate(leafBMP.Width, leafBMP.Height);
-                    canvas.RotateDegrees(90, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
+                        canvas.RotateDegrees((float)-angle.Degrees, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
+                        canvas.RotateDegrees(-90, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
+                        canvas.Translate(-scaledWidth, -scaledHeight);
+                        canvas.DrawBitmap(leafBMP, new SKRect((float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset, (float)leftPoint.X + xOffset + scaledWidth, (float)leftPoint.Y + yOffset + scaledHeight), bmpPaint);
+                        canvas.Translate(scaledWidth, scaledHeight);
+                        canvas.RotateDegrees(90, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
+                        canvas.RotateDegrees((float)angle.Degrees, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
 
-                    canvas.RotateDegrees(-180, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
-                    canvas.Translate(-leafBMP.Width, -leafBMP.Height);
-                    canvas.DrawBitmap(leafBMP, new SKRect((float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset, (float)skeletonPoint.Position.X + xOffset + leafBMP.Width, (float)skeletonPoint.Position.Y + yOffset + leafBMP.Height), bmpPaint);
-                    canvas.Translate(leafBMP.Width, leafBMP.Height);
-                    canvas.RotateDegrees(180, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
+                        canvas.RotateDegrees((float)-angle.Degrees, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
+                        canvas.RotateDegrees(-180, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
+                        canvas.Translate(-scaledWidth, -scaledHeight);
+                        canvas.DrawBitmap(leafBMP, new SKRect((float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset, (float)rightPoint.X + xOffset + scaledWidth, (float)rightPoint.Y + yOffset + scaledHeight), bmpPaint);
+                        canvas.Translate(scaledWidth, scaledHeight);
+                        canvas.RotateDegrees(180, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
+                        canvas.RotateDegrees((float)angle.Degrees, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
 
-                    canvas.RotateDegrees((float)angle.Degrees, (float)skeletonPoint.Position.X + xOffset, (float)skeletonPoint.Position.Y + yOffset);
+                    }
                 }
             }
         }

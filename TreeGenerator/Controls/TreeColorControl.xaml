@@ -8,63 +8,67 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-  <Grid>
-    <Expander Header="Color" IsExpanded="True">
-      <StackPanel>
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeFillColor.png" Height="60" Margin="5,5,10,5"/>
-          <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
-          <ToggleButton x:Name="FillColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=FillColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
-            <Rectangle Width="20" Height="20">
-              <Rectangle.Fill>
-                <SolidColorBrush Color="{Binding TrunkColor}" />
-              </Rectangle.Fill>
-            </Rectangle>
-          </ToggleButton>
-        </Grid>
-        <Popup Name="FillColorPopup" PlacementTarget="{Binding ElementName=FillColorToggleButton}" StaysOpen="False" Placement="Left" >
-          <controls:ColorCanvas SelectedColor="{Binding TrunkColor}" />
-        </Popup>
+    <Grid>
+        <Expander Header="Color" IsExpanded="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeFillColor.png" Height="60" Margin="5,5,10,5"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Fill Color</TextBlock>
+                    <ToggleButton x:Name="FillColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=FillColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
+                        <Rectangle Width="20" Height="20">
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding TrunkColor}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ToggleButton>
+                </Grid>
+                <Popup Name="FillColorPopup" PlacementTarget="{Binding ElementName=FillColorToggleButton}" StaysOpen="False" Placement="Left" >
+                    <controls:ColorCanvas SelectedColor="{Binding TrunkColor}" />
+                </Popup>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeOutlineColor.png" Height="60" Margin="5,5,10,5"/>
-          <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Color</TextBlock>
-          <ToggleButton x:Name="OutlineColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=OutlineColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
-            <Rectangle Width="20" Height="20">
-              <Rectangle.Fill>
-                <SolidColorBrush Color="{Binding OutlineColor}" />
-              </Rectangle.Fill>
-            </Rectangle>
-          </ToggleButton>
-        </Grid>
-        <Popup Name="OutlineColorPopup" PlacementTarget="{Binding ElementName=OutlineColorToggleButton}" StaysOpen="False" Placement="Left" >
-          <controls:ColorCanvas SelectedColor="{Binding OutlineColor}" />
-        </Popup>
-      </StackPanel>
-    </Expander>
-  </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="CSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="/TreeGeneratorWPF;component/Images/TreeOutlineColor.png" Height="60" Margin="5,5,10,5"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Outline Color</TextBlock>
+                    <ToggleButton x:Name="OutlineColorToggleButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="40" Height="40" IsChecked="{Binding IsOpen, ElementName=OutlineColorPopup}" Style="{DynamicResource MetroCircleToggleButtonStyle}">
+                        <Rectangle Width="20" Height="20">
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding OutlineColor}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ToggleButton>
+                </Grid>
+                <Popup Name="OutlineColorPopup" PlacementTarget="{Binding ElementName=OutlineColorToggleButton}" StaysOpen="False" Placement="Left" >
+                    <controls:ColorCanvas SelectedColor="{Binding OutlineColor}" />
+                </Popup>
+            </Grid>
+        </Expander>
+    </Grid>
 </UserControl>

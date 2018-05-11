@@ -53,6 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tree\Branch.cs" />
     <Compile Include="Tree\BranchType.cs" />
+    <Compile Include="Tree\LeafPosition.cs" />
     <Compile Include="Tree\TreeModel.cs" />
     <Compile Include="Tree\TreePoint.cs" />
     <Compile Include="Wrappers\ICancelableProgress.cs" />

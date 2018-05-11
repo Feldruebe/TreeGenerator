@@ -13,26 +13,26 @@
                       d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
                       dialogs:DialogParticipation.Register="{Binding }"
                       Loaded="MainWindowOnLoaded">
-  <controls:MetroWindow.Resources>
-    <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
-  </controls:MetroWindow.Resources>
-  <controls:MetroWindow.Flyouts>
-    <controls:FlyoutsControl>
-      <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
-        <StackPanel Margin="5,0,0,0">
-          <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
-          <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
-          <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
-        </StackPanel>
-      </controls:Flyout>
-    </controls:FlyoutsControl>
-  </controls:MetroWindow.Flyouts>
+    <controls:MetroWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+    </controls:MetroWindow.Resources>
+    <controls:MetroWindow.Flyouts>
+        <controls:FlyoutsControl>
+            <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
+                <StackPanel Margin="5,0,0,0">
+                    <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
+                    <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
+                    <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
+                </StackPanel>
+            </controls:Flyout>
+        </controls:FlyoutsControl>
+    </controls:MetroWindow.Flyouts>
 
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
-        <CheckBox Content="Debug" IsChecked="{Binding DebugViewModel.DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
-        <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugViewModel.DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
+                <CheckBox Content="Debug" IsChecked="{Binding DebugViewModel.DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
+                <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugViewModel.DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
                     <Rectangle Width="15" Height="15" Fill="White">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_bug}" Stretch="Fill" />
@@ -83,14 +83,24 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Image" Grid.Column="0" Grid.Row="0">
+        <GroupBox Grid.Column="0" Grid.Row="0">
+            <GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0">Image</TextBlock>
+                    <CheckBox Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding ShowSkeleton}">Show Skeleton</CheckBox>
+                </Grid>
+            </GroupBox.Header>
             <Grid HorizontalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Border BorderThickness="1" Grid.Column="0" BorderBrush="Red">
-                    <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
+                    <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Visibility="{Binding ShowSkeleton, Converter={StaticResource VisibilityConverter}}" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
                 </Border>
                 <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
                     <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeIamge}"/>
