@@ -28,7 +28,7 @@
           <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Value="{Binding BranchCount}" Minimum="0" Maximum="100" />
           <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchCount}" MinWidth="100" Maximum="100" Minimum="0"/>
           <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Value="{Binding BranchStart}" Maximum="{Binding TreeTrunkSize}" Minimum="0" />
+          <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Value="{Binding BranchStart}" Maximum="{Binding TreeTrunkSize}" Minimum="0" />
           <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0"/>
         </Grid>
 

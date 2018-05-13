@@ -28,6 +28,8 @@ namespace TreeGeneratorWPF.ViewModels
     using TreeGeneratorWPF.Wrapper;
     using TreeGeneratorWPF.MVVM;
     using System.Windows;
+    using System.Text;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -88,6 +90,7 @@ namespace TreeGeneratorWPF.ViewModels
 
         private int leafDistanceDeviation;
         private bool showSkeleton;
+        private bool leafAntialising;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -101,6 +104,8 @@ namespace TreeGeneratorWPF.ViewModels
 
             this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
             this.ExportImageCommand = new RelayCommand(this.ExportImage);
+            this.SaveParametersCommand = new RelayCommand(this.SaveParameters);
+            this.LoadParametersCommand = new RelayCommand(this.LoadParameters);
             this.LoadLeafImageCommand = new RelayCommand(this.LoadLeafImage);
             this.TreeTrunkSize = 60;
             this.TrunkSkewAngle = 0;
@@ -339,6 +344,10 @@ namespace TreeGeneratorWPF.ViewModels
 
         public RelayCommand ExportImageCommand { get; set; }
 
+        public RelayCommand SaveParametersCommand { get; set; }
+
+        public RelayCommand LoadParametersCommand { get; set; }
+
         public RelayCommand LoadLeafImageCommand { get; set; }
 
         public RelayCommand<LeafImageViewModel> DeleteLeafCommand => new RelayCommand<LeafImageViewModel>(this.Delete);
@@ -409,6 +418,11 @@ namespace TreeGeneratorWPF.ViewModels
             set => this.Set(ref this.showSkeleton, value);
         }
 
+        public bool LeafAntialising
+        {
+            get => leafAntialising;
+            set => this.Set(ref leafAntialising, value); }
+
         public void RedrawTree()
         {
             this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
@@ -463,7 +477,69 @@ namespace TreeGeneratorWPF.ViewModels
                 LeafParameters = this.GetLeafParameters(),
                 LeafDistance = this.LeafDistance,
                 LeafDistanceDeviation = this.LeafDistanceDeviation,
+                LeafAntialising = this.LeafAntialising,
             };
+        }
+
+        private void RestorePrameters(TreeParameters treeParameters)
+        {
+            this.TreeTrunkSize = treeParameters.TreeTrunkSize;
+            this.TrunkRotationAngle = treeParameters.TrunkRotationAngle;
+            this.TrunkRotationAngleStart = treeParameters.TrunkRotationAngleStart;
+            this.TrunkSkewAngle = treeParameters.TrunkSkewAngle;
+            this.TrunkSkewAngleStart = treeParameters.TrunkSkewAngleStart;
+            this.BranchCount = treeParameters.BranchCount;
+            this.BranchStart = treeParameters.BranchStart;
+            this.BranchLengthMin = treeParameters.BranchLengthMin;
+            this.BranchLengthMax = treeParameters.BranchLengthMax;
+            this.BranchDistance = treeParameters.BranchDistance;
+            this.BranchSkew = treeParameters.BranchSkew;
+            this.BranchSkewDeviation = treeParameters.BranchSkewDeviation;
+            this.BranchRotationAngleStart = treeParameters.BranchRotationAngleStart;
+            this.BranchRotationAngle = treeParameters.BranchRotationAngle;
+            this.TrunkWidthStart = treeParameters.TrunkWidthStart;
+            this.TrunkWidthEnd = treeParameters.TrunkWidthEnd;
+            this.TrunkColor = Color.FromArgb(treeParameters.TrunkColor.A, treeParameters.TrunkColor.R, treeParameters.TrunkColor.G, treeParameters.TrunkColor.B);
+            this.OutlineColor = Color.FromArgb(treeParameters.OutlineColor.A, treeParameters.OutlineColor.R, treeParameters.OutlineColor.G, treeParameters.OutlineColor.B);
+            this.BranchLevelLengthFactor = treeParameters.BranchLevelLengthFactor;
+            this.BranchMaxLevel = treeParameters.BranchMaxLevel;
+            this.BranchMinLevel = treeParameters.BranchMinLevel;
+            this.RandomSeed = treeParameters.RandomSeed;
+            this.LeafDistance = treeParameters.LeafDistance;
+            this.LeafDistanceDeviation = treeParameters.LeafDistanceDeviation;
+            this.LeafAntialising = treeParameters.LeafAntialising;
+
+            this.LeafImageViewModels = new ObservableCollection<LeafImageViewModel>(this.LeafImageViewModels.Where(vm => !vm.CanBeDeleted));
+            foreach (var vm in this.LeafImageViewModels)
+            {
+                vm.IsIncluded = false;
+            }
+
+            var loadedLeafParameters = treeParameters.LeafParameters.Select(p =>
+            {
+                var bitmap = new BitmapImage();
+                using (MemoryStream stream = new MemoryStream(p.ImageBuffer))
+                {
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                }
+
+                return new LeafImageViewModel(bitmap)
+                {
+                    CanBeDeleted = true,
+                    IsIncluded = true,
+                    Probability = p.Probability,
+                    Scale = p.Scale,
+                    ScaleDeviation = p.SacleDeviation
+                };
+            });
+
+            foreach (var vm in loadedLeafParameters)
+            {
+                this.LeafImageViewModels.Add(vm);
+            }
         }
 
         private Task<TreeModel<WpfTreeVisualWrapper>> GenerateTreeAsync()
@@ -489,9 +565,54 @@ namespace TreeGeneratorWPF.ViewModels
             this.rand = new Random(this.RandomSeed);
         }
 
+        private void SaveParameters()
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.AddExtension = true;
+            save.DefaultExt = "*.tree";
+            save.Filter = "*.tree|*.tree";
+            var result = save.ShowDialog();
+            if (result == true)
+            {
+                using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
+                {
+                    var parametersForSave = this.CreateTreeParameters();
+                    var settings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All
+                    };
+                    var parametersString = JsonConvert.SerializeObject(parametersForSave, Formatting.Indented, settings);
+                    var parametersBytes = new ASCIIEncoding().GetBytes(parametersString); ;
+                    stream.Write(parametersBytes, 0, parametersBytes.Length);
+                }
+            }
+        }
+
+        private void LoadParameters()
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            open.AddExtension = true;
+            open.DefaultExt = "*.tree";
+            open.Filter = "*.tree|*.tree";
+            var result = open.ShowDialog();
+            if (result == true)
+            {
+                string fileContens = File.ReadAllText(open.FileName);
+                var settings = new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                };
+                var treeParameters = JsonConvert.DeserializeObject<TreeParameters>(fileContens, settings);
+                this.RestorePrameters(treeParameters);
+            }
+        }
+
         private void ExportImage()
         {
             SaveFileDialog dialog = new SaveFileDialog();
+            dialog.AddExtension = true;
+            dialog.DefaultExt = "*.png";
+            dialog.Filter = "*.png|*.png";
             if (dialog.ShowDialog() == true)
             {
                 this.CreatePng(dialog.FileName, this.Tree.TreeVisual.TreeIamge);

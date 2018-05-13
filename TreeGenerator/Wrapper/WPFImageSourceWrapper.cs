@@ -35,10 +35,24 @@ namespace TreeGeneratorWPF.Wrapper
 
         public override void DrawTree<T>(TreeModel<T> tree, TreeParameters treeParameters)
         {
-            var xOffset = -tree.ContourPoints.Min(point => (int)point.X) + 20;
-            var yOffset = -tree.ContourPoints.Min(point => (int)point.Y) + 20;
-            var imageWidth = tree.ContourPoints.Max(point => (int)point.X) - tree.ContourPoints.Min(point => (int)point.X) + 41;
-            var imageHeight = tree.ContourPoints.Max(point => (int)point.Y) - tree.ContourPoints.Min(point => (int)point.Y) + 41;
+            var maxLeafWidth = 0;
+            foreach (var parameter in treeParameters.LeafParameters)
+            {
+                SKBitmap leafBMP = SKBitmap.Decode(parameter.ImageBuffer);
+                var scaledWidth = (int)Math.Ceiling(leafBMP.Width * (parameter.Scale + parameter.SacleDeviation));
+                var scaledHeight = (int)Math.Ceiling(leafBMP.Height * (parameter.Scale + parameter.SacleDeviation));
+
+                if (maxLeafWidth < scaledWidth)
+                {
+                    maxLeafWidth = (int)Math.Ceiling(Math.Sqrt(scaledWidth * scaledWidth + scaledHeight * scaledHeight));
+                }
+            }
+
+            var xOffset = -tree.ContourPoints.Min(point => (int)point.X) + maxLeafWidth;
+            var yOffset = -tree.ContourPoints.Min(point => (int)point.Y);
+
+            var imageWidth = tree.ContourPoints.Max(point => (int)point.X) - tree.ContourPoints.Min(point => (int)point.X) + maxLeafWidth * 2;
+            var imageHeight = tree.ContourPoints.Max(point => (int)point.Y) - tree.ContourPoints.Min(point => (int)point.Y) + maxLeafWidth * 2;
 
             using (var treeBitmap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format32bppPArgb))
             using (var skelettonBitmap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format32bppPArgb))
@@ -58,12 +72,12 @@ namespace TreeGeneratorWPF.Wrapper
                         surfaceSkeletton.Canvas.DrawPoint((float)point.Position.X + xOffset, (float)point.Position.Y + yOffset, paint);
                     }
 
-                    this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor);
+                    this.DrawBranch(surfaceTree.Canvas, tree.Trunk, xOffset, yOffset, treeParameters);
 
                     var reversedBranches = tree.Branches.ToList();
                     foreach (Branch branch in reversedBranches)
                     {
-                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters.TrunkColor, treeParameters.OutlineColor);
+                        this.DrawBranch(surfaceTree.Canvas, branch, xOffset, yOffset, treeParameters);
                     }
                 }
 
@@ -82,8 +96,11 @@ namespace TreeGeneratorWPF.Wrapper
             surfaceSkeletton.Canvas.Scale(1, -1);
         }
 
-        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, IColor color, IColor outlineColor)
+        private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, TreeParameters treeParameters)
         {
+
+            IColor color = treeParameters.TrunkColor;
+            IColor outlineColor = treeParameters.OutlineColor;
             var outlinePoints = branch.PolygonPoints.Select(point => new SKPoint((int)point.X + xOffset, (int)point.Y + yOffset)).ToList();
             var polygonPoints = outlinePoints.ToList();
             polygonPoints.Add(polygonPoints[0]);
@@ -120,9 +137,7 @@ namespace TreeGeneratorWPF.Wrapper
             {
                 foreach (var leafPosition in branch.LeafPositions)
                 {
-                    SKBitmap leafBMP = null;
-                    leafBMP = SKBitmap.Decode(leafPosition.ImageBuffer);
-
+                    SKBitmap leafBMP = SKBitmap.Decode(leafPosition.ImageBuffer);
                     if (leafBMP != null)
                     {
                         var skeletonPoint = leafPosition.PositionInTree;
@@ -131,7 +146,12 @@ namespace TreeGeneratorWPF.Wrapper
                         var scaledWidth = (int)(leafBMP.Width * leafPosition.Scale);
                         var scaledHeight = (int)(leafBMP.Height * leafPosition.Scale);
                         var angle = -skeletonPoint.GrowDirection.SignedAngleTo(Vector2D.YAxis, true, true);
-                        SKPaint bmpPaint = new SKPaint() { IsAntialias = false, FilterQuality = SKFilterQuality.None, IsDither = true };
+                        SKPaint bmpPaint = new SKPaint()
+                        {
+                            IsAntialias = treeParameters.LeafAntialising,
+                            FilterQuality = treeParameters.LeafAntialising ? SKFilterQuality.Low : SKFilterQuality.None,
+                            IsDither = true
+                        };
 
                         canvas.RotateDegrees((float)-angle.Degrees, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
                         canvas.RotateDegrees(-90, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);

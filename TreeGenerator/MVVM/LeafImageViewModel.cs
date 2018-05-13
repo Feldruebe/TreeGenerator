@@ -21,6 +21,13 @@
             this.CanBeDeleted = deletable;
         }
 
+        public LeafImageViewModel(BitmapImage image, bool deletable = true)
+        {
+            this.LoadedImage = image;
+
+            this.CanBeDeleted = deletable;
+        }
+
         public BitmapImage LoadedImage { get; }
 
         public bool CanBeDeleted

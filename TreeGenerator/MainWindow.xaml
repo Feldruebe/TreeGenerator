@@ -12,7 +12,7 @@
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
                       d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
                       dialogs:DialogParticipation.Register="{Binding }"
-                      Loaded="MainWindowOnLoaded">
+                      Loaded="MainWindowOnLoaded" d:DesignWidth="1195.32" d:DesignHeight="805.334">
     <controls:MetroWindow.Resources>
         <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
     </controls:MetroWindow.Resources>
@@ -83,6 +83,11 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
         <GroupBox Grid.Column="0" Grid.Row="0">
             <GroupBox.Header>
                 <Grid>
@@ -128,6 +133,8 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                         <controls:ToggleSwitch IsChecked="{Binding RegenerateRandomSeed}" Content="New seed:" />
@@ -135,6 +142,43 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
+                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Visual="{StaticResource appbar_layer_add}" Stretch="Fill" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                    </StackPanel>
+
+                    <GridSplitter Grid.Column="2" Width="5" IsEnabled="False"></GridSplitter>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">                       
+
+                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
+                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+
+                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding SaveParametersCommand}" Width="50" Height="50">
+                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Visual="{StaticResource appbar_save}" Stretch="Fill" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+
+                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding LoadParametersCommand}" Width="50" Height="50">
+                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Visual="{StaticResource appbar_folder_open}" Stretch="Fill" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+
                         <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
                             <Grid>
                                 <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
@@ -144,18 +188,14 @@
                                 </Rectangle>
                             </Grid>
                         </Button>
-
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
-                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Button>
                     </StackPanel>
                 </Grid>
             </GroupBox>
         </Grid>
+
+        <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Batch">
+
+        </GroupBox>
     </Grid>
 </controls:MetroWindow>
 
