@@ -13,189 +13,208 @@
                       d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
                       dialogs:DialogParticipation.Register="{Binding }"
                       Loaded="MainWindowOnLoaded" d:DesignWidth="1195.32" d:DesignHeight="805.334">
-    <controls:MetroWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
-    </controls:MetroWindow.Resources>
-    <controls:MetroWindow.Flyouts>
-        <controls:FlyoutsControl>
-            <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
-                <StackPanel Margin="5,0,0,0">
-                    <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
-                    <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
-                    <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
-                </StackPanel>
-            </controls:Flyout>
-        </controls:FlyoutsControl>
-    </controls:MetroWindow.Flyouts>
+  <controls:MetroWindow.Resources>
+    <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+  </controls:MetroWindow.Resources>
+  <controls:MetroWindow.Flyouts>
+    <controls:FlyoutsControl>
+      <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
+        <StackPanel Margin="5,0,0,0">
+          <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
+          <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
+          <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
+        </StackPanel>
+      </controls:Flyout>
+    </controls:FlyoutsControl>
+  </controls:MetroWindow.Flyouts>
 
-    <controls:MetroWindow.RightWindowCommands>
-        <controls:WindowCommands>
-            <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
-                <CheckBox Content="Debug" IsChecked="{Binding DebugViewModel.DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
-                <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugViewModel.DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
-                    <Rectangle Width="15" Height="15" Fill="White">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_bug}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </ToggleButton>
-            </StackPanel>
-        </controls:WindowCommands>
-    </controls:MetroWindow.RightWindowCommands>
+  <controls:MetroWindow.RightWindowCommands>
+    <controls:WindowCommands>
+      <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+        <CheckBox Content="Debug" IsChecked="{Binding DebugViewModel.DebugModeEnabled}" Visibility="{Binding IsDebugMode, Converter={StaticResource VisibilityConverter}}" />
+        <ToggleButton HorizontalAlignment="Left" Width="30" Height="30" Visibility="{Binding DebugViewModel.DebugModeEnabled, Converter={StaticResource VisibilityConverter}}" IsChecked="{Binding IsOpen, ElementName=DebugFlyout}">
+          <Rectangle Width="15" Height="15" Fill="White">
+            <Rectangle.OpacityMask>
+              <VisualBrush Visual="{StaticResource appbar_bug}" Stretch="Fill" />
+            </Rectangle.OpacityMask>
+          </Rectangle>
+        </ToggleButton>
+      </StackPanel>
+    </controls:WindowCommands>
+  </controls:MetroWindow.RightWindowCommands>
 
-    <Grid IsSharedSizeScope="True">
+  <Grid IsSharedSizeScope="True">
 
-        <Grid.Resources>
-            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-                <Setter Property="Margin" Value="0,5,10,0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="{x:Type controls:NumericUpDown}" BasedOn="{StaticResource {x:Type controls:NumericUpDown}}">
-                <Setter Property="Margin" Value="5,5,10,5"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
-                <Setter Property="Margin" Value="5,5,10,5"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="SmallChange" Value="1"/>
-                <Setter Property="IsSnapToTickEnabled" Value="True"/>
-                <Setter Property="IsMoveToPointEnabled" Value="True"/>
-            </Style>
-            <Style TargetType="{x:Type controls:RangeSlider}" BasedOn="{StaticResource {x:Type controls:RangeSlider}}">
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="SmallChange" Value="1"/>
-                <Setter Property="IsSnapToTickEnabled" Value="True"/>
-                <Setter Property="IsMoveToPointEnabled" Value="True"/>
-                <Setter Property="MinRangeWidth" Value="1" />
-            </Style>
-            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
-                <Setter Property="Margin" Value="5,5,10,5"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="{x:Type controls:ToggleSwitch}" BasedOn="{StaticResource {x:Type controls:ToggleSwitch}}">
-                <Setter Property="Margin" Value="5,5,10,5"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-        </Grid.Resources>
+    <Grid.Resources>
+      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Margin" Value="0,5,10,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+      <Style TargetType="{x:Type controls:NumericUpDown}" BasedOn="{StaticResource {x:Type controls:NumericUpDown}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+      <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="SmallChange" Value="1"/>
+        <Setter Property="IsSnapToTickEnabled" Value="True"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+      </Style>
+      <Style TargetType="{x:Type controls:RangeSlider}" BasedOn="{StaticResource {x:Type controls:RangeSlider}}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="SmallChange" Value="1"/>
+        <Setter Property="IsSnapToTickEnabled" Value="True"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+        <Setter Property="MinRangeWidth" Value="1" />
+      </Style>
+      <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+      <Style TargetType="{x:Type controls:ToggleSwitch}" BasedOn="{StaticResource {x:Type controls:ToggleSwitch}}">
+        <Setter Property="Margin" Value="5,5,10,5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+    </Grid.Resources>
 
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <GroupBox Grid.Column="0" Grid.Row="0">
+      <GroupBox.Header>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0">Image</TextBlock>
+          <CheckBox Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding ShowSkeleton}">Show Skeleton</CheckBox>
+        </Grid>
+      </GroupBox.Header>
+      <Grid HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border BorderThickness="1" Grid.Column="0" BorderBrush="Red">
+          <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Visibility="{Binding ShowSkeleton, Converter={StaticResource VisibilityConverter}}" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
+        </Border>
+        <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
+          <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeIamge}"/>
+        </Border>
+      </Grid>
+    </GroupBox>
+
+    <Grid Grid.Column="1" Grid.Row="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      <GroupBox Grid.Row="0" Header="Settings">
+        <ScrollViewer>
+          <StackPanel>
+            <treeControls:TrunkControl />
+            <treeControls:BranchControl />
+            <treeControls:TreeColorControl />
+            <treeControls:LeafsControl />
+          </StackPanel>
+        </ScrollViewer>
+      </GroupBox>
+      <GroupBox Grid.Row="1" Header="Controls">
+        <Grid>
+          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <StackPanel Grid.Column="0" Orientation="Horizontal">
+            <controls:ToggleSwitch IsChecked="{Binding RegenerateRandomSeed}" Content="New seed:" />
+            <TextBox Text="{Binding RandomSeed}" VerticalAlignment="Center" />
+          </StackPanel>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding AddToBatchCommand}" Width="50" Height="50">
+              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                <Rectangle.OpacityMask>
+                  <VisualBrush Visual="{StaticResource appbar_layer_add}" Stretch="Fill" />
+                </Rectangle.OpacityMask>
+              </Rectangle>
+            </Button>
+          </StackPanel>
 
-        <GroupBox Grid.Column="0" Grid.Row="0">
-            <GroupBox.Header>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0">Image</TextBlock>
-                    <CheckBox Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding ShowSkeleton}">Show Skeleton</CheckBox>
-                </Grid>
-            </GroupBox.Header>
-            <Grid HorizontalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Border BorderThickness="1" Grid.Column="0" BorderBrush="Red">
-                    <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Visibility="{Binding ShowSkeleton, Converter={StaticResource VisibilityConverter}}" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
-                </Border>
-                <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
-                    <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeIamge}"/>
-                </Border>
-            </Grid>
-        </GroupBox>
+          <GridSplitter Grid.Column="2" Width="5" IsEnabled="False"></GridSplitter>
 
-        <Grid Grid.Column="1" Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Settings">
-                <ScrollViewer>
-                    <StackPanel>
-                        <treeControls:TrunkControl />
-                        <treeControls:BranchControl />
-                        <treeControls:TreeColorControl />
-                        <treeControls:LeafsControl />
-                    </StackPanel>
-                </ScrollViewer>
-            </GroupBox>
-            <GroupBox Grid.Row="1" Header="Controls">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <controls:ToggleSwitch IsChecked="{Binding RegenerateRandomSeed}" Content="New seed:" />
-                        <TextBox Text="{Binding RandomSeed}" VerticalAlignment="Center" />
-                    </StackPanel>
+          <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
-                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_layer_add}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Button>
-                    </StackPanel>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
+              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                <Rectangle.OpacityMask>
+                  <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
+                </Rectangle.OpacityMask>
+              </Rectangle>
+            </Button>
 
-                    <GridSplitter Grid.Column="2" Width="5" IsEnabled="False"></GridSplitter>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding SaveParametersCommand}" Width="50" Height="50">
+              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                <Rectangle.OpacityMask>
+                  <VisualBrush Visual="{StaticResource appbar_save}" Stretch="Fill" />
+                </Rectangle.OpacityMask>
+              </Rectangle>
+            </Button>
 
-                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">                       
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding LoadParametersCommand}" Width="50" Height="50">
+              <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                <Rectangle.OpacityMask>
+                  <VisualBrush Visual="{StaticResource appbar_folder_open}" Stretch="Fill" />
+                </Rectangle.OpacityMask>
+              </Rectangle>
+            </Button>
 
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExportImageCommand}" Width="50" Height="50">
-                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_image_export}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Button>
-
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding SaveParametersCommand}" Width="50" Height="50">
-                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_save}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Button>
-
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding LoadParametersCommand}" Width="50" Height="50">
-                            <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_folder_open}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Button>
-
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
-                            <Grid>
-                                <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
-                                    <Rectangle.OpacityMask>
-                                        <VisualBrush Visual="{StaticResource appbar_acorn}" Stretch="Fill" />
-                                    </Rectangle.OpacityMask>
-                                </Rectangle>
-                            </Grid>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </GroupBox>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding GenerateTreeCommand}" Width="50" Height="50">
+              <Grid>
+                <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+                  <Rectangle.OpacityMask>
+                    <VisualBrush Visual="{StaticResource appbar_acorn}" Stretch="Fill" />
+                  </Rectangle.OpacityMask>
+                </Rectangle>
+              </Grid>
+            </Button>
+          </StackPanel>
         </Grid>
-
-        <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Batch">
-
-        </GroupBox>
+      </GroupBox>
     </Grid>
+
+    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Batch">
+      <ItemsControl ItemsSource="{Binding BatchTrees}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Columns="10" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate >
+          <DataTemplate>
+            <Grid d:DataContext="{d:DesignInstance viewmodel:BatchTreeViewModel}">
+              <controls:Tile Command="{Binding DataContext.BatchTreeRestoreCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}">
+                <Border Margin="0,5,0,5" Background="White">
+                  <Image RenderOptions.BitmapScalingMode="NearestNeighbor"  Source="{Binding Thumbnail}"/>
+                </Border>
+              </controls:Tile>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </GroupBox>
+  </Grid>
 </controls:MetroWindow>
+
+
 

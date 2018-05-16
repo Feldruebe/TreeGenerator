@@ -92,6 +92,8 @@ namespace TreeGeneratorWPF.ViewModels
         private bool showSkeleton;
         private bool leafAntialising;
 
+        private ObservableCollection<BatchTreeViewModel> batchTrees = new ObservableCollection<BatchTreeViewModel>();
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -102,11 +104,6 @@ namespace TreeGeneratorWPF.ViewModels
             this.DebugViewModel.DebugModeEnabled = true;
 #endif
 
-            this.GenerateTreeCommand = new RelayCommand(this.GenerateTreeAndDraw);
-            this.ExportImageCommand = new RelayCommand(this.ExportImage);
-            this.SaveParametersCommand = new RelayCommand(this.SaveParameters);
-            this.LoadParametersCommand = new RelayCommand(this.LoadParameters);
-            this.LoadLeafImageCommand = new RelayCommand(this.LoadLeafImage);
             this.TreeTrunkSize = 60;
             this.TrunkSkewAngle = 0;
             this.TrunkSkewAngleStart = 0;
@@ -139,7 +136,7 @@ namespace TreeGeneratorWPF.ViewModels
             };
             this.LeafImageViewModels.Add(defaultLeafImage);
         }
-
+        
         public int RandomSeed
         {
             get
@@ -340,16 +337,20 @@ namespace TreeGeneratorWPF.ViewModels
             }
         }
 
-        public RelayCommand GenerateTreeCommand { get; set; }
+        public RelayCommand GenerateTreeCommand => new RelayCommand(this.GenerateTreeAndDraw);          
 
-        public RelayCommand ExportImageCommand { get; set; }
+        public RelayCommand ExportImageCommand => new RelayCommand(this.ExportImage);
 
-        public RelayCommand SaveParametersCommand { get; set; }
+        public RelayCommand SaveParametersCommand => new RelayCommand(this.SaveParameters);
 
-        public RelayCommand LoadParametersCommand { get; set; }
+        public RelayCommand LoadParametersCommand => new RelayCommand(this.LoadParameters);
 
-        public RelayCommand LoadLeafImageCommand { get; set; }
+        public RelayCommand LoadLeafImageCommand => new RelayCommand(this.LoadLeafImage);
 
+        public RelayCommand AddToBatchCommand => new RelayCommand(this.AddToBatch);
+
+        public RelayCommand<BatchTreeViewModel> BatchTreeRestoreCommand => new RelayCommand<BatchTreeViewModel>(this.RestoreBatchTree);
+        
         public RelayCommand<LeafImageViewModel> DeleteLeafCommand => new RelayCommand<LeafImageViewModel>(this.Delete);
 
         public bool IsDebugMode
@@ -422,6 +423,12 @@ namespace TreeGeneratorWPF.ViewModels
         {
             get => leafAntialising;
             set => this.Set(ref leafAntialising, value); }
+
+        public ObservableCollection<BatchTreeViewModel> BatchTrees
+        {
+            get => this.batchTrees;
+            set => this.Set(ref this.batchTrees, value);
+        }
 
         public void RedrawTree()
         {
@@ -582,7 +589,7 @@ namespace TreeGeneratorWPF.ViewModels
                         TypeNameHandling = TypeNameHandling.All
                     };
                     var parametersString = JsonConvert.SerializeObject(parametersForSave, Formatting.Indented, settings);
-                    var parametersBytes = new ASCIIEncoding().GetBytes(parametersString); ;
+                    var parametersBytes = new ASCIIEncoding().GetBytes(parametersString);
                     stream.Write(parametersBytes, 0, parametersBytes.Length);
                 }
             }
@@ -625,9 +632,9 @@ namespace TreeGeneratorWPF.ViewModels
             {
                 using (FileStream stream = new FileStream(filename, FileMode.Create))
                 {
-                    PngBitmapEncoder encoder5 = new PngBitmapEncoder();
-                    encoder5.Frames.Add(BitmapFrame.Create(image));
-                    encoder5.Save(stream);
+                    PngBitmapEncoder encoderPNG = new PngBitmapEncoder();
+                    encoderPNG.Frames.Add(BitmapFrame.Create(image));
+                    encoderPNG.Save(stream);
                 }
             }
         }
@@ -675,6 +682,17 @@ namespace TreeGeneratorWPF.ViewModels
             encoder.Frames.Add(BitmapFrame.Create(imageC));
             encoder.Save(memStream);
             return memStream.ToArray();
+        }
+
+        private void AddToBatch()
+        {
+            var batchTreeViewModel = new BatchTreeViewModel { Name = this.Parameters.RandomSeed.ToString(), Thumbnail = this.Tree.TreeVisual.TreeIamge.Clone(), Parameters = this.Parameters };
+            this.BatchTrees.Add(batchTreeViewModel);
+        }
+
+        private void RestoreBatchTree(BatchTreeViewModel batchTreeViewModel)
+        {
+            this.RestorePrameters(batchTreeViewModel.Parameters);
         }
     }
 

@@ -168,7 +168,6 @@ namespace TreeGeneratorWPF.Wrapper
                         canvas.Translate(scaledWidth, scaledHeight);
                         canvas.RotateDegrees(180, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
                         canvas.RotateDegrees((float)angle.Degrees, (float)rightPoint.X + xOffset, (float)rightPoint.Y + yOffset);
-
                     }
                 }
             }
