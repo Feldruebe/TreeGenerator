@@ -22,7 +22,6 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
                         <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
-                        <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -49,7 +48,6 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="CThird"/>
                         <ColumnDefinition Width="*" SharedSizeGroup="CForth"/>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="CFiveth"/>
-                        <ColumnDefinition Width="*" SharedSizeGroup="CSixth"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

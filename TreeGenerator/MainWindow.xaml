@@ -7,6 +7,7 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:treeControls="clr-namespace:TreeGeneratorWPF.Controls"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:Converters="http://metro.mahapps.com/winfx/xaml/shared"
                       mc:Ignorable="d"
                       Title="MainWindow"
                       DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
@@ -95,8 +96,8 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <TextBlock Grid.Column="0">Image</TextBlock>
-          <CheckBox Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding ShowSkeleton}">Show Skeleton</CheckBox>
+          <TextBlock Grid.Column="0" Text="IMAGE" Foreground="White" FontFamily="Segoe UI" FontSize="12" Margin="0" />
+          <CheckBox Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding ShowSkeleton}" Foreground="White" FontFamily="Segoe UI" FontSize="12" Margin="0,-5,0,-5">Show Skeleton</CheckBox>
         </Grid>
       </GroupBox.Header>
       <Grid HorizontalAlignment="Center">
@@ -104,10 +105,10 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Border BorderThickness="1" Grid.Column="0" BorderBrush="Red">
+        <Border BorderThickness="1" Grid.Column="0" BorderBrush="{DynamicResource AccentColorBrush}">
           <Image Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor" Visibility="{Binding ShowSkeleton, Converter={StaticResource VisibilityConverter}}" Source="{Binding Tree.TreeVisual.TreeSkeletonIamge}"/>
         </Border>
-        <Border BorderThickness="1" Grid.Column="1" BorderBrush="Red">
+        <Border BorderThickness="1" Grid.Column="1" BorderBrush="{DynamicResource AccentColorBrush}">
           <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Tree.TreeVisual.TreeIamge}"/>
         </Border>
       </Grid>
@@ -151,7 +152,7 @@
             </Button>
           </StackPanel>
 
-          <GridSplitter Grid.Column="2" Width="5" IsEnabled="False"></GridSplitter>
+          <GridSplitter Grid.Column="2" Width="5" IsEnabled="False" Background="{DynamicResource AccentColorBrush}" ></GridSplitter>
 
           <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
 
@@ -193,26 +194,67 @@
       </GroupBox>
     </Grid>
 
-    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Batch">
-      <ItemsControl ItemsSource="{Binding BatchTrees}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <UniformGrid Columns="10" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate >
-          <DataTemplate>
-            <Grid d:DataContext="{d:DesignInstance viewmodel:BatchTreeViewModel}">
-              <controls:Tile Command="{Binding DataContext.BatchTreeRestoreCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}">
-                <Border Margin="0,5,0,5" Background="White">
-                  <Image RenderOptions.BitmapScalingMode="NearestNeighbor"  Source="{Binding Thumbnail}"/>
-                </Border>
-              </controls:Tile>
-            </Grid>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </GroupBox>
+    <Expander Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Batch">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <ItemsControl Grid.Column="0" ItemsSource="{Binding BatchViewModel.BatchTrees}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="10" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate >
+            <DataTemplate>
+              <Grid d:DataContext="{d:DesignInstance viewmodel:BatchTreeViewModel}">
+                <controls:Tile Command="{Binding DataContext.BatchTreeRestoreCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}" Height="100" Width="100">
+                  <Border Margin="0,5,0,5" Background="White">
+                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor"  Source="{Binding Thumbnail}"/>
+                  </Border>
+                </controls:Tile>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <StackPanel Grid.Column="1">
+          <GroupBox Header="Batch Control" DataContext="{Binding BatchViewModel}">
+            <StackPanel>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Result Width" />
+                <Slider Grid.Column="1" Grid.Row="0" Value="{Binding BatchedImageWidth}" Minimum="10" Maximum="1000" MinWidth="100"/>
+                <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding BatchedImageWidth}" Minimum="10" Maximum="1000" MinWidth="50"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Tree Count" />
+                <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BtchedTreesCount}" Minimum="1" Maximum="1000" MinWidth="100"/>
+                <controls:NumericUpDown Grid.Column="2" Grid.Row="1" Value="{Binding BtchedTreesCount}" Minimum="10" Maximum="1000" MinWidth="50"/>
+              </Grid>
+              <StackPanel>
+                <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExecuteBatchCommand}" Width="50" Height="50" HorizontalAlignment="Right">
+                  <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Visual="{StaticResource appbar_tree}" Stretch="Fill" />
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                </Button>
+              </StackPanel>
+            </StackPanel>
+          </GroupBox>
+        </StackPanel>
+      </Grid>
+    </Expander>
   </Grid>
 </controls:MetroWindow>
 

@@ -92,7 +92,7 @@ namespace TreeGeneratorWPF.ViewModels
         private bool showSkeleton;
         private bool leafAntialising;
 
-        private ObservableCollection<BatchTreeViewModel> batchTrees = new ObservableCollection<BatchTreeViewModel>();
+        
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -367,6 +367,8 @@ namespace TreeGeneratorWPF.ViewModels
 
         public DebugViewModel DebugViewModel { get; }
 
+        public BatchViewModel BatchViewModel { get; } = new BatchViewModel();
+
         public TreeModel<WpfTreeVisualWrapper> Tree
         {
             get
@@ -422,12 +424,7 @@ namespace TreeGeneratorWPF.ViewModels
         public bool LeafAntialising
         {
             get => leafAntialising;
-            set => this.Set(ref leafAntialising, value); }
-
-        public ObservableCollection<BatchTreeViewModel> BatchTrees
-        {
-            get => this.batchTrees;
-            set => this.Set(ref this.batchTrees, value);
+            set => this.Set(ref leafAntialising, value);
         }
 
         public void RedrawTree()
@@ -687,7 +684,7 @@ namespace TreeGeneratorWPF.ViewModels
         private void AddToBatch()
         {
             var batchTreeViewModel = new BatchTreeViewModel { Name = this.Parameters.RandomSeed.ToString(), Thumbnail = this.Tree.TreeVisual.TreeIamge.Clone(), Parameters = this.Parameters };
-            this.BatchTrees.Add(batchTreeViewModel);
+            this.BatchViewModel.BatchTrees.Add(batchTreeViewModel);
         }
 
         private void RestoreBatchTree(BatchTreeViewModel batchTreeViewModel)

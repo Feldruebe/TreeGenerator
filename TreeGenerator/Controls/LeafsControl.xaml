@@ -9,130 +9,128 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
-    <Expander Header="Leafs" IsExpanded="True">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" MinWidth="100" />
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+  <Expander Header="Leafs" IsExpanded="True">
+    <Grid >
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" MinWidth="100" />
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0" Grid.Row="0" ColumnSpan="4">
+      <Grid Grid.Column="0" Grid.Row="0" ColumnSpan="4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" SharedSizeGroup="LFirst" />
+          <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="LSecond" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button Grid.Column="0" Grid.Row="0" Command="{Binding LoadLeafImageCommand}">
+          <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+            <Rectangle.OpacityMask>
+              <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+            </Rectangle.OpacityMask>
+          </Rectangle>
+        </Button>
+        <ItemsControl Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{Binding LeafImageViewModels}" HorizontalAlignment="Right">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid d:DataContext="{d:DesignInstance mvvm:LeafImageViewModel}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="LFirst" />
-                    <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="LSecond" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="LThird" />
-                    <ColumnDefinition Width="*" SharedSizeGroup="LForth" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
+                <CheckBox Grid.Column="0" Margin="5,5,5,5" IsChecked="{Binding IsIncluded}" />
+                <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Uniform" Source="{Binding LoadedImage}" Width="30" Height="30" />
+                <Grid Grid.Column="2" Margin="0,10,0,0">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Button Grid.Column="0" Grid.Row="0" Command="{Binding LoadLeafImageCommand}">
-                    <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,5,10,0" Text="Ratio" VerticalAlignment="Center" />
+                  <Slider Margin="10,0,10,0" Grid.Row="0" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0.0" Maximum="1.0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding Probability}" />
+                  <controls:NumericUpDown Grid.Row="0" Grid.Column="2" IsEnabled="{Binding IsIncluded}" HasDecimals="True" StringFormat="0.##" Width="200" Minimum="0.0" Maximum="1.0" VerticalAlignment="Center" Value="{Binding Probability}" Interval="0.05" />
+
+                  <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,5,10,0" Text="Scale" VerticalAlignment="Center" />
+                  <Slider Margin="10,0,10,0" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0.1" Maximum="10.0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding Scale}" />
+                  <controls:NumericUpDown Margin="10,0,10,0" Grid.Row="1" Grid.Column="2" HasDecimals="True" IsEnabled="{Binding IsIncluded}" StringFormat="0.##" Width="200" Minimum="0.1" Maximum="10.0" VerticalAlignment="Center" Value="{Binding Scale}" Interval="0.05" />
+
+                  <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,5,10,0" Text="Scale Deviation" VerticalAlignment="Center" />
+                  <Slider Margin="10,0,10,0" Grid.Row="2" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0" Maximum="{Binding Scale}" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding ScaleDeviation}" />
+                  <controls:NumericUpDown Margin="10,0,10,0" Grid.Row="2" Grid.Column="2" HasDecimals="True" IsEnabled="{Binding IsIncluded}"  StringFormat="0.##" Width="200" Minimum="0" Maximum="{Binding Scale}" VerticalAlignment="Center" Value="{Binding ScaleDeviation}" Interval="0.05" />
+                </Grid>
+
+                <Button Grid.Column="3" Margin="5,5,5,5" Command="{Binding DataContext.DeleteLeafCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}" IsEnabled="{Binding CanBeDeleted}">
+                  <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="15" Height="15">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
                 </Button>
-                <ItemsControl Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{Binding LeafImageViewModels}" HorizontalAlignment="Right">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid d:DataContext="{d:DesignInstance mvvm:LeafImageViewModel}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <CheckBox Grid.Column="0" Margin="5,5,5,5" IsChecked="{Binding IsIncluded}" />
-                                <Image Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Stretch="Uniform" Source="{Binding LoadedImage}" Width="30" Height="30" />
-                                <Grid Grid.Column="2" Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,5,10,0" Text="Ratio" VerticalAlignment="Center" />
-                                    <Slider Margin="10,0,10,0" Grid.Row="0" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0.0" Maximum="1.0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding Probability}" />
-                                    <controls:NumericUpDown Grid.Row="0" Grid.Column="2" IsEnabled="{Binding IsIncluded}" HasDecimals="True" StringFormat="0.##" Width="200" Minimum="0.0" Maximum="1.0" VerticalAlignment="Center" Value="{Binding Probability}" Interval="0.05" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,5,10,0" Text="Scale" VerticalAlignment="Center" />
-                                    <Slider Margin="10,0,10,0" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0.1" Maximum="10.0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding Scale}" />
-                                    <controls:NumericUpDown Margin="10,0,10,0" Grid.Row="1" Grid.Column="2" HasDecimals="True" IsEnabled="{Binding IsIncluded}" StringFormat="0.##" Width="200" Minimum="0.1" Maximum="10.0" VerticalAlignment="Center" Value="{Binding Scale}" Interval="0.05" />
+      <Grid Grid.Column="0" Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" SharedSizeGroup="LBFirst"/>
+          <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="LBSecond"/>
+          <ColumnDefinition Width="Auto" SharedSizeGroup="LBThird"/>
+          <ColumnDefinition Width="*" SharedSizeGroup="LBForth"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Fill="{DynamicResource AccentColorBrush}" Width="25" Height="7">
+          <Rectangle.OpacityMask>
+            <VisualBrush Visual="{StaticResource appbar_dimension_line_width}" Stretch="Fill" />
+          </Rectangle.OpacityMask>
+        </Rectangle>
+        <TextBlock Margin="10,0,10,0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center">Leaf Distance</TextBlock>
+        <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding LeafDistance}" MinWidth="50" Maximum="1000" Minimum="1" />
+        <Slider Grid.Column="2" Grid.Row="1" Value="{Binding LeafDistance}" MinWidth="100" Maximum="1000" Minimum="1" />
+      </Grid>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,5,10,0" Text="Scale Deviation" VerticalAlignment="Center" />
-                                    <Slider Margin="10,0,10,0" Grid.Row="2" Grid.Column="1" IsEnabled="{Binding IsIncluded}" Width="200" Minimum="0" Maximum="{Binding Scale}" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" VerticalAlignment="Center" Value="{Binding ScaleDeviation}" />
-                                    <controls:NumericUpDown Margin="10,0,10,0" Grid.Row="2" Grid.Column="2" HasDecimals="True" IsEnabled="{Binding IsIncluded}"  StringFormat="0.##" Width="200" Minimum="0" Maximum="{Binding Scale}" VerticalAlignment="Center" Value="{Binding ScaleDeviation}" Interval="0.05" />
-                                </Grid>
+      <Grid Grid.Column="2" Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" SharedSizeGroup="RBFirst"/>
+          <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="RBSecond"/>
+          <ColumnDefinition Width="Auto" SharedSizeGroup="RBThird"/>
+          <ColumnDefinition Width="*" SharedSizeGroup="RBForth"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
+          <Rectangle.OpacityMask>
+            <VisualBrush Visual="{StaticResource appbar_graph_line}" Stretch="Fill" />
+          </Rectangle.OpacityMask>
+        </Rectangle>
+        <TextBlock Margin="10,0,10,0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center">Leaf Distance Deviation</TextBlock>
+        <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding LeafDistanceDeviation}" MinWidth="50" Maximum="{Binding LeafDistance}" Minimum="0" />
+        <Slider Grid.Column="2" Grid.Row="1" Value="{Binding LeafDistanceDeviation}" MinWidth="100" Maximum="{Binding LeafDistance}" Minimum="0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" />
+      </Grid>
 
-                                <Button Grid.Column="3" Margin="5,5,5,5" Command="{Binding DataContext.DeleteLeafCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}" IsEnabled="{Binding CanBeDeleted}">
-                                    <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="15" Height="15">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                </Button>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
-
-            <Grid Grid.Column="0" Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="LBFirst"/>
-                    <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="LBSecond"/>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="LBThird"/>
-                    <ColumnDefinition Width="*" SharedSizeGroup="LBForth"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Fill="{DynamicResource AccentColorBrush}" Width="25" Height="7">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_dimension_line_width}" Stretch="Fill" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-                <TextBlock Margin="10,0,10,0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center">Leaf Distance</TextBlock>
-                <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding LeafDistance}" MinWidth="50" Maximum="1000" Minimum="1" />
-                <Slider Grid.Column="2" Grid.Row="1" Value="{Binding LeafDistance}" MinWidth="100" Maximum="1000" Minimum="1" />
-            </Grid>
-
-            <Grid Grid.Column="2" Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="RBFirst"/>
-                    <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="RBSecond"/>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="RBThird"/>
-                    <ColumnDefinition Width="*" SharedSizeGroup="RBForth"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Fill="{DynamicResource AccentColorBrush}" Width="25" Height="25">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_graph_line}" Stretch="Fill" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-                <TextBlock Margin="10,0,10,0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center">Leaf Distance Deviation</TextBlock>
-                <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding LeafDistanceDeviation}" MinWidth="50" Maximum="{Binding LeafDistance}" Minimum="0" />
-                <Slider Grid.Column="2" Grid.Row="1" Value="{Binding LeafDistanceDeviation}" MinWidth="100" Maximum="{Binding LeafDistance}" Minimum="0" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" />
-            </Grid>
-
-            <CheckBox Grid.Row="2" IsChecked="{Binding LeafAntialising}">Antialise Leafs</CheckBox>
-        </Grid>
-    </Expander>
+      <CheckBox Grid.Row="2" IsChecked="{Binding LeafAntialising}">Antialise Leafs</CheckBox>
+    </Grid>
+  </Expander>
 </UserControl>

@@ -113,6 +113,7 @@
       <DependentUpon>TrunkControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\BatchTreeViewModel.cs" />
+    <Compile Include="MVVM\BatchViewModel.cs" />
     <Compile Include="MVVM\DebugViewModel.cs" />
     <Compile Include="MVVM\LeafImageViewModel.cs" />
     <Compile Include="Settings.cs" />
