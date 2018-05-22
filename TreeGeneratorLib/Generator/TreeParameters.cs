@@ -50,7 +50,7 @@ namespace TreeGeneratorLib.Generator
 
         public int BranchMinLevel { get; set; }
 
-        public int RandomSeed { get; set; }
+        public int? RandomSeed { get; set; }
 
         public List<LeafParameter> LeafParameters { get; set; }
 

@@ -508,7 +508,7 @@ namespace TreeGeneratorWPF.ViewModels
             this.BranchLevelLengthFactor = treeParameters.BranchLevelLengthFactor;
             this.BranchMaxLevel = treeParameters.BranchMaxLevel;
             this.BranchMinLevel = treeParameters.BranchMinLevel;
-            this.RandomSeed = treeParameters.RandomSeed;
+            this.RandomSeed = treeParameters.RandomSeed ?? -1;
             this.LeafDistance = treeParameters.LeafDistance;
             this.LeafDistanceDeviation = treeParameters.LeafDistanceDeviation;
             this.LeafAntialising = treeParameters.LeafAntialising;

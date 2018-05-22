@@ -7,141 +7,141 @@
              xmlns:viewModels="clr-namespace:TreeGeneratorWPF.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300">
-  <Grid IsSharedSizeScope="True">
-    <Expander Header="Branches" IsExpanded="True">
-      <StackPanel>
+             d:DesignHeight="341.627" d:DesignWidth="438.54">
+    <Grid IsSharedSizeScope="True">
+        <Expander Header="Branches" IsExpanded="True">
+            <StackPanel>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Count</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Value="{Binding BranchCount}" Minimum="0" Maximum="100" />
-          <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchCount}" MinWidth="100" Maximum="100" Minimum="0"/>
-          <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Value="{Binding BranchStart}" Maximum="{Binding TreeTrunkSize}" Minimum="0" />
-          <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0"/>
-        </Grid>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Count</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Value="{Binding BranchCount}" Minimum="0" Maximum="100" />
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchCount}" MinWidth="100" Maximum="100" Minimum="0"/>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Start</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Value="{Binding BranchStart}" Maximum="{Binding TreeTrunkSize}" Minimum="0" />
+                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchStart}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="0"/>
+                </Grid>
 
-        <Separator Height="5"/>
+                <Separator Height="5"/>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" >Length Min</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchLengthMin}" />
-          <TextBlock Grid.Column="2" Grid.Row="0" >Length Max</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchLengthMax}" />
-          <controls:RangeSlider Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" MaxWidth="300" LowerValue="{Binding BranchLengthMin}" UpperValue="{Binding BranchLengthMax}" Maximum="500" Minimum="1" />
-        </Grid>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" >Length Min</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchLengthMin}" />
+                    <TextBlock Grid.Column="2" Grid.Row="0" >Length Max</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchLengthMax}" />
+                    <controls:RangeSlider Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" MaxWidth="300" LowerValue="{Binding BranchLengthMin}" UpperValue="{Binding BranchLengthMax}" Maximum="500" Minimum="1" />
+                </Grid>
 
-        <Separator Height="5"/>
+                <Separator Height="5"/>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" >Sub Branch Min Level</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchMinLevel}" />
-          <TextBlock Grid.Column="2" Grid.Row="0" >Sub Branch Max Level</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchMaxLevel}" />
-          <controls:RangeSlider Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" MaxWidth="300" LowerValue="{Binding BranchMinLevel}" UpperValue="{Binding BranchMaxLevel}" Maximum="10" Minimum="1" />
-        </Grid>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" >Sub Branch Min Level</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchMinLevel}" />
+                    <TextBlock Grid.Column="2" Grid.Row="0" >Sub Branch Max Level</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Minimum="1" Maximum="500" Value="{Binding BranchMaxLevel}" />
+                    <controls:RangeSlider Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" MaxWidth="300" LowerValue="{Binding BranchMinLevel}" UpperValue="{Binding BranchMaxLevel}" Maximum="10" Minimum="1" />
+                </Grid>
 
-        <Separator Height="5"/>
+                <Separator Height="5"/>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Level Length Factor</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="1" Minimum="0.1" HasDecimals="True" StringFormat="0.##" Value="{Binding BranchLevelLengthFactor}" />
-          <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchLevelLengthFactor}" MinWidth="100" Maximum="1" Minimum="0.1" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Level Length Factor</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="1" Minimum="0.1" HasDecimals="True" StringFormat="0.##" Value="{Binding BranchLevelLengthFactor}" />
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchLevelLengthFactor}" MinWidth="100" Maximum="1" Minimum="0.1" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False"/>
 
-          <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Maximum="{Binding TreeTrunkSize}" Minimum="1" Value="{Binding BranchDistance}" />
-          <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" />
-        </Grid>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >Distance</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0" MinWidth="50" Maximum="{Binding TreeTrunkSize}" Minimum="1" Value="{Binding BranchDistance}" />
+                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchDistance}" MinWidth="100" Maximum="{Binding TreeTrunkSize}" Minimum="1" />
+                </Grid>
 
-        <Separator Height="5"/>
+                <Separator Height="5"/>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Skew</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="120" Minimum="10" Value="{Binding BranchSkew}" />
-          <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchSkew}" MinWidth="100" Maximum="120" Minimum="10"/>
-          <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Skew Deviation</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Maximum="50" Minimum="0" Value="{Binding BranchSkewDeviation}" />
-          <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchSkewDeviation}" MinWidth="100" Maximum="50" Minimum="0"/>
-        </Grid>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">Skew</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="120" Minimum="10" Value="{Binding BranchSkew}" />
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchSkew}" MinWidth="100" Maximum="120" Minimum="10"/>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Skew Deviation</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Maximum="50" Minimum="0" Value="{Binding BranchSkewDeviation}" />
+                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchSkewDeviation}" MinWidth="100" Maximum="50" Minimum="0"/>
+                </Grid>
 
-        <Separator Height="5"/>
+                <Separator Height="5"/>
 
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
-            <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
-            <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
-            <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BFirst"/>
+                        <ColumnDefinition Width="*" MinWidth="100" SharedSizeGroup="BSecond"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BThird"/>
+                        <ColumnDefinition Width="*" SharedSizeGroup="BForth"/>
 
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Rotation</TextBlock>
-          <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="240" Minimum="-240" Value="{Binding BranchRotationAngle}" />
-          <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240"/>
-          <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Rotation Start</TextBlock>
-          <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Maximum="{Binding BranchLengthMax}" Minimum="0" Value="{Binding BranchRotationAngleStart}" />
-          <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchRotationAngleStart}" MinWidth="100" Maximum="{Binding BranchLengthMax}" Minimum="0"/>
-        </Grid>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >Rotation</TextBlock>
+                    <controls:NumericUpDown Grid.Column="1" Grid.Row="0" MinWidth="50" Maximum="240" Minimum="-240" Value="{Binding BranchRotationAngle}" />
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BranchRotationAngle}" MinWidth="100" Maximum="240" Minimum="-240"/>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">Rotation Start</TextBlock>
+                    <controls:NumericUpDown Grid.Column="3" Grid.Row="0"  MinWidth="50" Maximum="{Binding BranchLengthMax}" Minimum="0" Value="{Binding BranchRotationAngleStart}" />
+                    <Slider Grid.Column="3" Grid.Row="1" Value="{Binding BranchRotationAngleStart}" MinWidth="100" Maximum="{Binding BranchLengthMax}" Minimum="0"/>
+                </Grid>
 
-      </StackPanel>
-    </Expander>
-  </Grid>
+            </StackPanel>
+        </Expander>
+    </Grid>
 </UserControl>
