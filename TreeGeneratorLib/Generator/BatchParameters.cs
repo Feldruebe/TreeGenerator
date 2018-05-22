@@ -9,9 +9,9 @@ namespace TreeGeneratorLib.Generator
 {
     public class BatchParameters
     {
-        public IList<TreeParameters> TreeParameters { get; set; }
+        public IList<BatchTreeParameter> BatchTreeParameters { get; set; }
 
         public int BatchWidth { get; set; }
-        public int TreeCount { get; internal set; }
+        public int TreeCount { get; set; }
     }
 }

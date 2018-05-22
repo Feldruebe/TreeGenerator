@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Generator\BatchGenerator.cs" />
     <Compile Include="Generator\BatchParameters.cs" />
+    <Compile Include="Generator\BatchTreeParameter.cs" />
     <Compile Include="Generator\LeafParameter.cs" />
     <Compile Include="Generator\TreeBatch.cs" />
     <Compile Include="Generator\TreeBatchPosition.cs" />

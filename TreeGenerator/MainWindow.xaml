@@ -85,7 +85,7 @@
     </Grid.ColumnDefinitions>
 
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="*" MinHeight="400"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
@@ -200,24 +200,60 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <ItemsControl Grid.Column="0" ItemsSource="{Binding BatchViewModel.BatchTrees}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <UniformGrid Columns="10" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate >
-            <DataTemplate>
-              <Grid d:DataContext="{d:DesignInstance viewmodel:BatchTreeViewModel}">
-                <controls:Tile Command="{Binding DataContext.BatchTreeRestoreCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}" Height="100" Width="100">
-                  <Border Margin="0,5,0,5" Background="White">
-                    <Image RenderOptions.BitmapScalingMode="NearestNeighbor"  Source="{Binding Thumbnail}"/>
-                  </Border>
-                </controls:Tile>
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ScrollViewer Grid.Column="0" MaxHeight="450">
+          <ItemsControl ItemsSource="{Binding BatchViewModel.BatchTrees}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate >
+              <DataTemplate>
+                <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" d:DataContext="{d:DesignInstance viewmodel:BatchTreeViewModel}" Margin="5">
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="150" />
+                      <RowDefinition Height="Auto" />
+                      <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Background="White" HorizontalAlignment="Center" Margin="5">
+                      <Image RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Thumbnail}" VerticalAlignment="Bottom"/>
+                    </Border>
+
+                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Probability" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                    <Slider Grid.Column="1" Grid.Row="1" Value="{Binding Probability}" Minimum="0" Maximum="1" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="False" MinWidth="100" VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                      <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding DataContext.BatchTreeRestoreCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}" Width="50" Height="50">
+                        <Grid>
+                          <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+                            <Rectangle.OpacityMask>
+                              <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                          </Rectangle>
+                        </Grid>
+                      </Button>
+
+                      <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding DataContext.BatchViewModel.DeleteCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}" CommandParameter="{Binding}" Width="50" Height="50">
+                        <Grid>
+                          <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="20" Height="23">
+                            <Rectangle.OpacityMask>
+                              <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                          </Rectangle>
+                        </Grid>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
         <StackPanel Grid.Column="1">
           <GroupBox Header="Batch Control" DataContext="{Binding BatchViewModel}">
             <StackPanel>
@@ -238,8 +274,8 @@
                 <controls:NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding BatchedImageWidth}" Minimum="10" Maximum="1000" MinWidth="50"/>
 
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Tree Count" />
-                <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BtchedTreesCount}" Minimum="1" Maximum="1000" MinWidth="100"/>
-                <controls:NumericUpDown Grid.Column="2" Grid.Row="1" Value="{Binding BtchedTreesCount}" Minimum="10" Maximum="1000" MinWidth="50"/>
+                <Slider Grid.Column="1" Grid.Row="1" Value="{Binding BatchedTreesCount}" Minimum="1" Maximum="1000" MinWidth="100"/>
+                <controls:NumericUpDown Grid.Column="2" Grid.Row="1" Value="{Binding BatchedTreesCount}" Minimum="10" Maximum="1000" MinWidth="50"/>
               </Grid>
               <StackPanel>
                 <Button Style="{DynamicResource MetroCircleButtonStyle}" Command="{Binding ExecuteBatchCommand}" Width="50" Height="50" HorizontalAlignment="Right">
@@ -254,6 +290,7 @@
           </GroupBox>
         </StackPanel>
       </Grid>
+
     </Expander>
   </Grid>
 </controls:MetroWindow>
