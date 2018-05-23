@@ -16,7 +16,7 @@ namespace TreeGeneratorLib.Generator
             this.progress = progress;
         }
 
-        public List<TreeBatchPosition> GenerateBatch(BatchParameters batchParameters)
+        public List<TreeBatchPosition<T>> GenerateBatch(BatchParameters batchParameters)
         {
             List<TreeBatchPosition<T>> trees = new List<TreeBatchPosition<T>>();
             Queue<(int min, int max)> ranges = new Queue<(int min, int max)>(new[] { (0, batchParameters.BatchWidth) });
@@ -31,6 +31,7 @@ namespace TreeGeneratorLib.Generator
                     if (randomPick < 0)
                     {
                         randomIndex = j;
+                        break;
                     }
                 }
                 
@@ -46,9 +47,10 @@ namespace TreeGeneratorLib.Generator
                 ranges.Enqueue((xPosition, range.max));
                 var rangeList = ranges.ToList();
                 rangeList.Sort((range1, range2) => (range1.max - range1.min) - (range2.max - range2.min));
+                rangeList.Reverse();
                 ranges = new Queue<(int min, int max)>(rangeList);
 
-                var newBatchPosition = new TreeBatchPosition<T> { XPosition = xPosition, Tree = tree, TreeParameter = treeParameter };
+                var newBatchPosition = new TreeBatchPosition<T> { XPosition = xPosition, Tree = tree, TreeParameter = treeBatchParameter.TreeParameters };
                 trees.Add(newBatchPosition);
             }
 

@@ -84,13 +84,13 @@
             }
 
             int imageHeight = (int)maxTreeHeight;
-            int imageWidth = batchParameter.BatchWidth + (int)maxTreeWidth;
+            int imageWidth = batchParameters.BatchWidth + (int)maxTreeWidth;
             using (var treeBitmap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format32bppPArgb))
             {
                 var dataTree = treeBitmap.LockBits(new Rectangle(0, 0, imageWidth, imageHeight), ImageLockMode.WriteOnly, treeBitmap.PixelFormat);
                 using (var surfaceTree = SKSurface.Create(imageWidth, imageHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataTree.Scan0, imageWidth * 4))
                 {
-                    WpfTreeVisualWrapper.MoveOriginToLeftBottom(surfaceTree, imageHeight);
+                    //WpfTreeVisualWrapper.MoveOriginToLeftBottom(surfaceTree, imageHeight);
                     SKPaint bmpPaint = new SKPaint()
                     {
                         IsAntialias = false,
@@ -102,7 +102,7 @@
                     {
                         var bytes = MainViewModel.GetPngBytesFromImageControl(tree.Tree.TreeVisual.TreeIamge);
                         SKBitmap bitmap = SKBitmap.Decode(bytes);
-                        surfaceTree.Canvas.DrawBitmap(bitmap, tree.XPosition, 0, bmpPaint);
+                        surfaceTree.Canvas.DrawBitmap(bitmap, tree.XPosition, imageHeight - bitmap.Height, bmpPaint);
                     }
                 }
 
