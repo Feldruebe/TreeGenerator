@@ -135,6 +135,8 @@ namespace TreeGeneratorWPF.ViewModels
                 ScaleDeviation = 0
             };
             this.LeafImageViewModels.Add(defaultLeafImage);
+
+            this.BatchViewModel = new BatchViewModel(this.controller);
         }
         
         public int RandomSeed
@@ -367,7 +369,7 @@ namespace TreeGeneratorWPF.ViewModels
 
         public DebugViewModel DebugViewModel { get; }
 
-        public BatchViewModel BatchViewModel { get; } = new BatchViewModel();
+        public BatchViewModel BatchViewModel { get; }
 
         public TreeModel<WpfTreeVisualWrapper> Tree
         {

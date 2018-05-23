@@ -12,6 +12,8 @@
 
         private BitmapSource thumbnail;
 
+        private double probability;
+
         public string Name
         {
             get => this.name;
@@ -25,5 +27,11 @@
         }
 
         public TreeParameters Parameters { get; set; }
+
+        public double Probability
+        {
+            get => this.probability;
+            set => this.Set(ref this.probability, value);
+        }
     }
 }
