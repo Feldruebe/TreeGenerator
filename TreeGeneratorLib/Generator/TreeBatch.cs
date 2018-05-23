@@ -9,17 +9,17 @@ using TreeGeneratorLib.Wrappers;
 
 namespace TreeGeneratorLib.Generator
 {
-    public class TreeBatch : IList<TreeBatchPosition>
+    public class TreeBatch<T> : IList<TreeBatchPosition<T>> where T : TreeVisual
     {
-        public TreeBatchPosition this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public TreeBatchPosition<T> this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public List<TreeBatchPosition> TreePositions { get; set; } = new List<TreeBatchPosition>();
+        public List<TreeBatchPosition<T>> TreePositions { get; set; } = new List<TreeBatchPosition<T>>();
 
         public int Count => throw new NotImplementedException();
 
         public bool IsReadOnly => throw new NotImplementedException();
 
-        public void Add(TreeBatchPosition item)
+        public void Add(TreeBatchPosition<T> item)
         {
             this.TreePositions.Add(item);
         }
@@ -29,32 +29,32 @@ namespace TreeGeneratorLib.Generator
             this.TreePositions.Clear();
         }
 
-        public bool Contains(TreeBatchPosition item)
+        public bool Contains(TreeBatchPosition<T> item)
         {
             return this.TreePositions.Contains(item);
         }
 
-        public void CopyTo(TreeBatchPosition[] array, int arrayIndex)
+        public void CopyTo(TreeBatchPosition<T>[] array, int arrayIndex)
         {
             this.TreePositions.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<TreeBatchPosition> GetEnumerator()
+        public IEnumerator<TreeBatchPosition<T>> GetEnumerator()
         {
             return this.TreePositions.GetEnumerator();
         }
 
-        public int IndexOf(TreeBatchPosition item)
+        public int IndexOf(TreeBatchPosition<T> item)
         {
             return this.TreePositions.IndexOf(item);
         }
 
-        public void Insert(int index, TreeBatchPosition item)
+        public void Insert(int index, TreeBatchPosition<T> item)
         {
             this.TreePositions.Insert(index, item);
         }
 
-        public bool Remove(TreeBatchPosition item)
+        public bool Remove(TreeBatchPosition<T> item)
         {
             return this.TreePositions.Remove(item);
         }

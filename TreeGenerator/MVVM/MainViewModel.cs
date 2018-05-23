@@ -318,7 +318,7 @@ namespace TreeGeneratorWPF.ViewModels
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.trunkColor, c);
-                this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
+                this.RedrawTree();
             }
         }
 
@@ -333,7 +333,7 @@ namespace TreeGeneratorWPF.ViewModels
             {
                 SKColor c = new SKColor(value.R, value.G, value.B, value.A);
                 this.Set(ref this.outlineColor, c);
-                this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
+                this.RedrawTree();
             }
         }
 
@@ -429,7 +429,9 @@ namespace TreeGeneratorWPF.ViewModels
 
         public void RedrawTree()
         {
+            this.Parameters = this.CreateTreeParameters();
             this.Tree?.TreeVisual.DrawTree(this.Tree, this.Parameters);
+            this.RaisePropertyChanged(nameof(this.Tree));
         }
 
         private async void GenerateTreeAndDraw()
@@ -660,7 +662,7 @@ namespace TreeGeneratorWPF.ViewModels
             {
                 var leafParameter = new LeafParameter
                 {
-                    ImageBuffer = this.GetPngBytesFromImageControl(leafViewModel.LoadedImage),
+                    ImageBuffer = GetPngBytesFromImageControl(leafViewModel.LoadedImage),
                     Probability = leafViewModel.Probability,
                     Scale = leafViewModel.Scale,
                     SacleDeviation = leafViewModel.ScaleDeviation,
@@ -672,7 +674,7 @@ namespace TreeGeneratorWPF.ViewModels
             return result;
         }
 
-        private byte[] GetPngBytesFromImageControl(BitmapImage imageC)
+        public static byte[] GetPngBytesFromImageControl(BitmapSource imageC)
         {
             MemoryStream memStream = new MemoryStream();
             PngBitmapEncoder encoder = new PngBitmapEncoder();

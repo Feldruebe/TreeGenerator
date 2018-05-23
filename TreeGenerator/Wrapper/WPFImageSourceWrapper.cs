@@ -62,7 +62,8 @@ namespace TreeGeneratorWPF.Wrapper
                 using (var surfaceTree = SKSurface.Create(imageWidth, imageHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataTree.Scan0, imageWidth * 4))
                 using (var surfaceSkeletton = SKSurface.Create(imageWidth, imageHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul, dataSkeletton.Scan0, imageWidth * 4))
                 {
-                    MoveOriginToLeftBottom(surfaceTree, imageHeight, surfaceSkeletton);
+                    MoveOriginToLeftBottom(surfaceTree, imageHeight);
+                    MoveOriginToLeftBottom(surfaceSkeletton, imageHeight);
 
                     SKPaint paint = new SKPaint() { Color = SKColors.Black, StrokeWidth = 1, Style = SKPaintStyle.Stroke };
                     var treeBranches = tree.Branches.Concat(new[] { tree.Trunk }).ToList();
@@ -88,12 +89,10 @@ namespace TreeGeneratorWPF.Wrapper
             }
         }
 
-        private static void MoveOriginToLeftBottom(SKSurface surfaceTree, int imageHeight, SKSurface surfaceSkeletton)
+        public static void MoveOriginToLeftBottom(SKSurface surfaceTree, int imageHeight)
         {
             surfaceTree.Canvas.Translate(0, imageHeight);
             surfaceTree.Canvas.Scale(1, -1);
-            surfaceSkeletton.Canvas.Translate(0, imageHeight);
-            surfaceSkeletton.Canvas.Scale(1, -1);
         }
 
         private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, TreeParameters treeParameters)
