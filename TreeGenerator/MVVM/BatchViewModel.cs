@@ -1,5 +1,6 @@
 ﻿namespace TreeGeneratorWPF.ViewModels
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Linq;
 
@@ -14,6 +15,7 @@
     using System.Drawing;
     using SkiaSharp;
     using System.Drawing.Imaging;
+    using System.Windows.Media.Imaging;
 
     public class BatchViewModel : ViewModelBase
     {
@@ -24,6 +26,8 @@
         private int batchedTreesCount;
 
         private ICancelableProgress progress;
+
+        private BitmapSource treeBatchImage;
 
         public RelayCommand ExecuteBatchCommand => new RelayCommand(this.ExecuteBatch);
 
@@ -52,6 +56,12 @@
         {
             get => this.batchedTreesCount;
             set => this.Set(ref this.batchedTreesCount, value);
+        }
+
+        public BitmapSource TreeBatchImage
+        {
+            get => this.treeBatchImage;
+            set => this.Set(ref this.treeBatchImage, value);
         }
 
         private void ExecuteBatch()
@@ -107,7 +117,7 @@
                 }
 
                 treeBitmap.UnlockBits(dataTree);
-                treeBitmap.Save(@"C:\Users\Michael\Desktop\Neuer Ordner\Test.png", ImageFormat.Png);
+                this.TreeBatchImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(treeBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(imageWidth, imageHeight));
             }
         }
     }
