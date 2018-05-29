@@ -623,11 +623,11 @@ namespace TreeGeneratorWPF.ViewModels
             dialog.Filter = "*.png|*.png";
             if (dialog.ShowDialog() == true)
             {
-                this.CreatePng(dialog.FileName, this.Tree.TreeVisual.TreeIamge);
+                CreatePng(dialog.FileName, this.Tree.TreeVisual.TreeIamge);
             }
         }
 
-        private void CreatePng(string filename, BitmapSource image)
+        public static void CreatePng(string filename, BitmapSource image)
         {
             if (filename != string.Empty)
             {
@@ -687,7 +687,7 @@ namespace TreeGeneratorWPF.ViewModels
 
         private void AddToBatch()
         {
-            var batchTreeViewModel = new BatchTreeViewModel { Name = this.Parameters.RandomSeed.ToString(), Thumbnail = this.Tree.TreeVisual.TreeIamge.Clone(), Parameters = this.Parameters };
+            var batchTreeViewModel = new BatchTreeViewModel { Name = this.Parameters.RandomSeed.ToString(), Thumbnail = this.Tree.TreeVisual.TreeIamge.Clone(), Parameters = this.Parameters, Probability = 0.5 };
             this.BatchViewModel.BatchTrees.Add(batchTreeViewModel);
         }
 

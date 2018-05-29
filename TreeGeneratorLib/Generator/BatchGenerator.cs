@@ -18,6 +18,11 @@ namespace TreeGeneratorLib.Generator
 
         public List<TreeBatchPosition<T>> GenerateBatch(BatchParameters batchParameters)
         {
+            if(!batchParameters.BatchTreeParameters.Any())
+            {
+                return new List<TreeBatchPosition<T>>();
+            }
+
             List<TreeBatchPosition<T>> trees = new List<TreeBatchPosition<T>>();
             Queue<(int min, int max)> ranges = new Queue<(int min, int max)>(new[] { (0, batchParameters.BatchWidth) });
             for (int i = 0; i < batchParameters.TreeCount; i++)
@@ -36,13 +41,27 @@ namespace TreeGeneratorLib.Generator
                 }
                 
                 var treeBatchParameter = batchParameters.BatchTreeParameters[randomIndex];
-                var seed = treeBatchParameter.TreeParameters.RandomSeed ?? new Random().Next();
+                var seed = !treeBatchParameter.UseNewSeed ? treeBatchParameter.TreeParameters.RandomSeed : new Random().Next();
                 TreeGenerator<T> generator = new TreeGenerator<T>();
                 generator.Initialize(treeBatchParameter.TreeParameters, this.progress, seed);
                 var tree = generator.GenerateTree();
 
                 var range = ranges.Dequeue();
-                var xPosition = new Random().Next(range.min, range.max);
+                int min = range.min;
+                int max = range.max;
+
+                if(max - min > batchParameters.BatchTreeDistance * 2)
+                {
+                    max -= batchParameters.BatchTreeDistance;
+                    min += batchParameters.BatchTreeDistance;
+                }
+                else
+                {
+                    int k = 0;
+                    k++;
+                }
+
+                var xPosition = new Random().Next(min, max);
                 ranges.Enqueue((range.min, xPosition));
                 ranges.Enqueue((xPosition, range.max));
                 var rangeList = ranges.ToList();

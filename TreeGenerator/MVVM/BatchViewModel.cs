@@ -16,6 +16,8 @@
     using SkiaSharp;
     using System.Drawing.Imaging;
     using System.Windows.Media.Imaging;
+    using Microsoft.Win32;
+    using MahApps.Metro.Controls.Dialogs;
 
     public class BatchViewModel : ViewModelBase
     {
@@ -25,11 +27,14 @@
 
         private int batchedTreesCount;
 
-        private ICancelableProgress progress;
+        private WPFProgressController progress;
 
         private BitmapSource treeBatchImage;
+        private int batchTreesDistance;
 
         public RelayCommand ExecuteBatchCommand => new RelayCommand(this.ExecuteBatch);
+
+        public RelayCommand SaveBatchCommand => new RelayCommand(this.SaveBatchImage);
 
         public RelayCommand<BatchTreeViewModel> DeleteCommand => new RelayCommand<BatchTreeViewModel>(viewModel => this.BatchTrees.Remove(viewModel));
 
@@ -38,6 +43,7 @@
             this.progress = controller;
             this.BatchedTreesCount = 10;
             this.BatchedImageWidth = 50;
+            this.BatchTreesDistance = 5;
         }
 
         public ObservableCollection<BatchTreeViewModel> BatchTrees
@@ -58,21 +64,47 @@
             set => this.Set(ref this.batchedTreesCount, value);
         }
 
+        public int BatchTreesDistance
+        {
+            get => this.batchTreesDistance;
+            set => this.Set(ref this.batchTreesDistance, value);
+        }
+
         public BitmapSource TreeBatchImage
         {
             get => this.treeBatchImage;
             set => this.Set(ref this.treeBatchImage, value);
         }
 
-        private void ExecuteBatch()
+        private void SaveBatchImage()
         {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.AddExtension = true;
+            dialog.DefaultExt = "*.png";
+            dialog.Filter = "*.png|*.png";
+            if (dialog.ShowDialog() == true)
+            {
+                MainViewModel.CreatePng(dialog.FileName, this.TreeBatchImage);
+            }
+        }
+
+        private async void ExecuteBatch()
+        {
+            if(!this.BatchTrees.Any())
+            {
+                return;
+            }
+
+            this.progress.ProgressDialogController = await DialogCoordinator.Instance.ShowProgressAsync(this, "Waiting...", "Wait", true);
+
             var batchTreeParameters = this.BatchTrees.Select(
                 batchTreeViewModel => new BatchTreeParameter()
                 {
                     Probability = batchTreeViewModel.Probability,
-                    TreeParameters = batchTreeViewModel.Parameters
+                    TreeParameters = batchTreeViewModel.Parameters,
+                    UseNewSeed = batchTreeViewModel.UseNewSeed,
                 }).ToList();
-            var batchParameters = new BatchParameters() { BatchTreeParameters = batchTreeParameters, BatchWidth = this.BatchedImageWidth, TreeCount = this.BatchedTreesCount };
+            var batchParameters = new BatchParameters() { BatchTreeParameters = batchTreeParameters, BatchWidth = this.BatchedImageWidth, TreeCount = this.BatchedTreesCount, BatchTreeDistance = this.batchTreesDistance };
             BatchGenerator<WpfTreeVisualWrapper> generator = new BatchGenerator<WpfTreeVisualWrapper>();
             generator.Initialize(this.progress);
             var treesBatch = generator.GenerateBatch(batchParameters);
@@ -82,7 +114,7 @@
             foreach (var tree in treesBatch)
             {
                 tree.Tree.TreeVisual.DrawTree(tree.Tree, tree.TreeParameter);
-                if(tree.Tree.TreeVisual.TreeIamge.Height > maxTreeHeight)
+                if (tree.Tree.TreeVisual.TreeIamge.Height > maxTreeHeight)
                 {
                     maxTreeHeight = tree.Tree.TreeVisual.TreeIamge.Height;
                 }
@@ -119,6 +151,8 @@
                 treeBitmap.UnlockBits(dataTree);
                 this.TreeBatchImage = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(treeBitmap.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(imageWidth, imageHeight));
             }
+
+            await this.progress.ProgressDialogController.CloseAsync();
         }
     }
 }

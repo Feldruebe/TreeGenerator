@@ -13,5 +13,6 @@ namespace TreeGeneratorLib.Generator
 
         public int BatchWidth { get; set; }
         public int TreeCount { get; set; }
+        public int BatchTreeDistance { get; set; }
     }
 }

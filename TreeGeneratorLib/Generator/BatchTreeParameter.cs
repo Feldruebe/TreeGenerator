@@ -5,5 +5,6 @@
         public TreeParameters TreeParameters { get; set; }
 
         public double Probability { get; set; }
+        public bool UseNewSeed { get; set; }
     }
 }

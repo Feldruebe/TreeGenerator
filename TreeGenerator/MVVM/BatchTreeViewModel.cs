@@ -13,6 +13,7 @@
         private BitmapSource thumbnail;
 
         private double probability;
+        private bool useNewSeed;
 
         public string Name
         {
@@ -32,6 +33,12 @@
         {
             get => this.probability;
             set => this.Set(ref this.probability, value);
+        }
+
+        public bool UseNewSeed
+        {
+            get => this.useNewSeed;
+            set => this.Set(ref this.useNewSeed, value);
         }
     }
 }
