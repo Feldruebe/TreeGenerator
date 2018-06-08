@@ -17,17 +17,7 @@
     <controls:MetroWindow.Resources>
         <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
     </controls:MetroWindow.Resources>
-    <controls:MetroWindow.Flyouts>
-        <controls:FlyoutsControl>
-            <controls:Flyout x:Name="DebugFlyout" Theme="Accent" Header="Debug" Position="Right" Width="300">
-                <StackPanel Margin="5,0,0,0">
-                    <controls:ToggleSwitch Content="Draw Trunk" IsChecked="{Binding DebugViewModel.DrawTrunk}" />
-                    <Slider Minimum="1" Maximum="{Binding AllBranchesCount}" Value="{Binding DebugViewModel.BranchToDraw}" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" />
-                    <controls:NumericUpDown Value="{Binding DebugViewModel.BranchToDraw}" />
-                </StackPanel>
-            </controls:Flyout>
-        </controls:FlyoutsControl>
-    </controls:MetroWindow.Flyouts>
+
 
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
