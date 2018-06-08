@@ -19,6 +19,8 @@ namespace TreeGeneratorWPF.Wrapper
 
     public class WpfTreeVisualWrapper : TreeVisual
     {
+        private Random rand;
+
         public new BitmapSource TreeIamge
         {
             get { return (BitmapSource)base.TreeIamge; }
@@ -47,6 +49,8 @@ namespace TreeGeneratorWPF.Wrapper
                     maxLeafWidth = (int)Math.Ceiling(Math.Sqrt(scaledWidth * scaledWidth + scaledHeight * scaledHeight));
                 }
             }
+
+            rand = treeParameters.RandomSeed.HasValue ? new Random(treeParameters.RandomSeed.Value) : new Random();
 
             var xOffset = -tree.ContourPoints.Min(point => (int)point.X) + maxLeafWidth;
             var yOffset = -tree.ContourPoints.Min(point => (int)point.Y);
@@ -97,7 +101,6 @@ namespace TreeGeneratorWPF.Wrapper
 
         private void DrawBranch(SKCanvas canvas, Branch branch, int xOffset, int yOffset, TreeParameters treeParameters)
         {
-
             IColor color = treeParameters.TrunkColor;
             IColor outlineColor = treeParameters.OutlineColor;
             var outlinePoints = branch.PolygonPoints.Select(point => new SKPoint((int)point.X + xOffset, (int)point.Y + yOffset)).ToList();
@@ -151,6 +154,15 @@ namespace TreeGeneratorWPF.Wrapper
                             FilterQuality = treeParameters.LeafAntialising ? SKFilterQuality.Low : SKFilterQuality.None,
                             IsDither = true
                         };
+
+                        float range = 30f;
+                        float d = (float)(range - this.rand.NextDouble() * range * 2);
+                        float[] brightnessMatrix = {
+                            1, 0, 0, 0, d,
+                            0, 1, 0, 0, d,
+                            1, 0, 1, 0, d,
+                            0, 0, 0, 1, 0};
+                        bmpPaint.ImageFilter = SKImageFilter.CreateColorFilter(SKColorFilter.CreateColorMatrix(brightnessMatrix));
 
                         canvas.RotateDegrees((float)-angle.Degrees, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
                         canvas.RotateDegrees(-90, (float)leftPoint.X + xOffset, (float)leftPoint.Y + yOffset);
